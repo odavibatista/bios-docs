@@ -1,9 +1,5 @@
 # BIOS — Briefing de Sessão e Contexto de Projeto
 
-> Documento de continuidade. Objetivo: permitir retomar o projeto (nesta ou em outra
-> conversa) sem perder decisões já tomadas. Não inclui conteúdo de natureza legal/pessoal
-> tratado em paralelo — esse material fica em registros próprios do autor.
-
 ## 1. Visão Geral do Projeto
 
 **Nome:** BIOS (vida, em grego).
