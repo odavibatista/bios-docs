@@ -50,7 +50,7 @@ O projeto é de desenvolvimento individual. Davi Deosmar Batista Oliveira Mirand
 
 Por se tratar de desenvolvimento individual, todas as responsabilidades acima são exercidas
 pela mesma pessoa, sem prejuízo do rastreamento formal de cada atividade por etapa e por tipo
-de teste no quadro de gerenciamento do projeto (ver Ferramenta de Gerenciamento).
+de teste no quadro de gerenciamento do projeto do GitHub Projects.
 
 ## Atividades
 
