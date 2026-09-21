@@ -19,10 +19,6 @@ oficiais, relaciona essas evidências a ODS específicos, e gera um índice de a
 ambiental explicável, acompanhado de um nível de confiança — permitindo busca, filtragem e
 exportação de empresas segundo critérios socioambientais.
 
-**Inspiração declarada:** o modelo de consulta/filtro/exportação de plataformas de
-inteligência comercial B2B (tipo Atlas/Speedio), adaptado para a agenda ambiental — com uma
-divergência de escopo deliberada e central (Seção 2).
-
 ## 2. Escopo Confirmado
 
 ### O que o BIOS faz
@@ -88,8 +84,7 @@ DADO → EVIDÊNCIA → REGRA → INDICADOR → SCORE
 ## 5. Stack Técnica
 
 - **Back-end:** NestJS + Prisma + **MongoDB** (dado não estruturado, disperso, sem grandes
-  relações — decisão tomada e mantida; não confundir com o projeto de portfólio pessoal do
-  autor, `api-ref`, que usa PostgreSQL e é um projeto não relacionado ao BIOS).
+  relações — decisão tomada e mantida.
 - **Front-end:** Angular moderno como primeira escolha, aberto a Next.js/React+TanStack Query
   por velocidade de entrega solo.
 - **Microsserviços leves:** `bios-core-api` (orquestração, API pública, contas/chaves),
@@ -118,10 +113,9 @@ Mapeamento SIEHP → estrutura exigida pela A3 (item 8 da proposta da disciplina
 | 11 Permissões | (adaptado, simplificado) |
 | (sem equivalente direto) | Impacto Ambiental — **a escrever** |
 
-## 7. Lições de Engenharia Aplicáveis ao BIOS (originadas da revisão do projeto `api-ref`)
+## 7. Lições de Engenharia Aplicáveis ao BIOS
 
-Da análise de código do projeto pessoal `api-ref` (NestJS+Prisma+Postgres, 103 módulos), os
-seguintes pontos foram identificados como práticas a **adotar desde o início no BIOS**, para
+Os seguintes pontos foram identificados como práticas a **adotar desde o início no BIOS**, para
 não repetir no BIOS problemas encontrados lá:
 
 - Injetar o cliente Prisma via `PrismaService` do próprio Nest, nunca como singleton global
