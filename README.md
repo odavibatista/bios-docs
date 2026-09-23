@@ -40,11 +40,11 @@ ferramentas de prospecção B2B genéricas — documentado à parte em "BIOS —
 
 | Fonte | Dado fornecido | Tipo de acesso | Observação |
 |---|---|---|---|
-| Receita Federal (via BrasilAPI / OpenCNPJ) | Cadastro de pessoa jurídica | API pública, sem chave | Camada de identidade, não gera evidência ambiental por si só |
-| IBGE | Descrição de CNAE | API pública, sem chave (`servicodados.ibge.gov.br`) | Dá significado ao código, não só o número |
-| IBAMA — Dados Abertos | Autuações e embargos ambientais | API pública (CKAN), sem chave | Evidência negativa mais forte e mais fácil de obter |
-| CGU — Portal da Transparência (CEIS/CNEP) | Sanções administrativas | API pública, chave via cadastro simples | Evidência negativa complementar |
-| GHG Protocol Brasil — Registro Público de Emissões | Inventários de emissões | Portal web, sem API REST documentada | Evidência positiva; entra como download/scraping leve, não API First — exceção documentada à hierarquia de fontes |
+| Receita Federal (via BrasilAPI, fallback Minha Receita) | Cadastro de pessoa jurídica | API pública, sem chave | Camada de identidade, não gera evidência ambiental por si só; nenhum dos dois provedores é institucional, cadeia de fallback é obrigatória |
+| IBGE | Descrição de CNAE | API pública, sem chave (`servicodados.ibge.gov.br`) | Fonte de apoio para taxonomia do CNAE; BrasilAPI já retorna descrição do CNAE principal e secundários numa única chamada |
+| IBAMA — Dados Abertos | Autuações e embargos ambientais | Dados abertos (CKAN) — **sem consulta por CNPJ ao vivo**, apenas dumps em lote | Ingestão batch assíncrona (job diário via BullMQ); MVP restrito aos dois recursos principais (auto de infração + embargo) — ver `Projeto-e-Arquitetura.md` |
+| CGU — Portal da Transparência (CEIS/CNEP) | Sanções administrativas | API pública, chave via cadastro simples | Aceito como sinal amplo de conduta administrativa, sem filtrar por órgão sancionador — categorizado à parte de evidência ambiental (RF08) |
+| GHG Protocol Brasil — Registro Público de Emissões | Inventários de emissões | Portal web, sem API REST documentada | Evidência positiva; fallback best-effort isolado e não bloqueante — cobertura estruturalmente baixa, `UNKNOWN` é o resultado esperado na maioria das consultas |
 
 **Descartadas do MVP (documentado, não esquecido):** DataJud/CNJ (processos judiciais),
 SICAR/CAR (dados geoespaciais rurais), LinkedIn e qualquer fonte de dado de contato pessoal.
@@ -85,19 +85,21 @@ DADO → EVIDÊNCIA → REGRA → INDICADOR → SCORE
   por velocidade de entrega solo.
 - **Microsserviços leves:** `bios-core-api` (orquestração, API pública, contas/chaves),
   módulo/serviço de ingestão CNPJ, módulo/serviço de ingestão ambiental (score), serviço
-  isolado de scraping (SICAR/GHG, se mantido) rodando à parte para não derrubar a API
-  principal em caso de falha de scraping.
+  isolado de fallback para o GHG Protocol rodando à parte para não derrubar a API principal
+  em caso de indisponibilidade ou falha da fonte (SICAR já descartado do MVP — ver seção 2).
 
 ## 6. Padrão de Documentação Técnica Adotado
 
-Referência principal: wiki do projeto **SIEHP** (template rigoroso, com RF/RNF/RIN por ID,
-prioridade e ator). O projeto **Coyote** (ERP incompleto do próprio autor) foi analisado como
-contraexemplo — mesma base de template, mas que degenerou em especificação de tela em prosa
-livre a partir do `Home.md`; decisão explícita de **não repetir esse padrão** no BIOS.
+Referência principal: wiki de um projeto de referência usado como modelo (template rigoroso,
+com RF/RNF/RIN por ID, prioridade e ator). O projeto **Coyote** (ERP incompleto do próprio
+autor) foi analisado como contraexemplo — mesma base de template, mas que degenerou em
+especificação de tela em prosa livre a partir do `Home.md`; decisão explícita de **não
+repetir esse padrão** no BIOS.
 
-Mapeamento SIEHP → estrutura exigida pela A3 (item 8 da proposta da disciplina):
+Mapeamento da estrutura de documentação adotada → estrutura exigida pela A3 (item 8 da
+proposta da disciplina):
 
-| Seção SIEHP | Seção A3 correspondente |
+| Seção da documentação técnica | Seção A3 correspondente |
 |---|---|
 | 01 Introdução | Introdução |
 | 02 Visão Geral | Problema, Contexto, Justificativa, Objetivos |
@@ -154,9 +156,10 @@ Architecture/SOLID/OO como princípio arquitetural.
   justificativa, público, stakeholders, objetivos), mas não foi formatado no template da
   documentação técnica final.
 - **Etapa 4 (Modelagem):** diagrama de classes, casos de uso e sequência — não iniciados.
-- **Etapa 5 (Projeto e Arquitetura):** conteúdo conceitual existe (Seções 4 e 5 deste
-  briefing), mas não foi escrito como seção formal de documentação técnica, com justificativa
-  explícita de arquitetura conforme ISO/IEC 25010.
+- **Etapa 5 (Projeto e Arquitetura):** fontes de dados, padrão de integração por fonte, fila/
+  agendamento e categorização de evidências já formalizados em `Projeto-e-Arquitetura.md`.
+  Falta: justificativa explícita de arquitetura conforme ISO/IEC 25010, e definição do número
+  definitivo da seção (ver nota no topo do próprio documento).
 - **Etapa 8 (Impacto Ambiental):** indicadores foram esboçados no briefing original (número de
   autuações, evolução do score, regiões com maior concentração), mas não formalizados para o
   escopo final do BIOS.
