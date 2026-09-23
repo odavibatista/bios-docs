@@ -62,7 +62,7 @@
 | :----------- | :----------- |
 | **Ator(es):** | Usuário. |
 | **Requisitos associados:** | [RF03], [RF08], [RF10]. |
-| **Objetivo:** | O sistema deve consolidar, por CNPJ, evidências ambientais provenientes de múltiplas fontes públicas (IBAMA, CEIS/CNEP). |
+| **Objetivo:** | O sistema deve consolidar, por CNPJ, evidências ambientais provenientes de múltiplas fontes públicas (IBAMA, CEIS/CNEP, GHG Protocol — Registro Público de Emissões). |
 
 
 <p align="center"><b>[RF08] Registrar metadados da evidência</b></p>
