@@ -6,6 +6,9 @@ Disponível em: https://dados.gov.br. Acesso em: 2026.
 BRASILAPI. **BrasilAPI — Documentação**. Disponível em: https://brasilapi.com.br. Acesso em:
 2026.
 
+MINHA RECEITA. **Documentação**. Disponível em: https://docs.minhareceita.org. Acesso em:
+2026.
+
 IBGE. **API de Localidades e Classificações**. Disponível em:
 https://servicodados.ibge.gov.br. Acesso em: 2026.
 
