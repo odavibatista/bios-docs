@@ -7,7 +7,7 @@
 | Prioridade: | ☑ Essencial / ☐ Importante / ☐ Desejável |
 | :----------- | :----------- |
 | **Ator(es):** | Usuário. |
-| **Requisitos associados:** | [RF02], [RF22]. |
+| **Requisitos associados:** | [RF02], [RF22], [RF28]. |
 | **Objetivo:** | O sistema deve permitir que um usuário crie uma conta para acessar as funcionalidades do BIOS. |
 
 
@@ -89,7 +89,7 @@
 | :----------- | :----------- |
 | **Ator(es):** | Sistema (processo automático). |
 | **Requisitos associados:** | [RF07], [RF11]. |
-| **Objetivo:** | O sistema deve calcular um índice de aderência ambiental por empresa a partir das evidências coletadas. |
+| **Objetivo:** | O sistema deve calcular, por empresa, um índice de aderência ambiental para cada ODS de referência do MVP — ODS 13 (Ação Contra a Mudança Global do Clima) e ODS 15 (Vida Terrestre) —, a partir das evidências vinculadas a cada ODS. Os ODS de referência são entidades próprias do banco de dados, populadas via seed (ver `14-Projeto-e-Arquitetura.md`, seção 3.1). |
 
 
 <p align="center"><b>[RF11] Calcular nível de confiança</b></p>
@@ -98,7 +98,7 @@
 | :----------- | :----------- |
 | **Ator(es):** | Sistema (processo automático). |
 | **Requisitos associados:** | [RF10]. |
-| **Objetivo:** | O sistema deve calcular um nível de confiança, separado do índice, refletindo quantidade e qualidade das evidências disponíveis. |
+| **Objetivo:** | O sistema deve calcular, para cada índice por ODS, um nível de confiança separado do índice, refletindo quantidade e qualidade das evidências disponíveis para aquele ODS. |
 
 
 <p align="center"><b>[RF12] Explicar composição do score</b></p>
@@ -107,7 +107,7 @@
 | :----------- | :----------- |
 | **Ator(es):** | Usuário. |
 | **Requisitos associados:** | [RF10]. |
-| **Objetivo:** | O sistema deve exibir quais evidências contribuíram para o índice, com peso e sinal (positivo/negativo). |
+| **Objetivo:** | O sistema deve exibir, separadamente para cada ODS, quais evidências contribuíram para o índice, com peso e sinal (positivo/negativo). |
 
 
 <p align="center"><b>[RF13] Filtrar empresas</b></p>
@@ -116,7 +116,7 @@
 | :----------- | :----------- |
 | **Ator(es):** | Usuário. |
 | **Requisitos associados:** | [RF10]. |
-| **Objetivo:** | O sistema deve permitir filtrar empresas por CNAE, UF, município, índice mínimo e confiança mínima. |
+| **Objetivo:** | O sistema deve permitir filtrar empresas por CNAE, UF, município e, para um ODS selecionado, índice mínimo e confiança mínima. |
 
 
 <p align="center"><b>[RF14] Ordenar resultados por score</b></p>
@@ -125,7 +125,7 @@
 | :----------- | :----------- |
 | **Ator(es):** | Usuário. |
 | **Requisitos associados:** | [RF13]. |
-| **Objetivo:** | O sistema deve permitir ordenar os resultados de uma busca por índice, ascendente ou descendente. |
+| **Objetivo:** | O sistema deve permitir ordenar os resultados de uma busca pelo índice de um ODS selecionado, ascendente ou descendente. |
 
 
 <p align="center"><b>[RF15] Exportar lista em XLSX</b></p>
@@ -134,7 +134,7 @@
 | :----------- | :----------- |
 | **Ator(es):** | Usuário. |
 | **Requisitos associados:** | [RF13]. |
-| **Objetivo:** | O sistema deve permitir exportar uma lista de empresas filtrada em formato XLSX. |
+| **Objetivo:** | O sistema deve permitir exportar uma lista de empresas filtrada em formato XLSX, com índice e nível de confiança em colunas separadas por ODS. |
 
 
 <p align="center"><b>[RF16] Gerenciar chaves de API</b></p>
@@ -160,7 +160,7 @@
 | Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
 | :----------- | :----------- |
 | **Ator(es):** | Sistema (processo automático). |
-| **Requisitos associados:** | [RF01], [RF16], [RF25]. |
+| **Requisitos associados:** | [RF01], [RF16], [RF25], [RF28]. |
 | **Objetivo:** | O sistema deve disparar e-mails transacionais (confirmação de cadastro, recuperação de senha, alerta de login suspeito) usando templates Handlebars via Nodemailer. |
 
 
@@ -196,7 +196,7 @@
 | Prioridade: | ☑ Essencial / ☐ Importante / ☐ Desejável |
 | :----------- | :----------- |
 | **Ator(es):** | Sistema (processo automático); Administrador. |
-| **Requisitos associados:** | [RF01]. |
+| **Requisitos associados:** | [RF01], [RF29]. |
 | **Objetivo:** | O sistema deve manter uma lista de domínios de e-mail bloqueados, inicializada a partir de um arquivo JSON de sementes (seed) e persistida como entidade em banco de dados, permitindo consulta em tempo de cadastro/autenticação e atualização posterior sem necessidade de novo deploy. |
 
 
@@ -225,3 +225,57 @@
 | **Ator(es):** | Usuário. |
 | **Requisitos associados:** | [RF01], [RF18]. |
 | **Objetivo:** | O sistema deve permitir que um usuário solicite redefinição de senha via e-mail cadastrado, através de um token de uso único e validade limitada, enviado por e-mail transacional. |
+
+
+<p align="center"><b>[RF26] Editar dados da conta</b></p>
+
+| Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário. |
+| **Requisitos associados:** | [RF02], [RF28]. |
+| **Objetivo:** | O sistema deve permitir que o usuário autenticado edite seus próprios dados cadastrais (nome e endereço), exigindo nova confirmação ([RF28]) caso o e-mail seja alterado. |
+
+
+<p align="center"><b>[RF27] Excluir conta</b></p>
+
+| Prioridade: | ☑ Essencial / ☐ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário. |
+| **Requisitos associados:** | [RF02], [RF16], [RF23]. |
+| **Objetivo:** | O sistema deve permitir que o usuário autenticado exclua a própria conta, mediante confirmação de senha, removendo seus dados pessoais, revogando todas as suas chaves de API e encerrando todas as suas sessões ativas — atendendo ao direito de eliminação do titular previsto na LGPD ([NFSE02]). |
+
+
+<p align="center"><b>[RF28] Confirmar e-mail de cadastro</b></p>
+
+| Prioridade: | ☑ Essencial / ☐ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário; Sistema (processo automático). |
+| **Requisitos associados:** | [RF01], [RF18]. |
+| **Objetivo:** | O sistema deve manter a conta recém-criada inativa até que o usuário confirme o e-mail informado, por meio de um token de uso único e validade limitada enviado por e-mail transacional ([RF18]). |
+
+
+<p align="center"><b>[RF29] Gerenciar blacklist de domínios de e-mail</b></p>
+
+| Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Administrador. |
+| **Requisitos associados:** | [RF22]. |
+| **Objetivo:** | O sistema deve permitir que um usuário com papel de administrador consulte, adicione e remova domínios da blacklist mantida pelo [RF22], com efeito imediato e sem necessidade de novo deploy. |
+
+
+<p align="center"><b>[RF30] Consultar evolução do índice médio por setor</b></p>
+
+| Prioridade: | ☐ Essencial / ☐ Importante / ☑ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário. |
+| **Requisitos associados:** | [RF06], [RF10]. |
+| **Objetivo:** | O sistema deve exibir, para cada ODS, a evolução do índice de aderência ambiental médio agregado por CNAE entre janelas de tempo sucessivas, nunca por empresa individual — conforme o indicador [IA05] e sua nota de restrição em `15-Impacto-Ambiental.md`. Depende da decisão de armazenamento de série histórica registrada na seção 15.4. |
+
+
+<p align="center"><b>[RF31] Disponibilizar integração com CRMs (bônus — fora do MVP)</b></p>
+
+| Prioridade: | ☐ Essencial / ☐ Importante / ☑ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Desenvolvedor externo. |
+| **Requisitos associados:** | [RF16], [RF17]. |
+| **Objetivo:** | O sistema deve permitir que CRMs de terceiros importem o perfil ambiental de **pessoas jurídicas** (dados cadastrais, índice, confiança e evidências) a partir da API pública, sem exportar qualquer dado de contato ou dado pessoal de indivíduo ([INL02]). Requisito bônus: entra apenas se houver folga no cronograma após a entrega dos requisitos essenciais e importantes, e não compõe o escopo mínimo do MVP. |
