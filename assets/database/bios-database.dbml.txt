@@ -31,8 +31,11 @@
 //    colaborador das empresas consultadas ([INL02]).
 //
 // Retenção:
-//  - Coleções de log e tokens recebem índice TTL do MongoDB (criado via
-//    script de migração, pois o Prisma não declara índices TTL).
+//  - Tokens, sessões, bloqueios e logs são removidos por índice TTL do MongoDB,
+//    com prazo configurável por variável de ambiente (DATA_RETENTION_*);
+//  - Como o Prisma não declara TTL, cada campo observado tem um índice simples
+//    no schema, convertido em TTL pela API a cada inicialização (prazo alterado
+//    é ajustado via collMod, sem recriar o índice).
 // =============================================================================
 
 Project bios {
@@ -193,12 +196,12 @@ Table user_tokens {
   created_at timestamp
   updated_at timestamp
 
-  Note: 'Tokens de uso único e validade limitada enviados por e-mail (confirmação de conta, troca de e-mail e recuperação de senha). TTL: removidos 7 dias após expires_at.'
+  Note: 'Tokens de uso único e validade limitada enviados por e-mail (confirmação de conta, troca de e-mail e recuperação de senha). TTL: removidos após expires_at + DATA_RETENTION_USER_TOKENS (padrão 7d).'
 
   Indexes {
     token_hash [unique, name: 'idx_user_tokens_token_hash']
     (user_id, purpose, used_at) [name: 'idx_user_tokens_user_purpose_used']
-    expires_at [name: 'idx_user_tokens_expires_at']
+    expires_at [name: 'idx_user_tokens_expires_at', note: 'Convertido em TTL na inicialização']
   }
 }
 
@@ -213,12 +216,12 @@ Table user_sessions {
   revocation_reason session_revocation_reason [null]
   created_at timestamp
 
-  Note: 'Sessões JWT revogáveis (RF23, RF24, NFSE05). Um token só é aceito se a sessão existir, não estiver revogada e não estiver expirada. TTL: removidas 30 dias após expires_at.'
+  Note: 'Sessões JWT revogáveis (RF23, RF24, NFSE05). Um token só é aceito se a sessão existir, não estiver revogada e não estiver expirada. TTL: removidas após expires_at + DATA_RETENTION_USER_SESSIONS (padrão 30d).'
 
   Indexes {
     jti_hash [unique, name: 'idx_user_sessions_jti_hash']
     (user_id, revoked_at) [name: 'idx_user_sessions_user_revoked']
-    expires_at [name: 'idx_user_sessions_expires_at']
+    expires_at [name: 'idx_user_sessions_expires_at', note: 'Convertido em TTL na inicialização']
   }
 }
 
@@ -254,11 +257,12 @@ Table login_attempts {
   failure_reason login_failure_reason [null]
   attempted_at timestamp
 
-  Note: 'Registro de cada tentativa de autenticação (RF19). A contagem de falhas consecutivas para o bloqueio (RF20) considera as tentativas desde o último sucesso. TTL: 90 dias.'
+  Note: 'Registro de cada tentativa de autenticação (RF19). A contagem de falhas consecutivas para o bloqueio (RF20) considera as tentativas desde o último sucesso. TTL: removidas após attempted_at + DATA_RETENTION_LOGIN_ATTEMPTS (padrão 90d).'
 
   Indexes {
     (ip, attempted_at) [name: 'idx_login_attempts_ip_attempted_at']
     (user_id, attempted_at) [name: 'idx_login_attempts_user_attempted_at']
+    attempted_at [name: 'idx_login_attempts_attempted_at', note: 'Convertido em TTL na inicialização']
   }
 }
 
@@ -271,11 +275,12 @@ Table access_blocks {
   blocked_until timestamp [null, note: 'Nulo = bloqueio sem prazo (honeypot)']
   created_at timestamp
 
-  Note: 'Bloqueios de IP ou de usuário. O banco é a fonte de verdade e a trilha de auditoria; os bloqueios ativos são espelhados no Redis para verificação rápida a cada requisição.'
+  Note: 'Bloqueios de IP ou de usuário. O banco é a fonte de verdade e a trilha de auditoria; os bloqueios ativos são espelhados no Redis para verificação rápida a cada requisição. TTL: removidos após blocked_until + DATA_RETENTION_ACCESS_BLOCKS (padrão 90d); bloqueios sem prazo nunca expiram.'
 
   Indexes {
     (scope, ip, blocked_until) [name: 'idx_access_blocks_scope_ip_until']
     (scope, user_id, blocked_until) [name: 'idx_access_blocks_scope_user_until']
+    blocked_until [name: 'idx_access_blocks_blocked_until', note: 'Convertido em TTL na inicialização']
   }
 }
 
@@ -287,10 +292,11 @@ Table honeypot_hits {
   user_agent varchar [null]
   hit_at timestamp
 
-  Note: 'Chamadas a endpoints isca (RF21). Os dados sintéticos devolvidos são gerados sob demanda, sem coleção própria. TTL: 180 dias.'
+  Note: 'Chamadas a endpoints isca (RF21). Os dados sintéticos devolvidos são gerados sob demanda, sem coleção própria. TTL: removidas após hit_at + DATA_RETENTION_HONEYPOT_HITS (padrão 180d).'
 
   Indexes {
     (ip, hit_at) [name: 'idx_honeypot_hits_ip_hit_at']
+    hit_at [name: 'idx_honeypot_hits_hit_at', note: 'Convertido em TTL na inicialização']
   }
 }
 
@@ -322,11 +328,12 @@ Table email_dispatch_logs {
   created_at timestamp
   updated_at timestamp
 
-  Note: 'Auditoria de e-mails transacionais (RF18). TTL: 180 dias.'
+  Note: 'Auditoria de e-mails transacionais (RF18). TTL: removidos após created_at + DATA_RETENTION_EMAIL_DISPATCH_LOGS (padrão 180d).'
 
   Indexes {
     (user_id, created_at) [name: 'idx_email_dispatch_logs_user_created_at']
     (status, created_at) [name: 'idx_email_dispatch_logs_status_created_at']
+    created_at [name: 'idx_email_dispatch_logs_created_at', note: 'Convertido em TTL na inicialização']
   }
 }
 
@@ -415,11 +422,12 @@ Table data_source_request_logs {
   error_message varchar [null]
   requested_at timestamp
 
-  Note: 'Log de cada chamada a uma fonte externa: base para auditoria de rate limit (NFPD01), diagnóstico de fallback e o indicador de cobertura por fonte [IA04]. TTL: 90 dias.'
+  Note: 'Log de cada chamada a uma fonte externa: base para auditoria de rate limit (NFPD01), diagnóstico de fallback e o indicador de cobertura por fonte [IA04]. TTL: removidos após requested_at + DATA_RETENTION_DATA_SOURCE_REQUEST_LOGS (padrão 90d).'
 
   Indexes {
     (data_source_id, requested_at) [name: 'idx_data_source_request_logs_source_requested_at']
     (cnpj, requested_at) [name: 'idx_data_source_request_logs_cnpj_requested_at']
+    requested_at [name: 'idx_data_source_request_logs_requested_at', note: 'Convertido em TTL na inicialização']
   }
 }
 
