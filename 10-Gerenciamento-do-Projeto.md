@@ -4,9 +4,10 @@
 
 O MVP do BIOS consolidará, a partir do CNPJ, dados cadastrais de empresas (Receita Federal e
 CNAE/IBGE) e evidências públicas de comprometimento ambiental (autuações e embargos do IBAMA;
-sanções administrativas do CEIS/CNEP — Portal da Transparência), gerando um índice de
-aderência ambiental explicável e um nível de confiança associado. O sistema permitirá busca
-por CNPJ ou razão social, filtragem por CNAE/UF/porte/score, ranqueamento de resultados e
+sanções administrativas do CEIS/CNEP — Portal da Transparência; inventários de emissões do
+GHG Protocol), gerando, para o ODS 13 (Ação Climática) e o ODS 15 (Vida Terrestre), um índice
+de aderência ambiental explicável e um nível de confiança associado. O sistema permitirá busca
+por CNPJ ou razão social, filtragem por CNAE/UF/município/índice/confiança, ranqueamento de resultados e
 exportação de listas em XLSX, além de um painel de conta com geração de chaves de API para
 consumo externo dos dados. Ficam fora do escopo do MVP, por decisão deliberada: identificação
 de tomadores de decisão, coleta de contatos pessoais (e-mail, telefone, WhatsApp, LinkedIn) e
@@ -80,12 +81,15 @@ de teste no quadro de gerenciamento do projeto do [GitHub Projects](https://gith
 ## Prioridades
 
 - Essencial: consulta de empresa por CNPJ, consolidação de evidências ambientais (IBAMA,
-  CEIS/CNEP), cálculo do índice de aderência ambiental com nível de confiança explicável,
-  autenticação de usuário;
+  CEIS/CNEP e GHG Protocol — Registro Público de Emissões), cálculo do índice de aderência
+  ambiental por ODS (13 e 15) com nível de confiança explicável, autenticação de usuário. A
+  ingestão do GHG Protocol é Essencial por ser a única fonte do índice do ODS 13; em tempo de
+  execução, continua isolada e não bloqueante (ver `14-Projeto-e-Arquitetura.md`);
 - Importante: filtros de busca, ranqueamento, exportação em XLSX, painel de conta e API
   pública documentada;
-- Desejável: evidências positivas via GHG Protocol (Registro Público de Emissões), mecanismos
-  adicionais de segurança de borda (ex.: honeypot).
+- Desejável: mecanismos adicionais de segurança de borda (ex.: honeypot), evolução do índice
+  médio por setor (RF30) e integração com CRMs (RF31 — bônus, fora do MVP caso não haja folga
+  no cronograma).
 
 ## Riscos
 
@@ -94,7 +98,9 @@ de teste no quadro de gerenciamento do projeto do [GitHub Projects](https://gith
   cache local e adapters isolados por fonte;
 - Ausência de API REST oficial para o Registro Público de Emissões do GHG Protocol, exigindo
   coleta manual/estruturada como exceção documentada à estratégia API First — mitigação via
-  tratamento dessa fonte como atualização de baixa frequência;
+  tratamento dessa fonte como atualização de baixa frequência. Como é a única fonte do índice do
+  ODS 13, uma falha prolongada nessa coleta deixa o ODS 13 integralmente em estado `UNKNOWN` —
+  degradação aceita e comunicada pelo nível de confiança (RF11), sem afetar o índice do ODS 15;
 - Restrição de tempo e de mão de obra por se tratar de desenvolvimento individual — mitigação
   via modelo incremental, escopo de MVP deliberadamente contido e corte explícito de
   funcionalidades não essenciais (ver Escopo);

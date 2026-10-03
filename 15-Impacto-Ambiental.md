@@ -12,7 +12,7 @@ O BIOS não atua diretamente sobre o comportamento ambiental das empresas consul
 | [IA02] | Volume de evidências consolidadas por categoria | Contagem de registros em `evidence_normalized`, segmentado por `categoria` (`INFRACAO_AMBIENTAL`, `CONDUTA_ADMINISTRATIVA`, `EMISSAO_GEE` — ver `14-Projeto-e-Arquitetura.md`, seção 4) | `evidence_normalized` |
 | [IA03] | Concentração geográfica de evidências | Contagem de evidências por UF/município, reaproveitando os filtros de RF13 | `company_profile` + endereço (RF05) |
 | [IA04] | Cobertura de evidência por fonte | Proporção de consultas com estado `CONFIRMED`/`NOT_FOUND`/`OUTDATED` vs. `UNKNOWN`, por fonte (IBAMA, CEIS/CNEP, GHG Protocol) | `evidence_normalized`, campo `estado` (RF08) |
-| [IA05] | Evolução do índice de aderência médio por setor | Média do índice (RF10) agregada por CNAE, comparada entre janelas de tempo sucessivas | `company_profile`, série histórica (ver 15.4) |
+| [IA05] | Evolução do índice de aderência médio por setor, por ODS | Média do índice de cada ODS (RF10 — ODS 13 e ODS 15) agregada por CNAE, comparada entre janelas de tempo sucessivas | `company_profile`, série histórica (ver 15.4) |
 
 **Nota sobre [IA05]:** reportado **por setor (CNAE)**, nunca por empresa individual isolada — inclusive na
 exposição ao usuário, formalizada como [RF30] (Desejável). Reportar evolução de score por empresa única, sem controle de causalidade sobre por que o score mudou (nova evidência ingerida vs. mudança real de conduta), geraria um ranking punitivo não sustentado por evidência suficiente — o mesmo risco que a separação score/confiança (RF11) já existe para mitigar.

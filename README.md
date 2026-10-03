@@ -1,8 +1,8 @@
-# BIOS — Briefing de Sessão e Contexto de Projeto
+# BIOS  - Business Intelligence on Sustainability — Briefing de Sessão e Contexto de Projeto
 
 ## 1. Visão Geral do Projeto
 
-**Nome:** BIOS (vida, em grego).
+**Nome:** BIOS - Business Intelligence on Sustainability (e, também 'vida', em grego).
 **Tema oficial (A3):** Inteligência Comercial de Agenda Verde: Prospecção Ativa e B2B Ambiental.
 **Contexto acadêmico:** Avaliação 3 das disciplinas de Engenharia de Software e Gestão e
 Qualidade de Software, curso de graduação em Ciência da Computação. Desenvolvimento
@@ -11,8 +11,9 @@ individual. Cronograma até novembro de 2026, com potencial de virar artigo acad
 
 **Definição resumida:** BIOS é uma plataforma que usa o CNPJ como eixo de integração de
 dados públicos, consolida evidências ambientais de uma empresa a partir de múltiplas fontes
-oficiais, relaciona essas evidências a ODS específicos, e gera um índice de aderência
-ambiental explicável, acompanhado de um nível de confiança — permitindo busca, filtragem e
+oficiais, relaciona essas evidências a dois ODS — ODS 13 (Ação Climática) e ODS 15 (Vida Terrestre),
+foco do MVP; os demais ODS ficam fora do escopo —, e gera, para cada um deles, um índice de
+aderência ambiental explicável, acompanhado de um nível de confiança — permitindo busca, filtragem e
 exportação de empresas segundo critérios socioambientais.
 
 ## 2. Escopo Confirmado
@@ -21,7 +22,8 @@ exportação de empresas segundo critérios socioambientais.
 - Consulta de empresa por CNPJ ou razão social.
 - Exibição de dados cadastrais públicos e descrição de CNAE.
 - Consolidação de evidências ambientais públicas por CNPJ (positivas e negativas).
-- Cálculo de um índice de aderência ambiental por ODS, com nível de confiança separado.
+- Cálculo de um índice de aderência ambiental por ODS (ODS 13 e ODS 15), cada um com nível de
+  confiança separado. Os ODS são seedados no banco como entidade própria, não fixados em código.
 - Explicabilidade do score (quais evidências, que peso, positivo/negativo).
 - Filtros de busca (CNAE, UF, município, score mínimo, confiança mínima) e ranking.
 - Exportação de listas filtradas em XLSX.
@@ -105,14 +107,15 @@ proposta da disciplina):
 | 01 Introdução | Introdução |
 | 02 Visão Geral do Produto e Projeto | Problema, Contexto, Justificativa, Objetivos |
 | 03 Sistemas Relacionados | (sem equivalente direto — contexto de mercado) |
-| 04 (a escrever) | Modelagem — casos de uso, classes, sequência |
+| 04 Atores e Histórias dos Usuários | Stakeholders |
 | 05/06/07 RF/RNF/RIN | Engenharia de Requisitos |
-| 08 Impacto Ambiental | Impacto Ambiental |
+| 08 Artefatos de Análise (a escrever) | Modelagem — casos de uso, classes, sequência |
 | 10 Gerenciamento do Projeto | Gerenciamento do Projeto |
 | 11 (a escrever) | Permissões (adaptado, simplificado) |
 | 12 Referências | Referências |
 | 13 Ficha Técnica | (sem equivalente direto — complementa Projeto e Arquitetura) |
 | 14 Projeto e Arquitetura | Projeto e Arquitetura |
+| 15 Impacto Ambiental | Impacto Ambiental |
 
 ## 7. Lições de Engenharia Aplicáveis ao BIOS
 
@@ -155,7 +158,8 @@ Architecture/SOLID/OO como princípio arquitetural.
 
 ## 9. Pendências em Aberto
 
-- **Etapa 4 (Modelagem):** diagrama de classes, casos de uso e sequência — não iniciados.
+- **Etapa 4 (Modelagem):** diagrama de classes, casos de uso e sequência — não iniciados
+  (documento `08-Artefatos-de-Análise.md`).
 - **Documento técnico consolidado:** ainda não existe um único arquivo unindo todas as seções
   na ordem exigida pelo item 8 da proposta da A3 (Introdução → Referências).
 - **Diagramas de arquitetura (C4/componentes):** não

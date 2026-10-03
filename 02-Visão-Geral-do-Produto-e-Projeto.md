@@ -4,8 +4,8 @@ O objetivo central deste projeto é oferecer um mecanismo eficiente e confiável
 e avaliação do comprometimento ambiental de empresas brasileiras, centralizando evidências
 hoje dispersas entre diferentes órgãos públicos. Busca-se oferecer um ambiente que transforme
 dados brutos, dispersos e de difícil interpretação em indicadores explicáveis e auditáveis de
-aderência ao Objetivo de Desenvolvimento Sustentável (ODS) 15 — Vida Terrestre, foco único do
-MVP, apoiando a
+aderência a dois Objetivos de Desenvolvimento Sustentável (ODS) de natureza ambiental — ODS 13
+(Ação Contra a Mudança Global do Clima) e ODS 15 (Vida Terrestre), foco do MVP —, apoiando a
 tomada de decisão de profissionais de negócios, de sustentabilidade, pesquisadores, imprensa e
 órgãos públicos.
 
