@@ -26,6 +26,7 @@ permissões nas quais ela está incluída.
 | `[P10]` Consultar Perfil via API | `[P04][P05]` | | | | ✅ |
 | `[P11]` Integrar com CRM (bônus) | `[P10]` | | | | ✅ |
 | `[P12]` Manter Blacklist de Domínios | | | | ✅ | |
+| `[P13]` Renovar Sessão | | | ✅ | ✅ | |
 
 ## 11.2 Correspondência com Casos de Uso
 
@@ -43,6 +44,7 @@ permissões nas quais ela está incluída.
 | `[P10]` | UC12 | [RF17] |
 | `[P11]` | UC16 | [RF31] |
 | `[P12]` | UC13 | [RF29] |
+| `[P13]` | UC17 | [RF32] |
 
 ## 11.3 Regras Complementares
 
@@ -56,6 +58,8 @@ permissões nas quais ela está incluída.
 - **Chave de API sem acesso à conta.** Uma chave não autentica no front-end nem acessa
   `[P03]`, `[P09]` ou `[P12]`; se a conta do titular for excluída, todas as suas chaves são
   revogadas (UC05).
+- **Renovação de sessão pelo refresh token.** `[P13]` autentica pelo refresh token, e não
+  pelo access token (que, no momento da renovação, normalmente já expirou).
 - **Processos automáticos fora da matriz.** Os casos de uso do ator Sistema (UC14, UC15) e os
   mecanismos de defesa (bloqueio de login, honeypot) são executados pelo próprio BIOS e não
   são concedidos a nenhum papel.

@@ -51,7 +51,10 @@ duas camadas: hash bcrypt, cifrado em seguida com AES-256
 
 [NFSE04] Rate limiting em endpoints públicos (ThrottlerModule do NestJS) (Resistance).
 
-[NFSE05] Sessões JWT revogáveis (logout forçado, troca de senha) (Authenticity).
+[NFSE05] Sessões revogáveis com rotação de credenciais (Authenticity): access token JWT de
+vida curta (padrão de 15 minutos), validado contra a sessão a cada requisição — revogação com
+efeito imediato (logout, troca de senha) —, e refresh token opaco de uso único, rotacionado a
+cada renovação, armazenado apenas como hash e com detecção de reuso.
 
 [NFSE06] Bloqueio de login — 5 tentativas malsucedidas resultam em bloqueio de 15 minutos por
 IP e/ou usuário (Resistance).

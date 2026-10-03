@@ -16,7 +16,7 @@
 | Prioridade: | ☑ Essencial / ☐ Importante / ☐ Desejável |
 | :----------- | :----------- |
 | **Ator(es):** | Usuário. |
-| **Requisitos associados:** | [RF01], [RF19], [RF20]. |
+| **Requisitos associados:** | [RF01], [RF19], [RF20], [RF32]. |
 | **Objetivo:** | O sistema deve permitir que um usuário se autentique para acessar informações de empresas, exigindo login válido para qualquer consulta. |
 
 
@@ -160,7 +160,7 @@
 | Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
 | :----------- | :----------- |
 | **Ator(es):** | Sistema (processo automático). |
-| **Requisitos associados:** | [RF01], [RF16], [RF25], [RF28]. |
+| **Requisitos associados:** | [RF01], [RF16], [RF25], [RF28], [RF32]. |
 | **Objetivo:** | O sistema deve disparar e-mails transacionais (confirmação de cadastro, recuperação de senha, alerta de login suspeito) usando templates Handlebars via Nodemailer. |
 
 
@@ -205,8 +205,8 @@
 | Prioridade: | ☑ Essencial / ☐ Importante / ☐ Desejável |
 | :----------- | :----------- |
 | **Ator(es):** | Usuário. |
-| **Requisitos associados:** | [RF02]. |
-| **Objetivo:** | O sistema deve permitir que o usuário encerre sua sessão a qualquer momento, revogando o token JWT ativo. |
+| **Requisitos associados:** | [RF02], [RF32]. |
+| **Objetivo:** | O sistema deve permitir que o usuário encerre, a qualquer momento, a sessão do dispositivo atual ou — opcionalmente — de todos os seus dispositivos, com efeito imediato sobre os tokens já emitidos. |
 
 
 <p align="center"><b>[RF24] Alterar senha</b></p>
@@ -279,3 +279,12 @@
 | **Ator(es):** | Desenvolvedor externo. |
 | **Requisitos associados:** | [RF16], [RF17]. |
 | **Objetivo:** | O sistema deve permitir que CRMs de terceiros importem o perfil ambiental de **pessoas jurídicas** (dados cadastrais, índice, confiança e evidências) a partir da API pública, sem exportar qualquer dado de contato ou dado pessoal de indivíduo ([INL02]). Requisito bônus: entra apenas se houver folga no cronograma após a entrega dos requisitos essenciais e importantes, e não compõe o escopo mínimo do MVP. |
+
+
+<p align="center"><b>[RF32] Renovar sessão</b></p>
+
+| Prioridade: | ☑ Essencial / ☐ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário. |
+| **Requisitos associados:** | [RF02], [RF18], [RF23]. |
+| **Objetivo:** | O sistema deve permitir renovar a sessão sem novo login, trocando um refresh token válido por um novo par de access token e refresh token. Cada refresh token é de uso único: a renovação o invalida (rotação), e a reapresentação de um refresh token já rotacionado deve revogar todas as sessões do usuário e disparar alerta de login suspeito por e-mail ([RF18]). |

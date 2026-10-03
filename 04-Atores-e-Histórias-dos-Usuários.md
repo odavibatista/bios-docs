@@ -46,7 +46,7 @@ cada história e os requisitos funcionais (`05-Requisitos-Funcionais.md`), não-
 | [HU01] | Usuário, | criar uma conta com meu e-mail e uma senha, | acessar as funcionalidades de consulta do BIOS. | [RF01], [RF22] |
 | [HU02] | Usuário, | confirmar meu e-mail por meio de um link enviado no cadastro, | ativar minha conta e garantir que ninguém se cadastre com um e-mail que não é seu. | [RF28], [RF18] |
 | [HU03] | Usuário, | me autenticar com e-mail e senha, | consultar informações de empresas com acesso restrito a usuários cadastrados. | [RF02] |
-| [HU04] | Usuário, | encerrar minha sessão a qualquer momento, | impedir que outra pessoa use minha conta em um dispositivo compartilhado. | [RF23], [NFSE05] |
+| [HU04] | Usuário, | encerrar minha sessão neste dispositivo, ou em todos os meus dispositivos, a qualquer momento, | impedir que outra pessoa use minha conta em um dispositivo compartilhado ou perdido. | [RF23], [NFSE05] |
 | [HU05] | Usuário, | alterar minha senha informando a senha atual, com as demais sessões encerradas ao final, | manter a segurança do acesso à minha conta. | [RF24], [NFSE05] |
 | [HU06] | Usuário, | recuperar minha senha esquecida por meio do e-mail cadastrado, | retomar o acesso à minha conta sem depender de suporte. | [RF25], [RF18] |
 | [HU07] | Usuário, | editar meus dados de conta, | manter meu cadastro atualizado. | [RF26], [RF28] |
@@ -77,3 +77,4 @@ cada história e os requisitos funcionais (`05-Requisitos-Funcionais.md`), não-
 | [HU32] | Desenvolvedor Externo de um CRM, | importar o perfil ambiental de pessoas jurídicas para o CRM (requisito bônus, fora do MVP), | enriquecer o cadastro de contas corporativas com dados ambientais, sem dados de contato de indivíduos. | [RF31], [INL02] |
 | [HU33] | Administrador, | adicionar e remover domínios da blacklist de e-mails sem novo deploy, | impedir cadastros com e-mails descartáveis assim que um novo domínio for identificado. | [RF22], [RF29] |
 | [HU34] | Administrador, | que qualquer chamador de um endpoint isca tenha seu IP registrado e bloqueado automaticamente, | identificar e conter robôs de raspagem sem afetar os usuários legítimos. | [RF21], [NFSE07] |
+| [HU35] | Usuário, | continuar conectado enquanto uso o sistema, sem refazer login a cada poucos minutos, | trabalhar sem interrupções, com a garantia de que um token roubado e reutilizado encerra minhas sessões e me alerta por e-mail. | [RF32], [RF18], [NFSE05] |

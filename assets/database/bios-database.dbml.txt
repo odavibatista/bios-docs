@@ -59,10 +59,12 @@ Enum user_token_purpose {
 }
 
 Enum session_revocation_reason {
-  LOGOUT
+  ROTATED [note: 'Refresh token consumido em uma renovação; substituído pelo elo seguinte (RF32)']
+  LOGOUT [note: 'Encerramento da sessão do dispositivo atual (RF23)']
+  LOGOUT_ALL_DEVICES [note: 'Encerramento de todas as sessões do usuário (RF23)']
   PASSWORD_CHANGE
   PASSWORD_RESET
-  ACCOUNT_DELETION
+  REUSE_DETECTED [note: 'Refresh token já rotacionado foi reapresentado: indício de vazamento (RF32)']
 }
 
 Enum login_failure_reason {
@@ -208,7 +210,9 @@ Table user_tokens {
 Table user_sessions {
   id_user_session objectid [primary key]
   user_id objectid [ref: > users.id_user]
-  jti_hash varchar [note: 'Hash do identificador único (jti) do JWT emitido']
+  family_id varchar [note: 'Família de rotação: compartilhada pelos elos originados do mesmo login (um dispositivo)']
+  refresh_token_hash varchar [note: 'Hash SHA-256 do refresh token deste elo']
+  replaced_by_session_id objectid [null, note: 'Elo que substituiu este na rotação; preenchido apenas quando revocation_reason = ROTATED']
   ip varchar
   user_agent varchar [null]
   expires_at timestamp
@@ -216,11 +220,12 @@ Table user_sessions {
   revocation_reason session_revocation_reason [null]
   created_at timestamp
 
-  Note: 'Sessões JWT revogáveis (RF23, RF24, NFSE05). Um token só é aceito se a sessão existir, não estiver revogada e não estiver expirada. TTL: removidas após expires_at + DATA_RETENTION_USER_SESSIONS (padrão 30d).'
+  Note: 'Elo de sessão = um refresh token de uso único (RF23, RF24, RF32, NFSE05). O access token JWT carrega o ID do elo (sid) e só é aceito enquanto o elo estiver ativo. Cada renovação revoga o elo atual como ROTATED e cria um novo na mesma família; reapresentar um refresh token já rotacionado revoga todas as sessões do usuário (REUSE_DETECTED). Elos rotacionados são mantidos até o fim da retenção para a detecção de reuso. TTL: removidos após expires_at + DATA_RETENTION_USER_SESSIONS (padrão 30d).'
 
   Indexes {
-    jti_hash [unique, name: 'idx_user_sessions_jti_hash']
+    refresh_token_hash [unique, name: 'idx_user_sessions_refresh_token_hash']
     (user_id, revoked_at) [name: 'idx_user_sessions_user_revoked']
+    (family_id, revoked_at) [name: 'idx_user_sessions_family_revoked']
     expires_at [name: 'idx_user_sessions_expires_at', note: 'Convertido em TTL na inicialização']
   }
 }

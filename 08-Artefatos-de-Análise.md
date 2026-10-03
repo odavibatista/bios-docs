@@ -3,8 +3,9 @@
 Esta seção apresenta os artefatos gerados pela Análise: casos de uso (diagrama e descrição),
 diagrama de classes de domínio, diagramas de sequência dos fluxos principais, modelo de dados
 e diagramas de arquitetura no modelo C4. Os diagramas 1 a 6 estão escritos em Mermaid,
-renderizado nativamente pelo GitHub e versionado como texto junto à documentação; os
-diagramas C4 (7 e 8) têm sua fonte editável em `assets/diagrams/bios-c4-architecture.drawio`.
+renderizado nativamente pelo GitHub e versionado como texto junto à documentação; o modelo de
+dados (diagrama 7) é gerado a partir da fonte DBML em `assets/database/bios-database.dbml.txt`;
+os diagramas C4 (8 e 9) têm sua fonte editável em `assets/diagrams/bios-c4-architecture.drawio`.
 
 Os atores referenciados são os definidos no Quadro 2 (`04-Atores-e-Histórias-dos-Usuários.md`).
 
@@ -44,9 +45,10 @@ flowchart LR
         UC14([UC14 Ingerir Evidências])
         UC15([UC15 Calcular Índice e Confiança])
         UC16([UC16 Integrar com CRM — bônus])
+        UC17([UC17 Renovar Sessão])
     end
 
-    U --- UC01 & UC02 & UC03 & UC04 & UC05
+    U --- UC01 & UC02 & UC03 & UC04 & UC05 & UC17
     U --- UC06 & UC07 & UC08 & UC09 & UC10 & UC11
     D --- UC12 & UC16
     A --- UC13
@@ -121,7 +123,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>1 - O usuário acessa a tela de login e informa e-mail e senha.</br>
 		<br>2 - O sistema verifica se o IP e o usuário não estão bloqueados.</br>
 		<br>3 - O sistema valida as credenciais e registra a tentativa (IP, data/hora, resultado).</br>
-		<br>4 - O sistema emite um token JWT de sessão revogável.</br>
+		<br>4 - O sistema abre uma nova família de sessão e emite um access token JWT de vida curta (com o <code>sid</code> da sessão) e um refresh token opaco de uso único, persistindo apenas o hash do refresh token.</br>
 		<br>5 - Exibe a tela principal do sistema de acordo com o papel.</br>
 		<br>6 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
@@ -131,12 +133,13 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>3.2 - Quinta falha consecutiva: o sistema bloqueia IP e/ou usuário por 15 minutos e envia e-mail de alerta de login suspeito ao titular da conta.</br>
 		<br>3.3 - Volta a 1.</br></td></tr>
 	<tr>
-        <td colspan="2"><b>Pós-condições:</b> Sessão ativa de acordo com o papel do usuário.</td></tr>
+        <td colspan="2"><b>Pós-condições:</b> Sessão ativa de acordo com o papel do usuário, renovável por UC17.</td></tr>
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - Somente contas ativas podem se autenticar.</br>
 		<br>2 - 5 tentativas consecutivas malsucedidas resultam em bloqueio de 15 minutos ([NFSE06]).</br>
-		<br>3 - A mensagem de erro não distingue e-mail inexistente de senha incorreta.</br></td></tr>
+		<br>3 - A mensagem de erro não distingue e-mail inexistente de senha incorreta.</br>
+		<br>4 - Cada login corresponde a um dispositivo: abre uma família de sessão própria, independente das demais sessões do usuário.</br></td></tr>
 </table>
 
 <br></br>
@@ -144,7 +147,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 <table>
     <tr>
         <td><b>Nome:</b> UC03 — Encerrar Sessão.</td>
-        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir que o usuário encerre sua sessão a qualquer momento. ([RF23])</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir que o usuário encerre a sessão do dispositivo atual ou de todos os seus dispositivos. ([RF23])</td>
     </tr>
     <tr>
         <td><b>Ator(es):</b> Usuário.</td>
@@ -156,15 +159,18 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 	<tr>
         <td colspan="2"><b>Fluxo Normal:</b>
 		<br>1 - O usuário seleciona a opção sair.</br>
-		<br>2 - O sistema revoga o token JWT ativo.</br>
+		<br>2 - O sistema identifica a sessão atual pelo <code>sid</code> do access token e revoga toda a família de rotação dessa sessão (LOGOUT).</br>
 		<br>3 - Exibe a tela de login.</br>
 		<br>4 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
-        <td colspan="2"><b>Fluxos Alternativos:</b> Não há.</td></tr>
+        <td colspan="2"><b>Fluxos Alternativos:</b>
+		<br>1.1 - Sair de todos os dispositivos: o sistema revoga todas as sessões ativas do usuário (LOGOUT_ALL_DEVICES). Vai para 3.</br></td></tr>
 	<tr>
-        <td colspan="2"><b>Pós-condições:</b> O token revogado não é mais aceito em nenhuma requisição.</td></tr>
+        <td colspan="2"><b>Pós-condições:</b> Nem o access token nem o refresh token das sessões encerradas são aceitos em qualquer requisição posterior.</td></tr>
 	<tr>
-        <td colspan="2"><b>Regras de Negócio:</b> Sessões revogadas são verificadas a cada requisição autenticada ([NFSE05]).</td></tr>
+        <td colspan="2"><b>Regras de Negócio:</b>
+		<br>1 - O access token é validado contra a sessão a cada requisição; a revogação tem efeito imediato, sem aguardar a expiração do token ([NFSE05]).</br>
+		<br>2 - Encerrar a sessão de um dispositivo não afeta as sessões dos demais.</br></td></tr>
 </table>
 
 <br></br>
@@ -598,6 +604,46 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Regras de Negócio:</b> Apenas dados de pessoa jurídica; nenhum dado de contato ou dado pessoal de indivíduo ([INL02]).</td></tr>
 </table>
 
+<br></br>
+
+<table>
+    <tr>
+        <td><b>Nome:</b> UC17 — Renovar Sessão.</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Trocar um refresh token válido por um novo par de tokens, mantendo o usuário conectado sem novo login, com rotação de uso único e detecção de reuso. ([RF32], [RF18])</td>
+    </tr>
+    <tr>
+        <td><b>Ator(es):</b> Usuário (pelo front-end, automaticamente ao expirar o access token).</td>
+        <td><b>Ator(es) Secundário(s):</b> Sistema.</td>
+    </tr>
+    <tr>
+        <td colspan="2"><b>Pré-condições:</b> O usuário possui um refresh token emitido no login (UC02) ou em renovação anterior.</td>
+    </tr>
+	<tr>
+        <td colspan="2"><b>Fluxo Normal:</b>
+		<br>1 - O front-end detecta o access token expirado e envia o refresh token.</br>
+		<br>2 - O sistema localiza o elo de sessão pelo hash do refresh token.</br>
+		<br>3 - O sistema verifica que o elo não foi revogado nem expirou.</br>
+		<br>4 - O sistema revoga o elo atual como ROTATED, de forma atômica e somente se ele ainda estiver ativo.</br>
+		<br>5 - O sistema cria um novo elo na mesma família, com novo refresh token e nova expiração, e emite um novo access token.</br>
+		<br>6 - O sistema registra no elo anterior a referência ao novo elo.</br>
+		<br>7 - Retorna o novo par de tokens.</br>
+		<br>8 - Este caso de uso finaliza aqui.</br></td></tr>
+	<tr>
+        <td colspan="2"><b>Fluxos Alternativos:</b>
+		<br>2.1 - Refresh token desconhecido: o sistema responde 401 com mensagem genérica.</br>
+		<br>3.1 - Elo já rotacionado (reuso): o sistema revoga todas as sessões ativas do usuário como REUSE_DETECTED, envia e-mail de alerta de login suspeito e responde 401 com a mesma mensagem genérica.</br>
+		<br>3.2 - Elo revogado por outro motivo ou expirado: o sistema responde 401 com a mesma mensagem genérica, sem revogação em cascata.</br>
+		<br>4.1 - O elo deixou de estar ativo entre a verificação e a revogação (renovação concorrente com o mesmo token): tratado como reuso. Vai para 3.1.</br></td></tr>
+	<tr>
+        <td colspan="2"><b>Pós-condições:</b> Na família da sessão, apenas o novo refresh token é aceito; o anterior não pode ser reutilizado.</td></tr>
+	<tr>
+        <td colspan="2"><b>Regras de Negócio:</b>
+		<br>1 - O refresh token é opaco (256 bits aleatórios), de uso único e armazenado apenas como hash SHA-256 ([NFSE05]).</br>
+		<br>2 - Todas as falhas respondem com a mesma mensagem, sem revelar se o token é desconhecido, expirado, revogado ou reutilizado.</br>
+		<br>3 - As durações são configuráveis por variável de ambiente: access token (padrão de 15 minutos, máximo de 60) e refresh token (padrão de 7 dias, renovado a cada rotação).</br>
+		<br>4 - Elos rotacionados permanecem no banco até o fim da retenção de sessões, para que a detecção de reuso continue funcionando após a rotação.</br></td></tr>
+</table>
+
 ## 8.3 Diagrama de Classes
 
 O diagrama 2 representa as classes de domínio do BIOS. Enumerações e a interface de adapter
@@ -637,7 +683,17 @@ classDiagram
     class TokenPurpose {
         <<enumeration>>
         EMAIL_CONFIRMATION
+        EMAIL_CHANGE
         PASSWORD_RESET
+    }
+    class SessionRevocationReason {
+        <<enumeration>>
+        ROTATED
+        LOGOUT
+        LOGOUT_ALL_DEVICES
+        PASSWORD_CHANGE
+        PASSWORD_RESET
+        REUSE_DETECTED
     }
 
     class User {
@@ -653,9 +709,12 @@ classDiagram
     }
     class Session {
         +String id
-        +String jti
+        +String familyId
+        +String refreshTokenHash
+        +String replacedBySessionId
         +DateTime expiresAt
         +DateTime revokedAt
+        +SessionRevocationReason revocationReason
     }
     class ApiKey {
         +String id
@@ -753,6 +812,8 @@ classDiagram
     class GhgDataSource
 
     User "1" --> "*" Session
+    Session "1" --> "0..1" Session : substituída por
+    Session --> SessionRevocationReason
     User "1" --> "*" ApiKey
     User "1" --> "*" OneTimeToken
     User "0..1" <-- "*" LoginAttempt
@@ -908,8 +969,8 @@ sequenceDiagram
         API->>API: Decifra o hash da senha (AES-256) e compara (bcrypt)
         API->>DB: Registra tentativa (IP, data/hora, resultado)
         alt Credenciais válidas
-            API->>DB: Cria sessão (jti)
-            API-->>U: 200 — token JWT
+            API->>DB: Cria elo de sessão (nova família, hash do refresh token)
+            API-->>U: 200 — access token (sid) + refresh token
         else Credenciais inválidas
             opt 5ª falha consecutiva
                 API->>DB: Bloqueia IP/usuário por 15 min
@@ -920,11 +981,39 @@ sequenceDiagram
     end
 ```
 
+### 8.4.4 Renovar sessão com rotação e detecção de reuso (UC17)
+
+<p align="center"><b>Diagrama 6 - Sequência: Renovar sessão</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário (front-end)
+    participant API as bios-core-api
+    participant DB as MongoDB
+    participant M as Servidor SMTP
+
+    U->>API: POST /auth/refresh (refresh token)
+    API->>DB: Busca o elo pelo hash SHA-256 do refresh token
+    alt Elo inexistente, expirado ou revogado sem rotação
+        API-->>U: 401 — sessão inválida (mensagem genérica)
+    else Elo já rotacionado (reuso)
+        API->>DB: Revoga todas as sessões ativas do usuário (REUSE_DETECTED)
+        API->>M: E-mail de alerta de login suspeito
+        API-->>U: 401 — sessão inválida (mesma mensagem)
+    else Elo ativo
+        API->>DB: Revoga o elo como ROTATED (atômico, somente se ainda ativo)
+        API->>DB: Cria novo elo na mesma família (novo hash, nova expiração)
+        API->>DB: Registra replaced_by_session_id no elo anterior
+        API-->>U: 200 — novo access token + novo refresh token
+    end
+```
+
 ## 8.5 Modelo de Dados
 
 O modelo de dados do BIOS está definido em DBML, cuja fonte textual é
 `assets/database/bios-database.dbml.txt` — referência única para coleções, campos, enumerações,
-índices e relações, a ser convertida no schema Prisma na etapa de implementação. O diagrama 6
+índices e relações, a ser convertida no schema Prisma na etapa de implementação. O diagrama 7
 é a imagem gerada a partir dessa fonte.
 
 Por se tratar de banco orientado a documentos, as relações são referências lógicas por
@@ -958,7 +1047,7 @@ Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura
 - **Upsert idempotente de evidências.** `evidence_normalized.evidence_key` é uma chave
   determinística por registro de fonte, permitindo reprocessar um dump sem duplicar evidências.
 
-<p align="center"><b>Diagrama 6 - Modelo de Dados</b></p>
+<p align="center"><b>Diagrama 7 - Modelo de Dados</b></p>
 
 <div align="center">
 
@@ -968,18 +1057,18 @@ Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura
 
 ## 8.6 Diagramas de Arquitetura (C4)
 
-Os diagramas 7 e 8 representam a arquitetura do BIOS nos dois primeiros níveis do modelo C4.
+Os diagramas 8 e 9 representam a arquitetura do BIOS nos dois primeiros níveis do modelo C4.
 A justificativa das decisões arquiteturais segundo a ISO/IEC 25010:2023 está em
 `14-Projeto-e-Arquitetura.md`, seção 6.
 
 ### 8.6.1 Nível 1 — Contexto
 
-O diagrama 7 situa o BIOS entre seus usuários e os sistemas externos com os quais se integra:
+O diagrama 8 situa o BIOS entre seus usuários e os sistemas externos com os quais se integra:
 o usuário consulta, filtra e exporta empresas via HTTPS; sistemas de terceiros consomem a API
 pública com chave de API; o BIOS consome BrasilAPI/OpenCNPJ/Minha Receita, IBGE, IBAMA (lote diário),
 CGU (CEIS/CNEP) e GHG Protocol (best-effort), e envia e-mails por servidor SMTP.
 
-<p align="center"><b>Diagrama 7 - C4 Nível 1: Contexto</b></p>
+<p align="center"><b>Diagrama 8 - C4 Nível 1: Contexto</b></p>
 
 <div align="center">
 
@@ -989,7 +1078,7 @@ CGU (CEIS/CNEP) e GHG Protocol (best-effort), e envia e-mails por servidor SMTP.
 
 ### 8.6.2 Nível 2 — Contêineres
 
-O diagrama 8 detalha os contêineres do BIOS:
+O diagrama 9 detalha os contêineres do BIOS:
 
 | Contêiner | Tecnologia | Responsabilidade |
 | --- | --- | --- |
@@ -1005,7 +1094,7 @@ A comunicação entre o `bios-core-api` e os serviços de ingestão (CNPJ, Ambie
 GHG) ocorre exclusivamente via filas BullMQ sobre o Redis; os serviços de ingestão não expõem
 camada HTTP (ver `13-Ficha-Técnica.md`, seção 2).
 
-<p align="center"><b>Diagrama 8 - C4 Nível 2: Contêineres</b></p>
+<p align="center"><b>Diagrama 9 - C4 Nível 2: Contêineres</b></p>
 
 <div align="center">
 
