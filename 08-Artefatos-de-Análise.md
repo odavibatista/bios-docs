@@ -530,7 +530,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Pós-condições:</b> Evidências normalizadas atualizadas e perfis afetados recalculados.</td></tr>
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
-		<br>1 - Registros com documento de pessoa física (CPF) são descartados na normalização ([INL02]).</br>
+		<br>1 - Registros com documento de pessoa física (CPF) são descartados antes de qualquer persistência, inclusive na camada bruta ([INL02]).</br>
 		<br>2 - Cada fonte é acessada exclusivamente por seu adapter ([NFPD02]) e respeitando seu rate limit ([NFPD01]).</br>
 		<br>3 - O registro bruto é mantido para auditoria ([NFCO02]).</br></td></tr>
 </table>
@@ -555,7 +555,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>2 - Para cada ODS, seleciona as evidências vinculadas a ele.</br>
 		<br>3 - Aplica a cada evidência o peso e o sinal definidos para sua categoria e estado.</br>
 		<br>4 - Calcula o índice e, separadamente, o nível de confiança pela quantidade e qualidade das evidências.</br>
-		<br>5 - Grava em <code>company_profile</code> o resultado por ODS, com a lista de contribuições usada na explicação do score.</br>
+		<br>5 - Grava em <code>company_ods_scores</code> um documento por empresa e ODS, com a lista de contribuições usada na explicação do score.</br>
 		<br>6 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Fluxos Alternativos:</b>
@@ -705,7 +705,6 @@ classDiagram
         +Address endereco
         +Cnae cnaePrincipal
         +Cnae[] cnaesSecundarios
-        +OdsScore[] scores
         +DateTime updatedAt
         +String previousHash
     }
@@ -714,6 +713,7 @@ classDiagram
         +String description
     }
     class OdsScore {
+        +String cnpj
         +String odsId
         +Float indice
         +Float confianca
@@ -758,7 +758,7 @@ classDiagram
     User "0..1" <-- "*" LoginAttempt
     User --> UserRole
 
-    CompanyProfile "1" *-- "*" OdsScore
+    CompanyProfile "1" --> "*" OdsScore
     CompanyProfile "1" *-- "1..*" Cnae
     OdsScore "1" *-- "*" ScoreContribution
     OdsScore "*" --> "1" Ods
@@ -783,9 +783,10 @@ Observações de modelagem:
 - **`emailHash`** é um índice cego (hash determinístico do e-mail normalizado): como o e-mail
   é armazenado com AES-256 ([NFSE03]), o hash permite localizar a conta no login e verificar
   unicidade sem decifrar a coleção inteira.
-- **`OdsScore`** e **`ScoreContribution`** são documentos embutidos em `company_profile`, não
-  coleções próprias: são sempre lidos junto com o perfil, e a lista de contribuições é a
-  própria explicação do score ([RF12]).
+- **`OdsScore`** é persistido em coleção própria (`company_ods_scores`), um documento por
+  empresa e ODS, para que filtro e ordenação por índice ([RF13], [RF14]) usem um único índice
+  composto; **`ScoreContribution`** é embutido em `OdsScore`, e a lista de contribuições é a
+  própria explicação do score ([RF12]). Detalhes na seção 8.5.
 - **`ReceitaDataSource`** alimenta os dados cadastrais de `CompanyProfile`, não evidências;
   implementa a mesma interface por uniformidade de isolamento ([NFPD02]).
 
@@ -846,10 +847,10 @@ sequenceDiagram
         end
         API->>R: Enfileira recálculo de índices por ODS e aguarda
         R->>AMB: Entrega job
-        AMB->>DB: Recalcula índice e confiança por ODS em company_profile
+        AMB->>DB: Recalcula índice e confiança por ODS em company_ods_scores
         AMB-->>R: Conclui job
         R-->>API: Job concluído
-        API->>DB: Lê company_profile
+        API->>DB: Lê company_profile e company_ods_scores
         API->>R: Grava perfil em cache
     end
     API-->>FE: Perfil (cadastro, evidências, índice e confiança por ODS)
@@ -872,11 +873,12 @@ sequenceDiagram
     AMB->>IB: Baixa dumps (autos de infração, termos de embargo)
     alt Download concluído
         IB-->>AMB: CSV/JSON
+        AMB->>AMB: Descarta registros de pessoa física (CPF)
         AMB->>DB: Grava registros em evidence_raw
-        AMB->>AMB: Normaliza por CNPJ e descarta registros de CPF
+        AMB->>AMB: Normaliza por CNPJ
         AMB->>DB: Upsert em evidence_normalized (categoria, ODS 15, estado)
         loop Para cada CNPJ afetado
-            AMB->>DB: Recalcula índice e confiança por ODS em company_profile
+            AMB->>DB: Recalcula índice e confiança por ODS em company_ods_scores
         end
         AMB-->>Q: Job concluído
     else Falha na fonte
@@ -920,117 +922,49 @@ sequenceDiagram
 
 ## 8.5 Modelo de Dados
 
-> **Modelo preliminar.** O diagrama 6 é derivado do diagrama de classes (seção 8.3) e serve
-> de referência até a elaboração do modelo de banco definitivo, que será incluído nesta seção
-> em DBML (fonte textual) acompanhado de sua imagem, substituindo o diagrama abaixo.
+O modelo de dados do BIOS está definido em DBML, cuja fonte textual é
+`assets/database/bios-database.dbml.txt` — referência única para coleções, campos, enumerações,
+índices e relações, a ser convertida no schema Prisma na etapa de implementação. O diagrama 6
+é a imagem gerada a partir dessa fonte.
 
-O diagrama 6 representa as coleções MongoDB do BIOS. Por se tratar de banco orientado a
-documentos, as relações abaixo são referências lógicas por identificador (sem integridade
-referencial imposta pelo banco), e `OdsScore`/`ScoreContribution` são documentos embutidos em
-`company_profile`.
+Por se tratar de banco orientado a documentos, as relações são referências lógicas por
+identificador, sem integridade referencial imposta pelo banco. As coleções estão organizadas
+em seis grupos:
+
+| Grupo | Coleções | Finalidade |
+| --- | --- | --- |
+| Identidade e acesso | `users`, `user_tokens`, `user_sessions`, `api_keys` | Contas, tokens de uso único, sessões JWT revogáveis e chaves de API. |
+| Segurança e auditoria | `login_attempts`, `access_blocks`, `honeypot_hits`, `blocked_email_domains`, `email_dispatch_logs` | Tentativas de login, bloqueios de IP/usuário, honeypot, blacklist de domínios e auditoria de e-mails. |
+| Catálogos | `ods`, `data_sources` | ODS de referência e fontes externas, ambos populados via seed. |
+| Ingestão | `ingestion_runs`, `data_source_request_logs` | Execuções de jobs e log de cada chamada às fontes externas. |
+| Evidências e perfis | `evidence_raw`, `evidence_normalized`, `company_profile` | As três camadas de dados (bruto → normalizado → agregado). |
+| Índices | `company_ods_scores`, `sector_score_snapshots` | Índice e confiança por empresa e ODS; agregados setoriais para a evolução por setor. |
+
+Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura.md`):
+
+- **Índices por ODS em coleção própria.** `company_ods_scores` guarda um documento por empresa
+  e ODS, com a lista de contribuições embutida e campos desnormalizados de localização e
+  CNAE. Assim, filtro e ordenação pelo índice de um ODS selecionado ([RF13], [RF14]) são
+  atendidos por um único índice composto, sem varrer arrays embutidos em `company_profile`.
+- **Fontes externas como entidade.** `data_sources` guarda prioridade na cadeia de fallback,
+  rate limit, janela de cache e timeout de cada fonte, permitindo reordenar ou desabilitar uma
+  fonte sem novo deploy.
+- **Chaves de cifragem fora do banco.** O banco guarda apenas a versão da chave AES usada em
+  cada documento (`encryption_key_version`), viabilizando rotação gradual.
+- **Segredos apenas como hash.** Tokens de uso único, identificadores de sessão e chaves de API
+  são persistidos somente como hash SHA-256.
+- **Exclusão de conta sem soft delete.** `users` não tem `deleted_at`: a exclusão (UC05) remove
+  o documento e seus dependentes, em conformidade com o direito de eliminação da LGPD.
+- **Upsert idempotente de evidências.** `evidence_normalized.evidence_key` é uma chave
+  determinística por registro de fonte, permitindo reprocessar um dump sem duplicar evidências.
 
 <p align="center"><b>Diagrama 6 - Modelo de Dados</b></p>
 
-```mermaid
-erDiagram
-    users ||--o{ sessions : possui
-    users ||--o{ api_keys : possui
-    users ||--o{ one_time_tokens : recebe
-    users |o--o{ login_attempts : registra
-    ods ||--o{ evidence_normalized : vincula
-    evidence_raw ||--o{ evidence_normalized : origina
-    company_profile ||--o{ evidence_normalized : agrega
+<div align="center">
 
-    users {
-        string id PK
-        string name
-        string emailEncrypted
-        string emailHash UK
-        string passwordHashEncrypted
-        string addressEncrypted
-        string role
-        boolean active
-        datetime createdAt
-    }
-    sessions {
-        string id PK
-        string userId FK
-        string jti UK
-        datetime expiresAt
-        datetime revokedAt
-    }
-    api_keys {
-        string id PK
-        string userId FK
-        string name
-        string prefix
-        string keyHash UK
-        datetime lastUsedAt
-        datetime revokedAt
-    }
-    one_time_tokens {
-        string id PK
-        string userId FK
-        string purpose
-        string tokenHash UK
-        datetime expiresAt
-        datetime usedAt
-    }
-    login_attempts {
-        string id PK
-        string userId FK
-        string ip
-        boolean success
-        datetime attemptedAt
-    }
-    blocked_ips {
-        string id PK
-        string ip UK
-        string reason
-        datetime blockedUntil
-    }
-    blocked_email_domains {
-        string id PK
-        string domain UK
-        datetime createdAt
-    }
-    ods {
-        string id PK
-        int number UK
-        string title
-        string description
-    }
-    evidence_raw {
-        string id PK
-        string source
-        json payload
-        datetime collectedAt
-    }
-    evidence_normalized {
-        string id PK
-        string cnpj FK
-        string rawId FK
-        string odsId FK
-        string source
-        string category
-        string state
-        string sourceReference
-        datetime publishedAt
-        datetime collectedAt
-    }
-    company_profile {
-        string cnpj PK
-        string razaoSocial
-        string nomeFantasia
-        string situacaoCadastral
-        string porte
-        json endereco
-        json cnaes
-        json scores
-        datetime updatedAt
-        string previousHash
-    }
-```
+![Modelo de Dados do BIOS](assets/database/bios-database.svg)
+
+</div>
 
 ## 8.6 Diagramas de Arquitetura (C4)
 

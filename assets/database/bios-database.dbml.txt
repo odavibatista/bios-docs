@@ -1,0 +1,629 @@
+// =============================================================================
+// BIOS — Business Intelligence on Sustainability
+// Modelo de dados (MongoDB + Prisma ORM v6)
+// =============================================================================
+//
+// Convenções:
+//  - Chave primária de cada coleção no formato `id_<entidade>` (ObjectId, mapeado
+//    para `_id` no Prisma via @map("_id") @db.ObjectId);
+//  - Chave estrangeira no formato `<entidade>_id`; empresas são referenciadas
+//    pela chave natural `cnpj` (14 dígitos, sem máscara);
+//  - Campos em snake_case; coleções em snake_case no plural, exceto as três
+//    coleções das camadas de dados (`evidence_raw`, `evidence_normalized`,
+//    `company_profile`), que mantêm o nome adotado na arquitetura;
+//  - Auditoria temporal: `created_at`, `updated_at` e, quando há remoção lógica,
+//    `deleted_at`;
+//  - Índices nomeados no padrão `idx_<coleção>_<campos>`;
+//  - Tabelas marcadas como "subdocumento embutido" não são coleções próprias:
+//    são tipos compostos (Prisma `type`) gravados dentro de outro documento;
+//  - Relações são lógicas: o MongoDB não impõe integridade referencial, que
+//    fica a cargo da camada de aplicação (repositórios).
+//
+// Segurança de dados:
+//  - E-mail e endereço de usuário cifrados com AES-256 ([NFSE03]); a senha
+//    recebe hash bcrypt, cifrado em seguida com AES-256;
+//  - Chaves de cifragem NUNCA são armazenadas no banco: ficam em variáveis de
+//    ambiente/cofre de segredos. O banco guarda apenas a versão da chave usada
+//    (`encryption_key_version`), permitindo rotação gradual;
+//  - Tokens de uso único, sessões e chaves de API são armazenados apenas como
+//    hash (SHA-256 — entradas de alta entropia, sem necessidade de bcrypt);
+//  - Nenhuma coleção armazena dado pessoal de sócio, administrador ou
+//    colaborador das empresas consultadas ([INL02]).
+//
+// Retenção:
+//  - Coleções de log e tokens recebem índice TTL do MongoDB (criado via
+//    script de migração, pois o Prisma não declara índices TTL).
+// =============================================================================
+
+Project bios {
+  database_type: 'MongoDB'
+  Note: 'BIOS — Business Intelligence on Sustainability. Consolida evidências ambientais públicas por CNPJ e calcula, para os ODS 13 e 15, índice de aderência e nível de confiança explicáveis.'
+}
+
+// -----------------------------------------------------------------------------
+// Enumerações
+// -----------------------------------------------------------------------------
+
+Enum user_role {
+  USER [note: 'Usuário comum (padrão)']
+  ADMIN [note: 'Usuário com acesso à gestão da blacklist de domínios']
+}
+
+Enum user_token_purpose {
+  EMAIL_CONFIRMATION [note: 'Ativação de conta recém-criada (RF28)']
+  EMAIL_CHANGE [note: 'Confirmação de troca de e-mail (RF26)']
+  PASSWORD_RESET [note: 'Recuperação de senha esquecida (RF25)']
+}
+
+Enum session_revocation_reason {
+  LOGOUT
+  PASSWORD_CHANGE
+  PASSWORD_RESET
+  ACCOUNT_DELETION
+}
+
+Enum login_failure_reason {
+  INVALID_CREDENTIALS
+  ACCOUNT_INACTIVE
+  ACCESS_BLOCKED
+}
+
+Enum access_block_scope {
+  IP
+  USER
+}
+
+Enum access_block_reason {
+  LOGIN_ATTEMPTS [note: '5 falhas consecutivas — bloqueio de 15 minutos (RF20)']
+  HONEYPOT [note: 'Chamada a endpoint isca (RF21)']
+}
+
+Enum blocked_domain_origin {
+  SEED [note: 'Carregado do arquivo JSON de sementes']
+  ADMIN [note: 'Incluído por administrador (RF29)']
+}
+
+Enum email_template {
+  EMAIL_CONFIRMATION
+  EMAIL_CHANGE_CONFIRMATION
+  PASSWORD_RESET
+  SUSPICIOUS_LOGIN_ALERT
+}
+
+Enum email_dispatch_status {
+  QUEUED
+  SENT
+  FAILED
+}
+
+Enum data_source_role {
+  CADASTRAL [note: 'Dados cadastrais de pessoa jurídica (cadeia de fallback)']
+  CNAE_TAXONOMY [note: 'Descrição de atividades econômicas']
+  EVIDENCE [note: 'Fonte de evidência ambiental ou de conduta']
+}
+
+Enum ingestion_mode {
+  ON_DEMAND [note: 'Consulta por CNPJ disparada pela requisição do usuário']
+  DAILY_BATCH [note: 'Dump completo ingerido por job agendado']
+  BEST_EFFORT [note: 'Consulta isolada e não bloqueante, com timeout']
+}
+
+Enum request_trigger {
+  USER_QUERY
+  PUBLIC_API
+  SCHEDULED_JOB
+  ON_DEMAND_JOB
+}
+
+Enum request_outcome {
+  SUCCESS
+  NOT_FOUND
+  FAILURE
+  TIMEOUT
+  RATE_LIMITED
+}
+
+Enum ingestion_run_type {
+  SCHEDULED
+  ON_DEMAND
+}
+
+Enum ingestion_run_status {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  SKIPPED_UNCHANGED [note: 'Dump idêntico ao da última execução (mesmo checksum)']
+  FAILED
+}
+
+Enum evidence_category {
+  INFRACAO_AMBIENTAL [note: 'IBAMA — vinculada ao ODS 15']
+  CONDUTA_ADMINISTRATIVA [note: 'CGU CEIS/CNEP — ODS 15, sinal complementar de peso reduzido']
+  EMISSAO_GEE [note: 'GHG Protocol — vinculada ao ODS 13']
+}
+
+Enum evidence_state {
+  CONFIRMED
+  NOT_FOUND
+  UNKNOWN
+  OUTDATED
+}
+
+Enum evidence_signal {
+  POSITIVE
+  NEGATIVE
+}
+
+// -----------------------------------------------------------------------------
+// Identidade e acesso
+// -----------------------------------------------------------------------------
+
+Table users {
+  id_user objectid [primary key]
+  user_name varchar
+  email_encrypted varchar [note: 'E-mail cifrado com AES-256']
+  email_hash varchar [note: 'Índice cego: hash determinístico do e-mail normalizado, usado no login e na verificação de unicidade']
+  password_encrypted varchar [note: 'Hash bcrypt da senha, cifrado com AES-256']
+  address_encrypted varchar [null, note: 'Endereço completo serializado e cifrado com AES-256']
+  encryption_key_version int [default: 1, note: 'Versão da chave AES usada nos campos cifrados deste documento']
+  role user_role [default: 'USER']
+  is_active boolean [default: false, note: 'Falso até a confirmação do e-mail (RF28)']
+  email_confirmed_at timestamp [null]
+  last_login_at timestamp [null]
+  password_changed_at timestamp [null]
+  created_at timestamp
+  updated_at timestamp
+
+  Note: 'Contas de usuário. Sem soft delete: a exclusão de conta (RF27) remove o documento e seus dependentes, atendendo ao direito de eliminação da LGPD; tentativas de login associadas têm `user_id` anulado.'
+
+  Indexes {
+    email_hash [unique, name: 'idx_users_email_hash']
+    role [name: 'idx_users_role']
+  }
+}
+
+Table user_tokens {
+  id_user_token objectid [primary key]
+  user_id objectid [ref: > users.id_user]
+  purpose user_token_purpose
+  token_hash varchar [note: 'Hash SHA-256 do token enviado por e-mail; o valor puro nunca é persistido']
+  pending_email_encrypted varchar [null, note: 'Novo e-mail cifrado, presente apenas quando purpose = EMAIL_CHANGE']
+  expires_at timestamp
+  used_at timestamp [null]
+  created_at timestamp
+  updated_at timestamp
+
+  Note: 'Tokens de uso único e validade limitada enviados por e-mail (confirmação de conta, troca de e-mail e recuperação de senha). TTL: removidos 7 dias após expires_at.'
+
+  Indexes {
+    token_hash [unique, name: 'idx_user_tokens_token_hash']
+    (user_id, purpose, used_at) [name: 'idx_user_tokens_user_purpose_used']
+    expires_at [name: 'idx_user_tokens_expires_at']
+  }
+}
+
+Table user_sessions {
+  id_user_session objectid [primary key]
+  user_id objectid [ref: > users.id_user]
+  jti_hash varchar [note: 'Hash do identificador único (jti) do JWT emitido']
+  ip varchar
+  user_agent varchar [null]
+  expires_at timestamp
+  revoked_at timestamp [null]
+  revocation_reason session_revocation_reason [null]
+  created_at timestamp
+
+  Note: 'Sessões JWT revogáveis (RF23, RF24, NFSE05). Um token só é aceito se a sessão existir, não estiver revogada e não estiver expirada. TTL: removidas 30 dias após expires_at.'
+
+  Indexes {
+    jti_hash [unique, name: 'idx_user_sessions_jti_hash']
+    (user_id, revoked_at) [name: 'idx_user_sessions_user_revoked']
+    expires_at [name: 'idx_user_sessions_expires_at']
+  }
+}
+
+Table api_keys {
+  id_api_key objectid [primary key]
+  user_id objectid [ref: > users.id_user]
+  key_name varchar [note: 'Nome de identificação escolhido pelo usuário']
+  key_prefix varchar [note: 'Prefixo público da chave, exibido na listagem e usado na busca']
+  key_hash varchar [note: 'Hash SHA-256 da chave completa; a chave só é exibida uma vez, na geração (NFSE01)']
+  last_used_at timestamp [null]
+  revoked_at timestamp [null]
+  created_at timestamp
+  updated_at timestamp
+
+  Note: 'Chaves de API para consumo programático (RF16, RF17). Revogadas em massa na exclusão da conta.'
+
+  Indexes {
+    key_prefix [unique, name: 'idx_api_keys_key_prefix']
+    key_hash [unique, name: 'idx_api_keys_key_hash']
+    (user_id, revoked_at) [name: 'idx_api_keys_user_revoked']
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Segurança e auditoria de acesso
+// -----------------------------------------------------------------------------
+
+Table login_attempts {
+  id_login_attempt objectid [primary key]
+  user_id objectid [null, ref: > users.id_user, note: 'Nulo quando o e-mail informado não corresponde a uma conta ou após exclusão da conta']
+  ip varchar
+  was_successful boolean
+  failure_reason login_failure_reason [null]
+  attempted_at timestamp
+
+  Note: 'Registro de cada tentativa de autenticação (RF19). A contagem de falhas consecutivas para o bloqueio (RF20) considera as tentativas desde o último sucesso. TTL: 90 dias.'
+
+  Indexes {
+    (ip, attempted_at) [name: 'idx_login_attempts_ip_attempted_at']
+    (user_id, attempted_at) [name: 'idx_login_attempts_user_attempted_at']
+  }
+}
+
+Table access_blocks {
+  id_access_block objectid [primary key]
+  scope access_block_scope
+  ip varchar [null, note: 'Preenchido quando scope = IP']
+  user_id objectid [null, ref: > users.id_user, note: 'Preenchido quando scope = USER']
+  reason access_block_reason
+  blocked_until timestamp [null, note: 'Nulo = bloqueio sem prazo (honeypot)']
+  created_at timestamp
+
+  Note: 'Bloqueios de IP ou de usuário. O banco é a fonte de verdade e a trilha de auditoria; os bloqueios ativos são espelhados no Redis para verificação rápida a cada requisição.'
+
+  Indexes {
+    (scope, ip, blocked_until) [name: 'idx_access_blocks_scope_ip_until']
+    (scope, user_id, blocked_until) [name: 'idx_access_blocks_scope_user_until']
+  }
+}
+
+Table honeypot_hits {
+  id_honeypot_hit objectid [primary key]
+  ip varchar
+  endpoint varchar
+  http_method varchar
+  user_agent varchar [null]
+  hit_at timestamp
+
+  Note: 'Chamadas a endpoints isca (RF21). Os dados sintéticos devolvidos são gerados sob demanda, sem coleção própria. TTL: 180 dias.'
+
+  Indexes {
+    (ip, hit_at) [name: 'idx_honeypot_hits_ip_hit_at']
+  }
+}
+
+Table blocked_email_domains {
+  id_blocked_email_domain objectid [primary key]
+  domain varchar [note: 'Domínio em minúsculas, sem @ (ex.: mailinator.com)']
+  origin blocked_domain_origin
+  created_by_user_id objectid [null, ref: > users.id_user, note: 'Administrador responsável, quando origin = ADMIN']
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp [null, note: 'Remoção lógica (RF29); reincluir um domínio restaura o registro']
+
+  Note: 'Blacklist de domínios de e-mail (RF22, RF29), inicializada por seed JSON.'
+
+  Indexes {
+    domain [unique, name: 'idx_blocked_email_domains_domain']
+  }
+}
+
+Table email_dispatch_logs {
+  id_email_dispatch_log objectid [primary key]
+  user_id objectid [null, ref: > users.id_user]
+  template email_template
+  recipient_email_hash varchar [note: 'Hash do destinatário; o e-mail em claro não é registrado em log']
+  status email_dispatch_status [default: 'QUEUED']
+  job_id varchar [null, note: 'Identificador do job BullMQ responsável pelo envio']
+  failure_reason varchar [null]
+  sent_at timestamp [null]
+  created_at timestamp
+  updated_at timestamp
+
+  Note: 'Auditoria de e-mails transacionais (RF18). TTL: 180 dias.'
+
+  Indexes {
+    (user_id, created_at) [name: 'idx_email_dispatch_logs_user_created_at']
+    (status, created_at) [name: 'idx_email_dispatch_logs_status_created_at']
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Catálogos de referência (populados via seed)
+// -----------------------------------------------------------------------------
+
+Table ods {
+  id_ods objectid [primary key]
+  ods_number int [note: 'Número oficial do ODS na Agenda 2030 (13, 15)']
+  title varchar
+  description varchar
+  is_active boolean [default: true]
+  created_at timestamp
+  updated_at timestamp
+
+  Note: 'Objetivos de Desenvolvimento Sustentável de referência. Seed do MVP: ODS 13 (Ação Contra a Mudança Global do Clima) e ODS 15 (Vida Terrestre). Incluir um ODS é uma nova entrada de seed, sem alteração de esquema.'
+
+  Indexes {
+    ods_number [unique, name: 'idx_ods_ods_number']
+  }
+}
+
+Table data_sources {
+  id_data_source objectid [primary key]
+  slug varchar [note: 'Identificador estável usado pelos adapters (ex.: BRASIL_API, OPEN_CNPJ, MINHA_RECEITA, IBGE_CNAE, IBAMA, CGU_CEIS, CGU_CNEP, GHG_PROTOCOL)']
+  name varchar
+  base_url varchar
+  role data_source_role
+  ingestion_mode ingestion_mode
+  fallback_priority int [null, note: 'Ordem na cadeia de fallback cadastral (1 = BrasilAPI, 2 = OpenCNPJ, 3 = Minha Receita)']
+  evidence_category evidence_category [null, note: 'Categoria das evidências produzidas, quando role = EVIDENCE']
+  ods_id objectid [null, ref: > ods.id_ods, note: 'ODS ao qual as evidências desta fonte se vinculam, quando role = EVIDENCE']
+  rate_limit_per_minute int [null, note: 'Limite respeitado pelo adapter (NFPD01)']
+  cache_ttl_seconds int [null, note: 'Janela de validade do cache das consultas a esta fonte (NFDE01)']
+  request_timeout_ms int [null]
+  is_enabled boolean [default: true]
+  created_at timestamp
+  updated_at timestamp
+
+  Note: 'Fontes externas de dados, populadas via seed. Mantê-las como entidade permite reordenar a cadeia de fallback, desabilitar uma fonte ou ajustar limites sem novo deploy.'
+
+  Indexes {
+    slug [unique, name: 'idx_data_sources_slug']
+    (role, is_enabled, fallback_priority) [name: 'idx_data_sources_role_enabled_priority']
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Ingestão
+// -----------------------------------------------------------------------------
+
+Table ingestion_runs {
+  id_ingestion_run objectid [primary key]
+  data_source_id objectid [ref: > data_sources.id_data_source]
+  run_type ingestion_run_type
+  cnpj varchar [null, note: 'Preenchido apenas em execuções avulsas por CNPJ']
+  status ingestion_run_status [default: 'QUEUED']
+  job_id varchar [null]
+  dump_checksum varchar [null, note: 'Checksum do dump baixado; dump idêntico ao da última execução bem-sucedida encerra o job como SKIPPED_UNCHANGED']
+  records_read int [default: 0]
+  records_upserted int [default: 0]
+  records_discarded int [default: 0, note: 'Registros descartados, incluindo os de pessoa física (CPF)']
+  error_message varchar [null]
+  started_at timestamp [null]
+  finished_at timestamp [null]
+  created_at timestamp
+
+  Note: 'Execuções de jobs de ingestão (diárias e avulsas). A última execução bem-sucedida de uma fonte em lote define a data de referência do estado NOT_FOUND das suas evidências.'
+
+  Indexes {
+    (data_source_id, status, finished_at) [name: 'idx_ingestion_runs_source_status_finished']
+    cnpj [name: 'idx_ingestion_runs_cnpj']
+  }
+}
+
+Table data_source_request_logs {
+  id_data_source_request_log objectid [primary key]
+  data_source_id objectid [ref: > data_sources.id_data_source]
+  ingestion_run_id objectid [null, ref: > ingestion_runs.id_ingestion_run]
+  cnpj varchar [null]
+  trigger request_trigger
+  outcome request_outcome
+  http_status int [null]
+  duration_ms int
+  error_message varchar [null]
+  requested_at timestamp
+
+  Note: 'Log de cada chamada a uma fonte externa: base para auditoria de rate limit (NFPD01), diagnóstico de fallback e o indicador de cobertura por fonte [IA04]. TTL: 90 dias.'
+
+  Indexes {
+    (data_source_id, requested_at) [name: 'idx_data_source_request_logs_source_requested_at']
+    (cnpj, requested_at) [name: 'idx_data_source_request_logs_cnpj_requested_at']
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Camadas de dados: evidence_raw (bruto) → evidence_normalized → company_profile
+// -----------------------------------------------------------------------------
+
+Table evidence_raw {
+  id_evidence_raw objectid [primary key]
+  data_source_id objectid [ref: > data_sources.id_data_source]
+  ingestion_run_id objectid [null, ref: > ingestion_runs.id_ingestion_run]
+  cnpj varchar [null, note: 'CNPJ extraído do registro, quando identificável']
+  external_reference varchar [null, note: 'Identificador do registro na fonte (ex.: número do auto de infração)']
+  payload json [note: 'Registro original da fonte, sem transformação']
+  payload_hash varchar [note: 'Hash do payload, usado para deduplicação entre execuções']
+  collected_at timestamp
+
+  Note: 'Camada bruta, mantida para auditoria (NFCO02). Registros de pessoa física (CPF) são descartados antes da persistência, inclusive nesta camada (INL02).'
+
+  Indexes {
+    (data_source_id, payload_hash) [unique, name: 'idx_evidence_raw_source_payload_hash']
+    cnpj [name: 'idx_evidence_raw_cnpj']
+    ingestion_run_id [name: 'idx_evidence_raw_ingestion_run']
+  }
+}
+
+Table evidence_normalized {
+  id_evidence objectid [primary key]
+  evidence_key varchar [note: 'Chave determinística para upsert idempotente: <slug da fonte>:<referência externa> ou, para ausência de registro, <slug da fonte>:<cnpj>:NOT_FOUND']
+  cnpj varchar [ref: > company_profile.cnpj]
+  data_source_id objectid [ref: > data_sources.id_data_source]
+  evidence_raw_id objectid [null, ref: > evidence_raw.id_evidence_raw, note: 'Nulo em evidências NOT_FOUND e UNKNOWN, que não derivam de um registro bruto']
+  ods_id objectid [ref: > ods.id_ods]
+  category evidence_category
+  state evidence_state
+  signal evidence_signal [note: 'Derivado da categoria: EMISSAO_GEE positivo; demais negativos']
+  summary varchar [null, note: 'Resumo legível exibido ao usuário (ex.: tipo de infração, sanção aplicada, ano do inventário)']
+  source_reference varchar [null, note: 'Identificador do registro no órgão de origem (RF09)']
+  source_url varchar [null, note: 'Link para auditoria na fonte original (RF09)']
+  details json [null, note: 'Atributos normalizados específicos da fonte (ex.: valor da multa, órgão sancionador, escopos de emissão)']
+  published_at timestamp [null, note: 'Data de publicação do registro na fonte (RF08)']
+  collected_at timestamp [note: 'Data de coleta pelo BIOS (RF08)']
+  valid_until timestamp [note: 'Após esta data, a evidência passa a OUTDATED até nova coleta']
+  created_at timestamp
+  updated_at timestamp
+
+  Note: 'Camada normalizada: uma evidência por registro de fonte, com fonte, categoria, ODS, estado e datas (RF07, RF08).'
+
+  Indexes {
+    evidence_key [unique, name: 'idx_evidence_normalized_evidence_key']
+    (cnpj, ods_id, state) [name: 'idx_evidence_normalized_cnpj_ods_state']
+    (cnpj, category) [name: 'idx_evidence_normalized_cnpj_category']
+    valid_until [name: 'idx_evidence_normalized_valid_until']
+  }
+}
+
+Table company_address {
+  street varchar [null]
+  number varchar [null]
+  complement varchar [null]
+  neighborhood varchar [null]
+  city varchar
+  city_ibge_code varchar [null]
+  uf varchar [note: 'Sigla da UF (2 caracteres)']
+  zipcode varchar [null]
+
+  Note: 'Subdocumento embutido (sem coleção própria). Endereço público da pessoa jurídica.'
+}
+
+Table company_cnae {
+  code varchar [note: 'Código CNAE de 7 dígitos, sem máscara']
+  description varchar
+
+  Note: 'Subdocumento embutido (sem coleção própria).'
+}
+
+Table company_profile {
+  id_company_profile objectid [primary key]
+  cnpj varchar [note: '14 dígitos, sem máscara']
+  legal_name varchar [note: 'Razão social']
+  trade_name varchar [null, note: 'Nome fantasia']
+  registration_status varchar [note: 'Situação cadastral na Receita Federal']
+  company_size varchar [null, note: 'Porte']
+  address company_address
+  main_cnae company_cnae
+  secondary_cnaes company_cnae[] [null]
+  cadastral_source_id objectid [ref: > data_sources.id_data_source, note: 'Provedor da cadeia de fallback que respondeu a última atualização']
+  content_hash varchar [note: 'Hash do conteúdo cadastral atual (snapshot leve)']
+  previous_content_hash varchar [null, note: 'Hash da versão anterior, para detectar mudança sem motor de diff']
+  refreshed_at timestamp [note: 'Última atualização a partir da fonte cadastral; base da janela de cache']
+  created_at timestamp
+  updated_at timestamp
+
+  Note: 'Camada agregada: perfil cadastral da pessoa jurídica (RF05, RF06). Sem dados de sócios ou administradores (INL02). Os índices por ODS ficam em company_ods_scores.'
+
+  Indexes {
+    cnpj [unique, name: 'idx_company_profile_cnpj']
+    (legal_name, trade_name) [type: fulltext, name: 'idx_company_profile_name_text', note: 'Índice de texto para a busca por nome (RF04)']
+    (`address.uf`, `address.city`) [name: 'idx_company_profile_uf_city']
+    `main_cnae.code` [name: 'idx_company_profile_main_cnae']
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Índices de aderência
+// -----------------------------------------------------------------------------
+
+Table score_contribution {
+  evidence_id objectid [ref: > evidence_normalized.id_evidence]
+  category evidence_category
+  signal evidence_signal
+  weight double [note: 'Peso aplicado à evidência (fixo no código na v1)']
+  points double [note: 'Contribuição efetiva ao índice, já com o sinal aplicado']
+
+  Note: 'Subdocumento embutido (sem coleção própria). Cada item é uma linha da explicação do score (RF12).'
+}
+
+Table company_ods_scores {
+  id_company_ods_score objectid [primary key]
+  cnpj varchar [ref: > company_profile.cnpj]
+  ods_id objectid [ref: > ods.id_ods]
+  ods_number int [note: 'Desnormalizado de ods para filtros e exportação']
+  score_value double [null, note: 'Índice de aderência (RF10); nulo quando não há evidência conclusiva para o ODS']
+  confidence_value double [note: 'Nível de confiança entre 0 e 1, calculado à parte do índice (RF11)']
+  evidence_count int [default: 0]
+  contributions score_contribution[] [null]
+  rules_version varchar [note: 'Versão das regras de pontuação usadas no cálculo, para rastrear recálculos']
+  uf varchar [note: 'Desnormalizado de company_profile.address.uf']
+  city varchar [note: 'Desnormalizado de company_profile.address.city']
+  cnae_codes varchar[] [note: 'Desnormalizado: CNAE principal e secundários']
+  calculated_at timestamp
+  created_at timestamp
+  updated_at timestamp
+
+  Note: 'Um documento por empresa e ODS. Coleção separada de company_profile para que filtro e ordenação por índice de um ODS selecionado (RF13, RF14) sejam atendidos por um único índice composto, sem varrer arrays embutidos. Os campos desnormalizados são reescritos no mesmo job que atualiza o perfil cadastral.'
+
+  Indexes {
+    (cnpj, ods_id) [unique, name: 'idx_company_ods_scores_cnpj_ods']
+    (ods_id, score_value) [name: 'idx_company_ods_scores_ods_score']
+    (ods_id, uf, city, score_value) [name: 'idx_company_ods_scores_ods_location_score']
+    (ods_id, cnae_codes, score_value) [name: 'idx_company_ods_scores_ods_cnae_score']
+    (ods_id, confidence_value) [name: 'idx_company_ods_scores_ods_confidence']
+  }
+}
+
+Table sector_score_snapshots {
+  id_sector_score_snapshot objectid [primary key]
+  ods_id objectid [ref: > ods.id_ods]
+  cnae_division varchar [note: 'Divisão CNAE (2 dígitos), granularidade de setor adotada para evitar amostras pequenas']
+  window_start timestamp
+  window_end timestamp
+  average_score double [null]
+  average_confidence double
+  company_count int [note: 'Empresas do setor com documento em company_ods_scores na janela']
+  scored_company_count int [note: 'Empresas com índice não nulo na janela']
+  rules_version varchar
+  created_at timestamp
+
+  Note: 'Agregados setoriais por janela de tempo (RF30, indicador IA05). Armazena apenas médias por setor, nunca série histórica por empresa individual.'
+
+  Indexes {
+    (ods_id, cnae_division, window_start) [unique, name: 'idx_sector_score_snapshots_ods_division_window']
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Agrupamentos
+// -----------------------------------------------------------------------------
+
+TableGroup identidade_e_acesso {
+  users
+  user_tokens
+  user_sessions
+  api_keys
+}
+
+TableGroup seguranca_e_auditoria {
+  login_attempts
+  access_blocks
+  honeypot_hits
+  blocked_email_domains
+  email_dispatch_logs
+}
+
+TableGroup catalogos {
+  ods
+  data_sources
+}
+
+TableGroup ingestao {
+  ingestion_runs
+  data_source_request_logs
+}
+
+TableGroup evidencias_e_perfis {
+  evidence_raw
+  evidence_normalized
+  company_profile
+  company_address
+  company_cnae
+}
+
+TableGroup indices {
+  company_ods_scores
+  score_contribution
+  sector_score_snapshots
+}

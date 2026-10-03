@@ -38,7 +38,7 @@ Os ODS aos quais os índices de aderência (RF10) se referem são modelados como
 | 13 | Ação Contra a Mudança Global do Clima | GHG Protocol — Registro Público de Emissões | Apenas positivo (publicação de inventário de emissões) |
 | 15 | Vida Terrestre | IBAMA (autos de infração e termos de embargo); CGU — CEIS/CNEP como sinal complementar de peso reduzido (ver seção 4) | Apenas negativo (autuação/embargo; sanção administrativa) |
 
-Cada evidência normalizada referencia o ODS ao qual se vincula, e o `company_profile` armazena uma lista de resultados por ODS (`{ odsId, indice, confianca }`) em vez de um par único índice/confiança. Nenhum ODS é assumido de forma implícita no código: incluir um novo ODS passa a ser uma nova entrada de seed somada às regras de pontuação correspondentes, sem alteração de esquema — o que preserva a escalabilidade a outros ODS prevista no objetivo geral do projeto.
+Cada evidência normalizada referencia o ODS ao qual se vincula, e os resultados por ODS (`{ odsId, indice, confianca }`) ficam na coleção `company_ods_scores`, um documento por empresa e ODS, em vez de um par único índice/confiança no `company_profile` — o que permite filtrar e ordenar pelo índice de um ODS selecionado com um único índice composto (modelo completo em `08-Artefatos-de-Análise.md`, seção 8.5). Nenhum ODS é assumido de forma implícita no código: incluir um novo ODS passa a ser uma nova entrada de seed somada às regras de pontuação correspondentes, sem alteração de esquema — o que preserva a escalabilidade a outros ODS prevista no objetivo geral do projeto.
 
 Limitações assumidas e registradas:
 
