@@ -6,7 +6,8 @@ O objetivo deste projeto é oferecer um mecanismo de consulta e avaliação do c
 ambiental de empresas brasileiras, a partir da consolidação de evidências públicas associadas
 ao CNPJ. Busca-se fornecer um ambiente que centralize informações hoje dispersas entre
 diferentes órgãos governamentais, transformando dados brutos em indicadores explicáveis de
-aderência aos Objetivos de Desenvolvimento Sustentável (ODS) de natureza ambiental. Com isso,
+aderência ao Objetivo de Desenvolvimento Sustentável (ODS) 15 — Vida Terrestre, recorte
+ambiental adotado como foco único do MVP. Com isso,
 pretende-se apoiar a tomada de decisão de profissionais de negócios, de sustentabilidade,
 pesquisadores, imprensa e órgãos públicos, sem incorrer nos riscos éticos e de privacidade
 próprios de ferramentas de prospecção comercial tradicionais.
@@ -55,7 +56,9 @@ tentativas de acesso não autorizado.
 ***MongoDB***: sistema de banco de dados orientado a documentos, utilizado como
 persistência principal do BIOS.
 
-***ODS***: Objetivos de Desenvolvimento Sustentável da Organização das Nações Unidas.
+***ODS***: Objetivos de Desenvolvimento Sustentável da Organização das Nações Unidas. O MVP do
+BIOS trabalha exclusivamente com o ODS 15 — Vida Terrestre (proteger, recuperar e promover o
+uso sustentável dos ecossistemas terrestres, deter o desmatamento e a perda de biodiversidade).
 
 ***ORM***: Object-Relational Mapping — camada de abstração entre código e banco de dados;
 no BIOS, implementada via Prisma ORM.
