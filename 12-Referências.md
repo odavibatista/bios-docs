@@ -20,9 +20,9 @@ em: https://portaldatransparencia.gov.br/api-de-dados. Acesso em: 2026.
 GHG PROTOCOL BRASIL. **Registro Público de Emissões**. Disponível em:
 https://registropublicodeemissoes.fgv.br. Acesso em: 2026.
 
-INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. **ISO/IEC 25010:2011** — Systems and
-software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE).
-Disponível em: https://iso.org/standard/35733.html. Acesso em: 2025.
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. **ISO/IEC 25010:2023** — Systems and
+software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE) —
+Product quality model. Disponível em: https://iso.org/standard/78176.html. Acesso em: 2026.
 
 UNITED NATIONS. **Transforming our world: the 2030 Agenda for Sustainable Development**.
 2015.

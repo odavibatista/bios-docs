@@ -41,19 +41,23 @@ Essa separação existe para que uma sanção administrativa genérica do CEIS/C
 
 O README (seção 4) e o RF08 formal (`05-Requisitos-Funcionais.md`) chegaram a listar números diferentes de estados (seis vs. quatro). Decisão: os quatro estados do RF08 (`CONFIRMED`, `NOT_FOUND`, `UNKNOWN`, `OUTDATED`) são o modelo definitivo do MVP. `NOT_APPLICABLE` e `CONFLICTING` ficam descartados do escopo atual e registrados aqui como trabalho futuro, não perdidos. O README foi atualizado (seção 4) para refletir essa decisão.
 
-## 6. Justificativa da arquitetura conforme ISO/IEC 25010
+## 6. Justificativa da arquitetura conforme ISO/IEC 25010:2023
 
-A arquitetura descrita nas seções 1 a 4 é justificada abaixo por característica de qualidade da ISO/IEC 25010:2011 (referenciada em `12-Referências.md`), amarrada aos RNFs já formalizados em `06-Requisitos-Nao-Funcionais.md` sempre que exista requisito correspondente.
+A arquitetura descrita nas seções 1 a 4 é justificada abaixo pelas nove características de
+qualidade da ISO/IEC 25010:2023 (referenciada em `12-Referências.md`), amarrada aos RNFs já
+formalizados e reclassificados em `06-Requisitos-Nao-Funcionais.md`.
 
-| Característica ISO/IEC 25010 | Como a arquitetura do BIOS a endereça | RNF/decisão relacionada |
+| Característica ISO/IEC 25010:2023 | Como a arquitetura do BIOS a endereça | RNF/decisão relacionada |
 | --- | --- | --- |
-| Adequação Funcional | Modelo evidência-primeiro (dado → evidência → regra → indicador → score) com estado explícito por evidência (RF08) garante que cada fonte contribua de forma isolada e auditável para o score, sem sobreposição de responsabilidade entre adapters | RF07, RF08, RF10 |
+| Adequação Funcional | Modelo evidência-primeiro (dado → evidência → regra → indicador → score) com estado explícito por evidência (RF08) garante que cada fonte contribua de forma isolada e auditável para o score, sem sobreposição de responsabilidade entre adapters | RF07, RF08, RF10; NFCO02 |
 | Eficiência de Desempenho | Cache de consulta evita nova chamada síncrona à fonte externa dentro da janela de validade; ingestão pesada do IBAMA roda como job assíncrono em lote (BullMQ), fora do caminho crítico da consulta em tempo real | NFDE01, NFDE02 |
-| Compatibilidade | Cada fonte isolada atrás de `DataSourceInterface`; a cadeia de fallback do cadastro (BrasilAPI → Minha Receita) troca de provedor sem alterar contrato interno nem lógica de negócio dependente | NFPD02; seção 1 |
-| Usabilidade | Endereçada apenas parcialmente nesta camada (o grosso é front-end); a separação estrutural entre score e confiança, e a explicação evidência a evidência (RF12), existem para que o resultado seja interpretável sem exigir conhecimento prévio das bases governamentais de origem | RF11, RF12 |
-| Confiabilidade | Degradação graciosa por fonte — indisponibilidade de uma fonte (ex.: GHG Protocol) não bloqueia a consulta inteira; job de ingestão com retry/backoff nativo do BullMQ | NFCO01, NFCO02 |
-| Segurança | Criptografia AES-256, hash de chave de API, sessão JWT revogável, rate limiting, bloqueio de login, honeypot — já formalizados como bloco dedicado de RNF | NFSE01–NFSE11 |
-| Manutenibilidade | Isolamento por adapter (um módulo por fonte) e camadas lógicas `evidence_raw` → `evidence_normalized` → `company_profile` reduzem acoplamento entre ingestão, normalização e agregação — alterar uma fonte não exige tocar nas demais | NFPD02; seção 3 |
-| Portabilidade | Stack inteiramente Node.js/TypeScript, com Prisma ORM como camada de abstração sobre MongoDB; permanência deliberada na Prisma v6 (em vez da v7) preserva justamente essa portabilidade, já que a v7 não suporta MongoDB | `13-Ficha-Técnica.md`, seção 3 |
+| Compatibilidade | Cada fonte isolada atrás de `DataSourceInterface`; a cadeia de fallback do cadastro (BrasilAPI → Minha Receita) troca de provedor sem alterar contrato interno; rate limit de cada fonte externa respeitado | NFPD01; seção 1 |
+| Capacidade de Interação | Não endereçada nesta camada de arquitetura (back-end/dados) — depende de decisões de front-end ainda não formalizadas | — (ver `06-Requisitos-Nao-Funcionais.md`, seção 6.4) |
+| Confiabilidade | Degradação graciosa por fonte — indisponibilidade de uma fonte (ex.: GHG Protocol) não bloqueia a consulta inteira; job de ingestão com retry/backoff nativo do BullMQ | NFCO01 |
+| Segurança | Criptografia AES-256, hash de chave de API, sessão JWT revogável, rate limiting, bloqueio de login, honeypot, monitoramento de dependências | NFSE01–NFSE08 |
+| Manutenibilidade | Isolamento por adapter (um módulo por fonte), camadas lógicas `evidence_raw` → `evidence_normalized` → `company_profile`, cobertura mínima de teste, barreira pré-commit e análise estática | NFPD02, NFPD03, NFSE09–NFSE11; seção 3 |
+| Flexibilidade | Mesmo isolamento por adapter também sustenta adição de novas fontes sem alterar o núcleo, ainda que formalizado sob Manutenibilidade | NFPD02 (referência cruzada) |
+| Segurança Operacional (Safety) | Não aplicável — o BIOS não atua sobre processo físico ou operacional de terceiros | — |
 
-Usabilidade e Compatibilidade dependem em parte de decisões de front-end ainda não formalizadas; a tabela cobre apenas a parcela resolvida pela arquitetura de back-end/dados deste documento.
+Capacidade de Interação depende de decisões de front-end ainda não formalizadas; a tabela
+cobre apenas a parcela resolvida pela arquitetura de back-end/dados deste documento.
