@@ -40,7 +40,7 @@
 | Rate limiting | `@nestjs/throttler` | NFSE04 — Throttler nos endpoints públicos |
 | Validação | `nestjs-zod`, `zod`, `class-validator`, `class-transformer` | DTOs e validação de entrada |
 | Autenticação | `jsonwebtoken`, `bcryptjs` | RF02, NFSE05 — login e hash de senha |
-| Criptografia | `crypto` (nativo do Node) | NFSE03 — AES-256 em dados sensíveis |
+| Criptografia | `crypto` (nativo do Node) | NFSE03 — AES-256 em dados sensíveis e sobre o hash bcrypt da senha |
 | E-mail | `handlebars`, `nodemailer`, `@types/nodemailer` | RF18 — e-mails transacionais |
 | Dados sintéticos | `@faker-js/faker` | RF21 — honeypot (dependência de **produção** no BIOS, onde é usada só em teste) |
 | Identificadores | `@paralleldrive/cuid2` | Geração de IDs |
@@ -74,7 +74,7 @@
 
 | Fonte | Protocolo/Formato | Observação |
 |---|---|---|
-| BrasilAPI / OpenCNPJ | HTTPS + JSON | REST, sem autenticação |
+| BrasilAPI / OpenCNPJ / Minha Receita | HTTPS + JSON | REST, sem autenticação; cadeia de fallback nessa ordem |
 | IBGE (`servicodados.ibge.gov.br`) | HTTPS + JSON | REST, sem autenticação |
 | IBAMA — Dados Abertos | HTTPS + JSON | API CKAN (Action API), sem autenticação |
 | CGU — Portal da Transparência (CEIS/CNEP) | HTTPS + JSON | REST, autenticação por chave de API em header |
@@ -84,7 +84,9 @@ A comunicação entre o BIOS e as fontes externas é majoritariamente **HTTPS co
 única exceção no GHG Protocol, que não expõe API formal — desvio já tratado como excepcional
 desde a definição das fontes de dados (hierarquia API First → dataset → download → scraping).
 
-A comunicação **interna** entre os componentes do próprio BIOS (core API ↔ serviço de
-ingestão ↔ serviço de scraping) também é HTTPS + JSON para chamadas síncronas, evoluindo para
-mensageria assíncrona via BullMQ/Redis nos jobs de ingestão que não exigem resposta imediata
-(ex.: atualização periódica de evidências, scraping do GHG Protocol).
+A comunicação **interna** entre os componentes do próprio BIOS (core API ↔ serviços de
+ingestão ↔ serviço de fallback do GHG Protocol) ocorre **exclusivamente via filas BullMQ sobre
+o Redis**: os serviços de ingestão são aplicações NestJS *standalone*, sem camada HTTP exposta.
+Quando uma consulta exige resposta imediata (ex.: perfil de CNPJ ainda não presente em cache),
+o core enfileira o job e aguarda sua conclusão com timeout; jobs que não exigem resposta
+imediata (ex.: atualização periódica de evidências) são apenas enfileirados.

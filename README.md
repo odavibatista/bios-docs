@@ -42,7 +42,7 @@ ferramentas de prospecção B2B genéricas — documentado à parte em "BIOS —
 
 | Fonte | Dado fornecido | Tipo de acesso | Observação |
 |---|---|---|---|
-| Receita Federal (via BrasilAPI, fallback Minha Receita) | Cadastro de pessoa jurídica | API pública, sem chave | Camada de identidade, não gera evidência ambiental por si só; nenhum dos dois provedores é institucional, cadeia de fallback é obrigatória |
+| Receita Federal (via BrasilAPI, fallback OpenCNPJ e, por último, Minha Receita) | Cadastro de pessoa jurídica | API pública, sem chave | Camada de identidade, não gera evidência ambiental por si só; nenhum dos três provedores é institucional, cadeia de fallback é obrigatória |
 | IBGE | Descrição de CNAE | API pública, sem chave (`servicodados.ibge.gov.br`) | Fonte de apoio para taxonomia do CNAE; BrasilAPI já retorna descrição do CNAE principal e secundários numa única chamada |
 | IBAMA — Dados Abertos | Autuações e embargos ambientais | Dados abertos (CKAN) — **sem consulta por CNPJ ao vivo**, apenas dumps em lote | Ingestão batch assíncrona (job diário via BullMQ); MVP restrito aos dois recursos principais (auto de infração + embargo) — ver `Projeto-e-Arquitetura.md` |
 | CGU — Portal da Transparência (CEIS/CNEP) | Sanções administrativas | API pública, chave via cadastro simples | Aceito como sinal amplo de conduta administrativa, sem filtrar por órgão sancionador — categorizado à parte de evidência ambiental (RF08) |
@@ -109,9 +109,9 @@ proposta da disciplina):
 | 03 Sistemas Relacionados | (sem equivalente direto — contexto de mercado) |
 | 04 Atores e Histórias dos Usuários | Stakeholders |
 | 05/06/07 RF/RNF/RIN | Engenharia de Requisitos |
-| 08 Artefatos de Análise (a escrever) | Modelagem — casos de uso, classes, sequência |
+| 08 Artefatos de Análise | Modelagem — casos de uso, classes, sequência, modelo de dados, C4 |
 | 10 Gerenciamento do Projeto | Gerenciamento do Projeto |
-| 11 (a escrever) | Permissões (adaptado, simplificado) |
+| 11 Permissões | (adaptado, simplificado) |
 | 12 Referências | Referências |
 | 13 Ficha Técnica | (sem equivalente direto — complementa Projeto e Arquitetura) |
 | 14 Projeto e Arquitetura | Projeto e Arquitetura |
@@ -158,9 +158,8 @@ Architecture/SOLID/OO como princípio arquitetural.
 
 ## 9. Pendências em Aberto
 
-- **Etapa 4 (Modelagem):** diagrama de classes, casos de uso e sequência — não iniciados
-  (documento `08-Artefatos-de-Análise.md`).
 - **Documento técnico consolidado:** ainda não existe um único arquivo unindo todas as seções
   na ordem exigida pelo item 8 da proposta da A3 (Introdução → Referências).
-- **Diagramas de arquitetura (C4/componentes):** não
-  produzidos.
+- **Diagrama C4 nível 3 (componentes):** opcional; os níveis 1 (contexto) e 2 (contêineres)
+  estão em `08-Artefatos-de-Análise.md`, seção 8.6, com fonte em
+  `assets/diagrams/bios-c4-architecture.drawio`.

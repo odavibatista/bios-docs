@@ -45,7 +45,8 @@ externa estiver indisponível, sem falhar a consulta inteira.
 de indivíduo (Confidentiality; formalmente uma exigência regulatória, sem sub-característica
 dedicada na norma — enquadrada aqui por ser o item mais próximo do modelo).
 
-[NFSE03] Criptografia AES-256 de dados sensíveis (e-mail, senha, endereço de usuário)
+[NFSE03] Criptografia AES-256 de dados sensíveis (e-mail e endereço de usuário). A senha recebe
+duas camadas: hash bcrypt, cifrado em seguida com AES-256
 (Confidentiality).
 
 [NFSE04] Rate limiting em endpoints públicos (ThrottlerModule do NestJS) (Resistance).

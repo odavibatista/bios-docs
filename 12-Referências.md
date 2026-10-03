@@ -6,6 +6,9 @@ Disponível em: https://dados.gov.br. Acesso em: 2026.
 BRASILAPI. **BrasilAPI — Documentação**. Disponível em: https://brasilapi.com.br. Acesso em:
 2026.
 
+OPENCNPJ. **OpenCNPJ — API pública de consulta de CNPJ**. Disponível em:
+https://opencnpj.org. Acesso em: 2026.
+
 MINHA RECEITA. **Documentação**. Disponível em: https://docs.minhareceita.org. Acesso em:
 2026.
 

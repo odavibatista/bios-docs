@@ -4,7 +4,7 @@
 
 | Fonte | Acesso | Mecanismo | Autenticação | Padrão de ingestão |
 | --- | --- | --- | --- | --- |
-| Receita Federal (cadastro/CNAE) | Espelho comunitário dos dumps abertos da RFB, sem API institucional | `GET brasilapi.com.br/api/cnpj/v1/{cnpj}` (principal); `GET minhareceita.org/{cnpj}` (fallback) | Nenhuma | Síncrono sob demanda, com cache |
+| Receita Federal (cadastro/CNAE) | Espelho comunitário dos dumps abertos da RFB, sem API institucional | `GET brasilapi.com.br/api/cnpj/v1/{cnpj}` (principal); `GET api.opencnpj.org/{cnpj}` (1º fallback); `GET minhareceita.org/{cnpj}` (fallback final) | Nenhuma | Síncrono sob demanda, com cache |
 | IBGE (CNAE — apoio) | API pública oficial | `GET servicodados.ibge.gov.br/api/v2/cnae/...` | Nenhuma | Síncrono sob demanda, com cache |
 | IBAMA (autuações e embargos) | Dados abertos (CKAN) | Dumps CSV/JSON/XML em URL fixa por recurso — **sem endpoint de consulta por CNPJ** | Nenhuma | Batch assíncrono (job diário) |
 | CGU — Portal da Transparência (CEIS/CNEP) | API REST oficial (Swagger documentado) | `GET api.portaldatransparencia.gov.br/api-de-dados/ceis` e `/cnep`, paginado, filtro por CNPJ | Header `chave-api-dados`, token gratuito via conta gov.br | Síncrono sob demanda, com cache |
@@ -12,7 +12,7 @@
 
 Observações por fonte:
 
-- **Receita Federal**: nenhum dos dois provedores é institucional — ambos são projetos comunitários que espelham o dump aberto da RFB. A cadeia de fallback (BrasilAPI → Minha Receita) é obrigatória, não redundância opcional. O retorno da BrasilAPI já cobre RF05 e RF06 numa única chamada (situação cadastral, porte, endereço, CNAE principal e secundários com descrição).
+- **Receita Federal**: nenhum dos três provedores é institucional — todos são projetos comunitários que espelham o dump aberto da RFB. A cadeia de fallback (BrasilAPI → OpenCNPJ → Minha Receita) é obrigatória, não redundância opcional: a Minha Receita só é consultada quando nem a BrasilAPI nem o OpenCNPJ retornam dados. O retorno da BrasilAPI já cobre RF05 e RF06 numa única chamada (situação cadastral, porte, endereço, CNAE principal e secundários com descrição).
 - **IBAMA**: não existe consulta por CNPJ ao vivo nessa fonte. O MVP ingere apenas os dois recursos principais — auto de infração e termo de embargo —, cada um já carregando o documento (CPF/CNPJ) do autuado/interessado na própria linha. Os recursos auxiliares (enquadramento legal, coordenadas, bioma, espécime, anexos) ficam fora do MVP: uma auditoria de dados feita por contribuição da sociedade civil ao 5º Plano de Ação de Governo Aberto documentou ausência de chave primária confiável para cruzar esses recursos entre si (contagens de registro divergentes entre tabelas relacionadas extraídas na mesma data, formatos de número de processo inconsistentes). Tentar reconstruir o quadro completo joinando tudo é risco de estouro de prazo, não de dificuldade de código.
 - **CGU CEIS/CNEP**: aceito como sinal amplo de conduta administrativa, sem filtrar por órgão sancionador — decisão explícita (ver seção 4, categorização).
 - **GHG Protocol**: cobertura estruturalmente baixa (~600 organizações reportando por ano, contra milhões de CNPJs ativos no Brasil). `UNKNOWN` é o resultado esperado na maioria das consultas — não é falha de coleta, é a realidade da adesão ao programa (RIN [IND02]).
@@ -20,6 +20,8 @@ Observações por fonte:
 ## 2. Fila, agendamento e consulta sob demanda
 
 Decisão: **BullMQ + Redis para tudo**, sem broker adicional. BullMQ já cobre nativamente os três elementos que a ingestão do IBAMA precisa — fila, repetição agendada (job repetível = cron) e retry com backoff —, o que torna um segundo broker (ex.: RabbitMQ) redundante com a stack já adotada (ver `overview.md`) e contrário à diretriz de viabilidade solo do projeto (ver `ways-of-working.md`).
+
+A mesma decisão vale para a comunicação **interna**: o `bios-core-api` e os serviços de ingestão (CNPJ, Ambiental e Fallback GHG) conversam exclusivamente via filas BullMQ, sem chamadas HTTP entre si. Quando a consulta do usuário exige resposta imediata, o core enfileira o job e aguarda sua conclusão com timeout (sequência em `08-Artefatos-de-Análise.md`, seção 8.4.1); estourado o timeout de uma fonte não bloqueante (GHG), a evidência correspondente é exibida como `UNKNOWN`.
 
 Caso de CNPJ não indexado localmente (miss no índice do lote diário do IBAMA): reaproveita o mesmo adapter/parser do job diário, disparado sob demanda como job avulso do BullMQ para aquele CNPJ específico, contra o mesmo dump oficial. Isso **não** reintroduz webscraping nem um segundo mecanismo de ingestão — é o mesmo pipeline, com gatilho diferente.
 
@@ -65,6 +67,10 @@ Justificativa da escolha pelo ODS 15 e não pelo ODS 13: tanto o IBAMA quanto o 
 
 O README (seção 4) e o RF08 formal (`05-Requisitos-Funcionais.md`) chegaram a listar números diferentes de estados (seis vs. quatro). Decisão: os quatro estados do RF08 (`CONFIRMED`, `NOT_FOUND`, `UNKNOWN`, `OUTDATED`) são o modelo definitivo do MVP. `NOT_APPLICABLE` e `CONFLICTING` ficam descartados do escopo atual e registrados aqui como trabalho futuro, não perdidos. O README foi atualizado (seção 4) para refletir essa decisão.
 
+Os diagramas C4 de contexto (nível 1) e de contêineres (nível 2) que materializam as decisões
+desta seção estão em `08-Artefatos-de-Análise.md`, seção 8.6; o modelo de dados das coleções,
+na seção 8.5.
+
 ## 6. Justificativa da arquitetura conforme ISO/IEC 25010:2023
 
 A arquitetura descrita nas seções 1 a 4 é justificada abaixo pelas nove características de
@@ -75,7 +81,7 @@ formalizados e reclassificados em `06-Requisitos-Nao-Funcionais.md`.
 | --- | --- | --- |
 | Adequação Funcional | Modelo evidência-primeiro (dado → evidência → regra → indicador → score) com estado explícito por evidência (RF08) garante que cada fonte contribua de forma isolada e auditável para o score, sem sobreposição de responsabilidade entre adapters | RF07, RF08, RF10; NFCO02 |
 | Eficiência de Desempenho | Cache de consulta evita nova chamada síncrona à fonte externa dentro da janela de validade; ingestão pesada do IBAMA roda como job assíncrono em lote (BullMQ), fora do caminho crítico da consulta em tempo real | NFDE01, NFDE02 |
-| Compatibilidade | Cada fonte isolada atrás de `DataSourceInterface`; a cadeia de fallback do cadastro (BrasilAPI → Minha Receita) troca de provedor sem alterar contrato interno; rate limit de cada fonte externa respeitado | NFPD01; seção 1 |
+| Compatibilidade | Cada fonte isolada atrás de `DataSourceInterface`; a cadeia de fallback do cadastro (BrasilAPI → OpenCNPJ → Minha Receita) troca de provedor sem alterar contrato interno; rate limit de cada fonte externa respeitado | NFPD01; seção 1 |
 | Capacidade de Interação | Não endereçada nesta camada de arquitetura (back-end/dados) — depende de decisões de front-end ainda não formalizadas | — (ver `06-Requisitos-Nao-Funcionais.md`, seção 6.4) |
 | Confiabilidade | Degradação graciosa por fonte — indisponibilidade de uma fonte (ex.: GHG Protocol) não bloqueia a consulta inteira; job de ingestão com retry/backoff nativo do BullMQ | NFCO01 |
 | Segurança | Criptografia AES-256, hash de chave de API, sessão JWT revogável, rate limiting, bloqueio de login, honeypot, monitoramento de dependências | NFSE01–NFSE08 |
