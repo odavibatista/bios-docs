@@ -6,8 +6,9 @@
 
 ## 1. Linguagens de Programação
 
-- **TypeScript** — linguagem principal em toda a stack (back-end, front-end e
-  microsserviços), com `strict` habilitado no `tsconfig.json`.
+- **TypeScript 6** — linguagem principal em toda a stack (back-end, front-end e
+  microsserviços), com `strict` habilitado no `tsconfig.json`. O back-end é compilado como
+  **ESM** (`"type": "module"`), padrão do NestJS 12.
 - **JavaScript** — restrito a arquivos de configuração/build quando exigido por alguma
   ferramenta, nunca como linguagem de lógica de negócio.
 
@@ -15,7 +16,7 @@
 
 | Camada | Framework | Observação |
 |---|---|---|
-| Back-end | NestJS (v11.x) | Versão Major |
+| Back-end | NestJS (v12.x) | Versão major atual; exige Node.js ≥ 22.22.3. Adotada pelo suporte nativo a Standard Schema (validação e serialização com Zod sem biblioteca intermediária) |
 | Front-end | Angular (versão moderna, standalone components) | Decisão travada nesta ficha |
 | Microsserviços de ingestão/scraping | NestJS *standalone* (sem camada HTTP exposta) | Comunicação com o core via fila (BullMQ) |
 
@@ -25,34 +26,42 @@
   MongoDB. **Decisão explícita:** o BIOS permanece nesta versão mesmo com a existência da
   Prisma ORM v7, porque a v7 **ainda não suporta MongoDB** (limitação declarada pela própria
   Prisma, decorrente de uma reescrita da camada de query engine que priorizou bancos SQL).
-- **MongoDB** como banco de dados principal, modelado em três coleções lógicas
-  (`evidence_raw`, `evidence_normalized`, `company_profile` — padrão Bronze/Silver/Gold).
+- **MongoDB 8** como banco de dados principal, executado como **replica set** (exigência do
+  Prisma para transações e ações referenciais emuladas). As camadas de dados seguem o padrão
+  Bronze/Silver/Gold em três coleções lógicas (`evidence_raw`, `evidence_normalized`,
+  `company_profile`); o modelo completo está em `assets/database/bios-database.dbml.txt`.
+- **Schema Prisma multiarquivo**, distribuído pelos módulos: cada módulo mantém os schemas
+  das suas entidades em `src/modules/<módulo>/entity/*.prisma`, e apenas o `generator` e o
+  `datasource` ficam na infraestrutura compartilhada. O `prisma.config.ts` aponta a raiz do
+  schema para `src/`, de onde o Prisma reúne todos os arquivos recursivamente.
 
 ## 4. Bibliotecas — Back-end
 
 | Categoria | Biblioteca | Função no BIOS |
 |---|---|---|
 | Núcleo do framework | `@nestjs/common`, `@nestjs/core`, `@nestjs/platform-express` | Base do NestJS |
-| Configuração | `@nestjs/config`, `dotenv` | Variáveis de ambiente |
+| Configuração | `@nestjs/config` + schema Zod | Variáveis de ambiente validadas no bootstrap (configuração inválida impede a aplicação de subir) |
 | Documentação de API | `@nestjs/swagger`, `@scalar/nestjs-api-reference` | RF17 — API pública documentada |
 | Cache | `@nestjs/cache-manager`, `cache-manager`, `keyv`, `@keyv/redis` | NFDE01 — cache de consultas |
 | Filas / jobs assíncronos | `@nestjs/bullmq`, `bullmq` | Ingestão periódica de evidências, scraping do GHG Protocol |
 | Rate limiting | `@nestjs/throttler` | NFSE04 — Throttler nos endpoints públicos |
-| Validação | `nestjs-zod`, `zod`, `class-validator`, `class-transformer` | DTOs e validação de entrada |
+| Validação e serialização | `zod` (Standard Schema nativo do NestJS 12) | Schemas de request e response: validação de entrada (`StandardSchemaValidationPipe`), serialização de saída que descarta campos não declarados (`StandardSchemaSerializerInterceptor`) e geração do OpenAPI (`@nestjs/swagger`) a partir do mesmo schema |
 | Autenticação | `jsonwebtoken`, `bcryptjs` | RF02, NFSE05 — login e hash de senha |
 | Criptografia | `crypto` (nativo do Node) | NFSE03 — AES-256 em dados sensíveis e sobre o hash bcrypt da senha |
 | E-mail | `handlebars`, `nodemailer`, `@types/nodemailer` | RF18 — e-mails transacionais |
 | Dados sintéticos | `@faker-js/faker` | RF21 — honeypot (dependência de **produção** no BIOS, onde é usada só em teste) |
-| Identificadores | `@paralleldrive/cuid2` | Geração de IDs |
+| Identificadores | ObjectId nativo do MongoDB (`@default(auto())`) | Chaves primárias: geradas pelo próprio banco, compactas e ordenadas por tempo de criação |
 | Datas | `date-fns` | Manipulação de datas de evidência |
 | HTTP client | `axios` | Consumo das APIs externas (Seção 6) |
 
 ## 5. Bibliotecas de Teste
 
 ### 5.1 Back-end
-- **Jest** (test runner) + **ts-jest**;
-- **@nestjs/testing** — `Test.createTestingModule` para injeção de dependência em teste,
-  evitando o padrão de `jest.mock`;
+- **Vitest** (test runner, padrão do NestJS 12) — API de mocks equivalente à do Jest
+  (`vi.fn`, `vi.spyOn`), execução nativa de TypeScript/ESM sem transformador dedicado e
+  cobertura via `@vitest/coverage-v8`, com limite mínimo de 75% configurado ([NFPD03]);
+- **@nestjs/testing** — `Test.createTestingModule` com `overrideProvider` para substituir
+  dependências pelo container de injeção, evitando mock de módulo inteiro;
 - **supertest** + `@types/supertest` — testes e2e de endpoint HTTP;
 - **@faker-js/faker** — fixtures de teste.
 
@@ -64,7 +73,7 @@
   Etapa 6, sem impacto na Etapa 5).
 
 ### 5.3 Microsserviço (ingestão/scraping)
-- **Jest** — mesmo test runner do back-end, por consistência;
+- **Vitest** — mesmo test runner do back-end, por consistência;
 - **nock** ou **MSW (Mock Service Worker)** — simulação de respostas das APIs externas nos
   testes de integração de cada adapter, sem depender da disponibilidade real da fonte durante
   o CI;

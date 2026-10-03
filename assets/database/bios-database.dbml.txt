@@ -547,9 +547,9 @@ Table company_ods_scores {
   evidence_count int [default: 0]
   contributions score_contribution[] [null]
   rules_version varchar [note: 'Versão das regras de pontuação usadas no cálculo, para rastrear recálculos']
-  uf varchar [note: 'Desnormalizado de company_profile.address.uf']
-  city varchar [note: 'Desnormalizado de company_profile.address.city']
-  cnae_codes varchar[] [note: 'Desnormalizado: CNAE principal e secundários']
+  uf varchar [null, note: 'Desnormalizado de company_profile.address.uf; nulo para CNPJ com evidência e ainda sem perfil cadastral']
+  city varchar [null, note: 'Desnormalizado de company_profile.address.city; nulo para CNPJ ainda sem perfil cadastral']
+  cnae_codes varchar[] [note: 'Desnormalizado: CNAE principal e secundários; vazio para CNPJ ainda sem perfil cadastral']
   calculated_at timestamp
   created_at timestamp
   updated_at timestamp
