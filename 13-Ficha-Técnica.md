@@ -59,11 +59,18 @@
 ### 5.1 Back-end
 - **Vitest** (test runner, padrão do NestJS 12) — API de mocks equivalente à do Jest
   (`vi.fn`, `vi.spyOn`), execução nativa de TypeScript/ESM sem transformador dedicado e
-  cobertura via `@vitest/coverage-v8`, com limite mínimo de 75% configurado ([NFPD03]);
+  cobertura via `@vitest/coverage-v8`, com limite mínimo de 75% configurado ([NFPD03]).
+  Ficam fora da medição, pelo sufixo do nome, o bootstrap da aplicação, os seeders
+  (`seeder.ts`), a configuração (`config.ts`), as exceções (`.exception.ts`), os protocolos
+  (`.protocol.ts`), os decorators (`.decorator.ts`) e os módulos do Nest (`.module.ts`); os
+  testes desses arquivos continuam sendo executados, apenas não entram no cálculo;
 - **@nestjs/testing** — `Test.createTestingModule` com `overrideProvider` para substituir
   dependências pelo container de injeção, evitando mock de módulo inteiro;
 - **supertest** + `@types/supertest` — testes e2e de endpoint HTTP;
-- **@faker-js/faker** — fixtures de teste.
+- **@faker-js/faker** — dados de **todas** as suítes de teste, unitárias e e2e: nenhum valor
+  arbitrário é fixado à mão. Os registros são gerados por factories (`test/factories/`) e,
+  quando um teste falha, a semente usada é exibida para reproduzir exatamente os mesmos
+  dados.
 
 ### 5.2 Front-end (Angular)
 - **Jasmine + Karma** — testes unitários, padrão do Angular CLI;
@@ -77,7 +84,7 @@
 - **nock** ou **MSW (Mock Service Worker)** — simulação de respostas das APIs externas nos
   testes de integração de cada adapter, sem depender da disponibilidade real da fonte durante
   o CI;
-- **@faker-js/faker** — dados sintéticos de teste.
+- **@faker-js/faker** — dados de todas as suítes de teste, com a mesma regra do back-end.
 
 ## 6. APIs Consumidas e Forma de Comunicação
 
