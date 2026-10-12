@@ -8,7 +8,11 @@
 
 - **TypeScript 6** — linguagem principal em toda a stack (back-end, front-end e
   microsserviços), com `strict` habilitado no `tsconfig.json`. O back-end é compilado como
-  **ESM** (`"type": "module"`), padrão do NestJS 12.
+  **ESM** (`"type": "module"`), padrão do NestJS 12. A série 6 é o teto porque duas
+  ferramentas da stack ainda não aceitam a 7: `@nestjs/swagger` declara peer
+  `^5.5.0 || ^6.0.0` e `typescript-eslint`, `>=4.8.4 <6.1.0`. Com a 7 instalada, a
+  instalação limpa (`npm ci`) falha na resolução de peers e o CI não chega a rodar, de modo
+  que a major fica bloqueada no Dependabot até as duas subirem o teto.
 - **JavaScript** — restrito a arquivos de configuração/build quando exigido por alguma
   ferramenta, nunca como linguagem de lógica de negócio.
 
@@ -57,9 +61,12 @@
 ## 5. Bibliotecas de Teste
 
 ### 5.1 Back-end
-- **Vitest** (test runner, padrão do NestJS 12) — API de mocks equivalente à do Jest
+- **Vitest 4** (test runner, padrão do NestJS 12) — API de mocks equivalente à do Jest
   (`vi.fn`, `vi.spyOn`), execução nativa de TypeScript/ESM sem transformador dedicado e
   cobertura via `@vitest/coverage-v8`, com limite mínimo de 75% configurado ([NFPD03]).
+  A série 5 fica adiada: ela exige o binário nativo do Rolldown já na inicialização, e esse
+  binário é declarado como dependência opcional *e* peer — combinação que o npm não instala
+  a partir do lockfile, deixando o runner sem como subir.
   Ficam fora da medição, pelo sufixo do nome, o bootstrap da aplicação, os seeders
   (`seeder.ts`), a configuração (`config.ts`), as exceções (`.exception.ts`), os protocolos
   (`.protocol.ts`), os decorators (`.decorator.ts`) e os módulos do Nest (`.module.ts`); os
