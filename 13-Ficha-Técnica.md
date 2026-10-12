@@ -47,7 +47,7 @@
 | Configuração | `@nestjs/config` + schema Zod | Variáveis de ambiente validadas no bootstrap (configuração inválida impede a aplicação de subir) |
 | Documentação de API | `@nestjs/swagger`, `@scalar/nestjs-api-reference` | RF17 — API pública documentada |
 | Cache | `@nestjs/cache-manager`, `cache-manager`, `keyv`, `@keyv/redis` | NFDE01 — cache de consultas |
-| Filas / jobs assíncronos | `@nestjs/bullmq`, `bullmq` | Ingestão periódica de evidências, scraping do GHG Protocol |
+| Filas / jobs assíncronos | `@nestjs/bullmq`, `bullmq` (série 6), `ioredis` | Comunicação interna entre o core e os serviços de ingestão, ingestão periódica de evidências e scraping do GHG Protocol. A série 6 do BullMQ transformou o cliente de Redis em dependência *peer* opcional — ele passou a aceitar `ioredis`, `redis` ou até Postgres como backend —, de modo que o driver é escolhido explicitamente: `ioredis`, o de uso consolidado com BullMQ |
 | Rate limiting | `@nestjs/throttler` | NFSE04 — Throttler nos endpoints públicos |
 | Validação e serialização | `zod` (Standard Schema nativo do NestJS 12) | Schemas de request e response: validação de entrada (`StandardSchemaValidationPipe`), serialização de saída que descarta campos não declarados (`StandardSchemaSerializerInterceptor`) e geração do OpenAPI (`@nestjs/swagger`) a partir do mesmo schema |
 | Autenticação | `jsonwebtoken`, `bcryptjs` | RF02, NFSE05 — login e hash de senha |
