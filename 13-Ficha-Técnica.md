@@ -52,7 +52,7 @@
 | Validação e serialização | `zod` (Standard Schema nativo do NestJS 12) | Schemas de request e response: validação de entrada (`StandardSchemaValidationPipe`), serialização de saída que descarta campos não declarados (`StandardSchemaSerializerInterceptor`) e geração do OpenAPI (`@nestjs/swagger`) a partir do mesmo schema |
 | Autenticação | `jsonwebtoken`, `bcryptjs` | RF02, NFSE05 — login e hash de senha |
 | Criptografia | `crypto` (nativo do Node) | NFSE03 — AES-256 em dados sensíveis e sobre o hash bcrypt da senha |
-| E-mail | `handlebars`, `nodemailer`, `@types/nodemailer` | RF18 — e-mails transacionais |
+| E-mail | `handlebars`, `nodemailer`, `@types/nodemailer` | RF18 — e-mails transacionais. O envio é assíncrono: o caso de uso registra o disparo em `email_dispatch_logs` e enfileira, e o consumidor da fila `email-dispatch` — hospedado no próprio core, por não haver serviço separado de envio — entrega a mensagem e fecha a auditoria. Nas suítes o transporte é substituído pelo `jsonTransport` do próprio Nodemailer, sem SMTP real |
 | Dados sintéticos | `@faker-js/faker` | RF21 — honeypot (dependência de **produção** no BIOS, onde é usada só em teste) |
 | Identificadores | ObjectId nativo do MongoDB (`@default(auto())`) | Chaves primárias: geradas pelo próprio banco, compactas e ordenadas por tempo de criação |
 | Datas | `date-fns` | Manipulação de datas de evidência |
