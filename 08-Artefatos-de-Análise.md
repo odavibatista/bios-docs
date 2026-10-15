@@ -255,7 +255,12 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - A exclusão atende ao direito de eliminação do titular previsto na LGPD ([NFSE02]).</br>
-		<br>2 - Registros de tentativa de login associados à conta excluída mantêm apenas IP e data/hora, desvinculados do titular.</br></td></tr>
+		<br>2 - Registros de tentativa de login associados à conta excluída mantêm apenas IP e data/hora, desvinculados do titular.</br>
+			<br>3 - O endereço é composto por CEP, logradouro, número, complemento (opcional), bairro, cidade e unidade da federação; é guardado serializado e cifrado com AES-256 ([NFSE03]), e pode ser removido da conta.</br>
+			<br>4 - A alteração de e-mail exige a senha atual. O link de confirmação é enviado ao novo endereço, tem as mesmas regras do link de confirmação de cadastro (uso único, 24 horas por padrão) e o e-mail atual vale até que ele seja aberto; pedir outra troca invalida o link anterior.</br>
+			<br>5 - O novo e-mail é verificado contra a blacklist de domínios ([RF22]). Se ele já pertencer a outra conta, o pedido recebe a mesma resposta do sucesso e nada é enviado, para não revelar contas existentes; se passar a pertencer a outra conta antes da confirmação, a troca é recusada.</br>
+			<br>6 - A exclusão exige a senha e remove a conta, as sessões, os tokens, as chaves de API, os bloqueios e os registros de e-mails enviados ao titular; não há remoção lógica. A sessão usada no pedido deixa de valer imediatamente.</br>
+			<br>7 - Ao gravar qualquer campo cifrado, os demais campos cifrados da conta são migrados para a chave de criptografia ativa quando o documento ainda usa uma versão anterior (ver UC04, regra 7); o e-mail pendente de uma troca guarda a versão da chave que o cifrou.</br></td></tr>
 </table>
 
 <br></br>
