@@ -298,7 +298,12 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - Nenhum dado pessoal de sócios ou administradores é exibido ou armazenado ([INL02]).</br>
 		<br>2 - A busca por nome opera apenas sobre empresas já presentes na base local, pois nenhuma das fontes cadastrais oferece busca por nome.</br>
-		<br>3 - Consultas em cache devem responder em até 2 segundos ([NFDE02]).</br></td></tr>
+		<br>3 - Consultas em cache devem responder em até 2 segundos ([NFDE02]).</br>
+			<br>4 - O core não consulta os provedores cadastrais: ele publica um job na fila <code>company-profile</code> e aguarda, com prazo, o serviço de ingestão do CNPJ percorrer a cadeia de fallback e gravar o perfil. O serviço responde <code>FOUND</code>, <code>NOT_FOUND</code> (fluxo 3.3) ou <code>SOURCES_UNAVAILABLE</code> (fluxo 3.2).</br>
+			<br>5 - A ordem de resolução é cache, banco e fila. Um cadastro guardado dentro da janela de validade da fonte que o respondeu (<code>data_sources.cache_ttl_seconds</code>) é servido sem nova consulta externa e volta ao cache.</br>
+			<br>6 - Com os provedores indisponíveis, o cadastro guardado é servido mesmo vencido (degradação graciosa, [NFCO01]) e não volta ao cache; sem cadastro guardado, a resposta é de indisponibilidade temporária, distinta de "empresa não encontrada".</br>
+			<br>7 - Consultas simultâneas do mesmo CNPJ, e as repetidas em até 60 segundos, compartilham um único job e o seu resultado, o que respeita o limite de requisições das fontes ([NFPD01]).</br>
+			<br>8 - O CNPJ é validado pelo formato e pelos dígitos verificadores, e pode ser numérico ou alfanumérico (formato adotado pela Receita Federal a partir de julho de 2026); é normalizado (sem pontuação, em maiúsculas) antes de ser usado em cache, fila e banco.</br></td></tr>
 </table>
 
 <br></br>
