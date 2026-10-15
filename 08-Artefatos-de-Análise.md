@@ -104,7 +104,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>3 - E-mail e endereço são armazenados com AES-256; a senha recebe duas camadas — hash bcrypt, cifrado em seguida com AES-256 ([NFSE03]).</br>
 			<br>4 - A senha tem de 8 a 128 caracteres, com ao menos uma letra e um número; o nome tem de 2 a 100 caracteres.</br>
 			<br>5 - O e-mail é normalizado (minúsculas, sem espaços nas bordas) antes da verificação de unicidade, de modo que variações de caixa não geram contas distintas.</br>
-			<br>6 - A resposta do cadastro e a do reenvio do link são idênticas para um e-mail novo e para um já cadastrado, inclusive no tempo de resposta, para que não sirvam de consulta de contas existentes.</br></td></tr>
+			<br>6 - A resposta do cadastro e a do reenvio do link são idênticas para um e-mail novo e para um já cadastrado, para que não sirvam de consulta de contas existentes. No cadastro, o hash da senha é calculado antes de se saber se o e-mail existe, o que iguala também o tempo de resposta; no reenvio, o tempo não é igualado, e a diferença (uma gravação e um enfileiramento) é um limite conhecido.</br></td></tr>
 </table>
 
 <br></br>
@@ -217,7 +217,12 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - O token de recuperação é de uso único e tem validade limitada (2 horas por padrão, configurável); solicitar um novo link invalida o anterior.</br>
-		<br>2 - A tela de recuperação não revela se o e-mail informado está cadastrado.</br></td></tr>
+		<br>2 - A tela de recuperação não revela se o e-mail informado está cadastrado.</br>
+			<br>3 - A nova senha obedece à mesma política do cadastro (8 a 128 caracteres, com ao menos uma letra e um número) e, na alteração, deve ser diferente da atual.</br>
+			<br>4 - Somente contas ativas recebem o link de recuperação; a conta ainda não confirmada precisa confirmar o e-mail (UC01).</br>
+			<br>5 - A alteração e a recuperação revogam as sessões ativas de todos os dispositivos do usuário, inclusive a que originou o pedido; a nova senha é gravada antes da revogação, para que a senha antiga não possa abrir uma sessão nova no intervalo.</br>
+			<br>6 - Uma nova senha inválida (política) não consome o link de recuperação; um link já usado, expirado ou de outra finalidade é recusado.</br>
+			<br>7 - Ao gravar a nova senha, os campos cifrados da conta (e-mail e endereço) são migrados para a chave de criptografia ativa quando o documento ainda usa uma versão anterior, pois a conta registra uma única versão de chave.</br></td></tr>
 </table>
 
 <br></br>
