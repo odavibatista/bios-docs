@@ -178,7 +178,10 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - O access token é validado contra a sessão a cada requisição; a revogação tem efeito imediato, sem aguardar a expiração do token ([NFSE05]).</br>
-		<br>2 - Encerrar a sessão de um dispositivo não afeta as sessões dos demais.</br></td></tr>
+		<br>2 - Encerrar a sessão de um dispositivo não afeta as sessões dos demais.</br>
+			<br>3 - Encerrar a sessão de um dispositivo revoga toda a sua família de rotação (inclusive o refresh token vigente), de modo que nem o access token nem o refresh token continuam válidos; não há lista de tokens revogados.</br>
+			<br>4 - Toda funcionalidade exige sessão ativa por padrão; apenas as de acesso anônimo (cadastro, confirmação de e-mail, login, renovação de sessão, recuperação de senha e health check) são públicas.</br>
+			<br>5 - Requisições sem sessão válida — token ausente, adulterado, expirado ou de sessão encerrada — recebem a mesma resposta de não autenticado.</br></td></tr>
 </table>
 
 <br></br>
