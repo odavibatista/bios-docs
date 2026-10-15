@@ -462,7 +462,13 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - Chaves são armazenadas apenas como hash e nunca reexibidas após a geração ([NFSE01]).</br>
-		<br>2 - A listagem exibe apenas nome, prefixo, data de criação e data do último uso.</br></td></tr>
+		<br>2 - A listagem exibe apenas nome, prefixo, data de criação e data do último uso.</br>
+			<br>3 - A chave tem o formato <code>bios_&lt;identificador público de 8 caracteres&gt;_&lt;segredo de 256 bits&gt;</code>. O prefixo (<code>bios_</code> + identificador) é público e identifica a chave na listagem e na busca; do valor completo só se grava o hash SHA-256.</br>
+			<br>4 - O nome de identificação tem de 2 a 60 caracteres, sem espaços nas pontas.</br>
+			<br>5 - Cada usuário pode ter até 10 chaves ativas. Ao atingir o teto, a geração é recusada (<code>API_KEY_LIMIT_REACHED</code>) até que uma chave seja revogada.</br>
+			<br>6 - A revogação é definitiva, vale imediatamente e só pode ser feita pelo dono da chave. Chave de outro usuário, inexistente, malformada ou já revogada recebe a mesma resposta de "não encontrada", para não revelar a existência de chaves alheias.</br>
+			<br>7 - A chave revogada deixa de aparecer na listagem; o registro permanece, com a data da revogação, para auditoria.</br>
+			<br>8 - Gerar, listar e revogar exigem sessão ativa: o painel de chaves não aceita chave de API como credencial.</br></td></tr>
 </table>
 
 <br></br>
