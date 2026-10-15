@@ -501,7 +501,12 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - Endpoints documentados em OpenAPI/Swagger.</br>
-		<br>2 - Rate limiting aplicado por chave ([NFSE04]).</br></td></tr>
+		<br>2 - Rate limiting aplicado por chave ([NFSE04]).</br>
+		<br>3 - A chave é enviada no cabeçalho <code>x-api-key</code>. Chave ausente, malformada, desconhecida, com segredo incorreto ou revogada recebe a mesma resposta HTTP 401, sem indicar o motivo; a revogação (UC11) vale a partir da chamada seguinte.</br>
+		<br>4 - O limite de requisições é contado por chave, e a resposta HTTP 429 informa em <code>Retry-After</code> quando a chamada pode ser repetida. Tentativas com chaves inválidas também consomem o limite.</br>
+		<br>5 - A data de último uso da chave tem precisão de 1 minuto: chamadas dentro desse intervalo não a atualizam de novo.</br>
+		<br>6 - A sessão de usuário não substitui a chave de API nesta consulta, e a chave de API não substitui a sessão nas telas do painel.</br>
+		<br>7 - Enquanto o perfil ambiental (UC07) não estiver disponível, a resposta traz apenas os dados cadastrais; as evidências e os índices por ODS passam a acompanhá-la quando ele existir.</br></td></tr>
 </table>
 
 <br></br>
