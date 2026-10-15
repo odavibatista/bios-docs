@@ -8,7 +8,7 @@
 | :----------- | :----------- |
 | **Ator(es):** | Usuário. |
 | **Requisitos associados:** | [RF02], [RF22], [RF28]. |
-| **Objetivo:** | O sistema deve permitir que um usuário crie uma conta para acessar as funcionalidades do BIOS. |
+| **Objetivo:** | O sistema deve permitir que um usuário crie uma conta para acessar as funcionalidades do BIOS, informando nome, e-mail e senha (de 8 a 128 caracteres, com ao menos uma letra e um número). A conta nasce inativa e a resposta do cadastro não revela se o e-mail já estava cadastrado. |
 
 
 <p align="center"><b>[RF02] Autenticar usuário</b></p>

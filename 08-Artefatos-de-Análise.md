@@ -101,7 +101,10 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - Contas não confirmadas não podem efetuar login.</br>
 		<br>2 - O token de confirmação é de uso único e tem validade limitada (24 horas por padrão, configurável); solicitar um novo link invalida o anterior.</br>
-		<br>3 - E-mail e endereço são armazenados com AES-256; a senha recebe duas camadas — hash bcrypt, cifrado em seguida com AES-256 ([NFSE03]).</br></td></tr>
+		<br>3 - E-mail e endereço são armazenados com AES-256; a senha recebe duas camadas — hash bcrypt, cifrado em seguida com AES-256 ([NFSE03]).</br>
+			<br>4 - A senha tem de 8 a 128 caracteres, com ao menos uma letra e um número; o nome tem de 2 a 100 caracteres.</br>
+			<br>5 - O e-mail é normalizado (minúsculas, sem espaços nas bordas) antes da verificação de unicidade, de modo que variações de caixa não geram contas distintas.</br>
+			<br>6 - A resposta do cadastro e a do reenvio do link são idênticas para um e-mail novo e para um já cadastrado, inclusive no tempo de resposta, para que não sirvam de consulta de contas existentes.</br></td></tr>
 </table>
 
 <br></br>
