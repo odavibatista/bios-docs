@@ -649,7 +649,10 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>1 - O refresh token é opaco (256 bits aleatórios), de uso único e armazenado apenas como hash SHA-256 ([NFSE05]).</br>
 		<br>2 - Todas as falhas respondem com a mesma mensagem, sem revelar se o token é desconhecido, expirado, revogado ou reutilizado.</br>
 		<br>3 - As durações são configuráveis por variável de ambiente: access token (padrão de 15 minutos, máximo de 60) e refresh token (padrão de 7 dias, renovado a cada rotação).</br>
-		<br>4 - Elos rotacionados permanecem no banco até o fim da retenção de sessões, para que a detecção de reuso continue funcionando após a rotação.</br></td></tr>
+		<br>4 - Elos rotacionados permanecem no banco até o fim da retenção de sessões, para que a detecção de reuso continue funcionando após a rotação.</br>
+			<br>5 - O papel do usuário no novo access token é o vigente no momento da renovação, e não o do login; a renovação mantém o user-agent e o IP do pedido atual no novo elo.</br>
+			<br>6 - O reuso de um refresh token revoga as sessões de todos os dispositivos do usuário, e não apenas a família do token reutilizado, pois não há como saber qual cópia do token está com o legítimo titular.</br>
+			<br>7 - A renovação só é concedida a contas ativas; a conta não confirmada recebe a mesma resposta genérica das demais recusas.</br></td></tr>
 </table>
 
 ## 8.3 Diagrama de Classes
