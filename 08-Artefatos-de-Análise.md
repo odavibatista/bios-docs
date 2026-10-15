@@ -134,7 +134,8 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>2.1 - IP ou usuário bloqueado: o sistema recusa a tentativa, informa que o acesso está temporariamente bloqueado e encerra o caso de uso.</br>
 		<br>3.1 - Credenciais inválidas: o sistema registra a falha e exibe mensagem genérica de credenciais inválidas.</br>
 		<br>3.2 - Quinta falha consecutiva: o sistema bloqueia IP e/ou usuário por 15 minutos e envia e-mail de alerta de login suspeito ao titular da conta.</br>
-		<br>3.3 - Volta a 1.</br></td></tr>
+		<br>3.3 - Volta a 1.</br>
+			<br>3.4 - A senha confere, mas o e-mail da conta ainda não foi confirmado: o sistema registra a tentativa, informa que é preciso confirmar o e-mail, oferece o reenvio do link (UC01, fluxo 6.1) e volta a 1.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Pós-condições:</b> Sessão ativa de acordo com o papel do usuário, renovável por UC17.</td></tr>
 	<tr>
@@ -142,7 +143,11 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>1 - Somente contas ativas podem se autenticar.</br>
 		<br>2 - 5 tentativas consecutivas malsucedidas resultam em bloqueio de 15 minutos ([NFSE06]).</br>
 		<br>3 - A mensagem de erro não distingue e-mail inexistente de senha incorreta.</br>
-		<br>4 - Cada login corresponde a um dispositivo: abre uma família de sessão própria, independente das demais sessões do usuário.</br></td></tr>
+		<br>4 - Cada login corresponde a um dispositivo: abre uma família de sessão própria, independente das demais sessões do usuário.</br>
+			<br>5 - A contagem de falhas consecutivas é feita por IP e por usuário, e o primeiro a chegar a 5 é bloqueado. Um login bem-sucedido zera a contagem, e o início de um bloqueio também: as falhas que o causaram não contam de novo. Tentativas recusadas por bloqueio ou por conta não confirmada não contam como falha de senha.</br>
+			<br>6 - Enquanto durar o bloqueio, nem a senha correta permite o acesso, e a resposta informa o tempo restante.</br>
+			<br>7 - O e-mail de alerta de login suspeito é enviado apenas quando o bloqueio é da conta; falhas contra e-mails sem conta bloqueiam apenas o IP.</br>
+			<br>8 - Não distinguir e-mail inexistente de senha incorreta vale também para o tempo de resposta: sem conta, a senha é conferida contra um hash descartável.</br></td></tr>
 </table>
 
 <br></br>
