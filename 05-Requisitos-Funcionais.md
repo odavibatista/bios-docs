@@ -224,7 +224,7 @@
 | :----------- | :----------- |
 | **Ator(es):** | Usuário. |
 | **Requisitos associados:** | [RF01], [RF18]. |
-| **Objetivo:** | O sistema deve permitir que um usuário solicite redefinição de senha via e-mail cadastrado, através de um token de uso único e validade limitada, enviado por e-mail transacional. |
+| **Objetivo:** | O sistema deve permitir que um usuário solicite redefinição de senha via e-mail cadastrado, através de um token de uso único e validade limitada — 2 horas por padrão, configurável —, enviado por e-mail transacional. |
 
 
 <p align="center"><b>[RF26] Editar dados da conta</b></p>
@@ -251,7 +251,7 @@
 | :----------- | :----------- |
 | **Ator(es):** | Usuário; Sistema (processo automático). |
 | **Requisitos associados:** | [RF01], [RF18]. |
-| **Objetivo:** | O sistema deve manter a conta recém-criada inativa até que o usuário confirme o e-mail informado, por meio de um token de uso único e validade limitada enviado por e-mail transacional ([RF18]). |
+| **Objetivo:** | O sistema deve manter a conta recém-criada inativa até que o usuário confirme o e-mail informado, por meio de um token de uso único e validade limitada — 24 horas por padrão, configurável — enviado por e-mail transacional ([RF18]). |
 
 
 <p align="center"><b>[RF29] Gerenciar blacklist de domínios de e-mail</b></p>

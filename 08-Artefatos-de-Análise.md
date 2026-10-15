@@ -100,7 +100,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - Contas não confirmadas não podem efetuar login.</br>
-		<br>2 - O token de confirmação é de uso único e tem validade limitada.</br>
+		<br>2 - O token de confirmação é de uso único e tem validade limitada (24 horas por padrão, configurável); solicitar um novo link invalida o anterior.</br>
 		<br>3 - E-mail e endereço são armazenados com AES-256; a senha recebe duas camadas — hash bcrypt, cifrado em seguida com AES-256 ([NFSE03]).</br></td></tr>
 </table>
 
@@ -205,7 +205,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Pós-condições:</b> Nova senha em vigor e nenhuma sessão anterior ativa.</td></tr>
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
-		<br>1 - O token de recuperação é de uso único e tem validade limitada.</br>
+		<br>1 - O token de recuperação é de uso único e tem validade limitada (2 horas por padrão, configurável); solicitar um novo link invalida o anterior.</br>
 		<br>2 - A tela de recuperação não revela se o e-mail informado está cadastrado.</br></td></tr>
 </table>
 
