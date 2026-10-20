@@ -580,7 +580,10 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - Registros com documento de pessoa física (CPF) são descartados antes de qualquer persistência, inclusive na camada bruta ([INL02]).</br>
 		<br>2 - Cada fonte é acessada exclusivamente por seu adapter ([NFPD02]) e respeitando seu rate limit ([NFPD01]).</br>
-		<br>3 - O registro bruto é mantido para auditoria ([NFCO02]).</br></td></tr>
+		<br>3 - O registro bruto é mantido para auditoria ([NFCO02]).</br>
+		<br>4 - A coleta de uma fonte para uma empresa é um retrato: cada registro vira uma evidência <code>CONFIRMED</code> e o que a fonte deixou de listar é removido; fonte consultada sem registro gera <code>NOT_FOUND</code>; fonte que não respondeu gera <code>UNKNOWN</code> apenas quando não há coleta anterior que tenha respondido, e nunca apaga o que já se sabia. Repetir a coleta não duplica evidências ([RF08]).</br>
+		<br>5 - A validade da evidência é a janela de cache da fonte no catálogo. Passada a validade, a evidência <code>CONFIRMED</code> ou <code>NOT_FOUND</code> é tratada como <code>OUTDATED</code> (estado derivado na leitura); <code>UNKNOWN</code> não envelhece e é reconsultada após uma janela curta (15 minutos).</br>
+		<br>6 - A categoria e o ODS de cada evidência vêm do cadastro da fonte, e o sinal (positivo/negativo) vem da categoria: o normalizador não os escolhe.</br></td></tr>
 </table>
 
 <br></br>
@@ -1091,7 +1094,9 @@ Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura
 - **Exclusão de conta sem soft delete.** `users` não tem `deleted_at`: a exclusão (UC05) remove
   o documento e seus dependentes, em conformidade com o direito de eliminação da LGPD.
 - **Upsert idempotente de evidências.** `evidence_normalized.evidence_key` é uma chave
-  determinística por registro de fonte, permitindo reprocessar um dump sem duplicar evidências.
+  determinística por registro de fonte e empresa (`<fonte>:<cnpj>:<referência>`; e
+  `<fonte>:<cnpj>#NOT_FOUND` ou `#UNKNOWN` para o resultado da consulta), permitindo reprocessar
+  um dump sem duplicar evidências e sem que a mesma referência em duas empresas se sobrescreva.
 
 <p align="center"><b>Diagrama 7 - Modelo de Dados</b></p>
 

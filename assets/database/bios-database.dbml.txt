@@ -461,7 +461,7 @@ Table evidence_raw {
 
 Table evidence_normalized {
   id_evidence objectid [primary key]
-  evidence_key varchar [note: 'Chave determinística para upsert idempotente: <slug da fonte>:<referência externa> ou, para ausência de registro, <slug da fonte>:<cnpj>:NOT_FOUND']
+  evidence_key varchar [note: 'Chave determinística para upsert idempotente: <slug da fonte>:<cnpj>:<referência externa> ou, para o resultado da consulta sem registro, <slug da fonte>:<cnpj>#NOT_FOUND / #UNKNOWN']
   cnpj varchar [ref: > company_profile.cnpj]
   data_source_id objectid [ref: > data_sources.id_data_source]
   evidence_raw_id objectid [null, ref: > evidence_raw.id_evidence_raw, note: 'Nulo em evidências NOT_FOUND e UNKNOWN, que não derivam de um registro bruto']
@@ -475,7 +475,7 @@ Table evidence_normalized {
   details json [null, note: 'Atributos normalizados específicos da fonte (ex.: valor da multa, órgão sancionador, escopos de emissão)']
   published_at timestamp [null, note: 'Data de publicação do registro na fonte (RF08)']
   collected_at timestamp [note: 'Data de coleta pelo BIOS (RF08)']
-  valid_until timestamp [note: 'Após esta data, a evidência passa a OUTDATED até nova coleta']
+  valid_until timestamp [note: 'Após esta data, a evidência passa a OUTDATED (derivado na leitura; UNKNOWN não envelhece) até nova coleta']
   created_at timestamp
   updated_at timestamp
 
