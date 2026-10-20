@@ -86,10 +86,12 @@ DADO → EVIDÊNCIA → REGRA → INDICADOR → SCORE
   relações — decisão tomada e mantida.
 - **Front-end:** Angular moderno como primeira escolha, aberto a Next.js/React+TanStack Query
   por velocidade de entrega solo.
-- **Microsserviços leves:** `bios-core-api` (orquestração, API pública, contas/chaves),
-  módulo/serviço de ingestão CNPJ, módulo/serviço de ingestão ambiental (score), serviço
-  isolado de fallback para o GHG Protocol rodando à parte para não derrubar a API principal
-  em caso de indisponibilidade ou falha da fonte (SICAR já descartado do MVP — ver seção 2).
+- **Módulos por fonte, no `bios-core-api`:** orquestração, API pública e contas/chaves no
+  core, mais módulos de ingestão do CNPJ e ambiental (score) e um módulo isolado de fallback
+  para o GHG Protocol, cada um com adapter, limite e prazo próprios para que a falha de uma
+  fonte não derrube a API principal (SICAR já descartado do MVP — ver seção 2). Pedido e
+  atendimento dos jobs ocorrem só via filas, o que permite mover um consumidor para um
+  processo próprio sem mudar o contrato.
 
 ## 6. Padrão de Documentação Técnica Adotado
 

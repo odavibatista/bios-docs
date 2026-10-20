@@ -526,11 +526,10 @@ Table company_profile {
   created_at timestamp
   updated_at timestamp
 
-  Note: 'Camada agregada: perfil cadastral da pessoa jurídica (RF05, RF06). Sem dados de sócios ou administradores (INL02). Os índices por ODS ficam em company_ods_scores.'
+  Note: 'Camada agregada: perfil cadastral da pessoa jurídica (RF05, RF06). Sem dados de sócios ou administradores (INL02). Os índices por ODS ficam em company_ods_scores. A busca por nome (RF04) casa início de palavra em legal_name e trade_name por expressão regular, sem índice próprio: um índice de texto do MongoDB só casa palavras inteiras, e a base são as empresas já consultadas.'
 
   Indexes {
     cnpj [unique, name: 'idx_company_profile_cnpj']
-    (legal_name, trade_name) [type: fulltext, name: 'idx_company_profile_name_text', note: 'Índice de texto para a busca por nome (RF04)']
     (`address.uf`, `address.city`) [name: 'idx_company_profile_uf_city']
     `main_cnae.code` [name: 'idx_company_profile_main_cnae']
   }

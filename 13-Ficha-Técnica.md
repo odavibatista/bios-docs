@@ -7,7 +7,7 @@
 ## 1. Linguagens de Programação
 
 - **TypeScript 6** — linguagem principal em toda a stack (back-end, front-end e
-  microsserviços), com `strict` habilitado no `tsconfig.json`. O back-end é compilado como
+  módulos de ingestão), com `strict` habilitado no `tsconfig.json`. O back-end é compilado como
   **ESM** (`"type": "module"`), padrão do NestJS 12. A série 6 é o teto porque duas
   ferramentas da stack ainda não aceitam a 7: `@nestjs/swagger` declara peer
   `^5.5.0 || ^6.0.0` e `typescript-eslint`, `>=4.8.4 <6.1.0`. Com a 7 instalada, a
@@ -22,7 +22,7 @@
 |---|---|---|
 | Back-end | NestJS (v12.x) | Versão major atual; exige Node.js ≥ 22.22.3. Adotada pelo suporte nativo a Standard Schema (validação e serialização com Zod sem biblioteca intermediária) |
 | Front-end | Angular (versão moderna, standalone components) | Decisão travada nesta ficha |
-| Microsserviços de ingestão/scraping | NestJS *standalone* (sem camada HTTP exposta) | Comunicação com o core via fila (BullMQ) |
+| Ingestão de fontes externas | Módulos do próprio `bios-core-api` (um por fonte), com consumidores de fila | Sem serviço à parte: quem pede e quem atende o job conversam só via fila (BullMQ), então um consumidor pode ser movido para um processo próprio sem mudar o contrato |
 
 ## 3. ORM e Persistência
 
@@ -47,7 +47,7 @@
 | Configuração | `@nestjs/config` + schema Zod | Variáveis de ambiente validadas no bootstrap (configuração inválida impede a aplicação de subir) |
 | Documentação de API | `@nestjs/swagger`, `@scalar/nestjs-api-reference` | RF17 — API pública documentada |
 | Cache | `ioredis` (mesmo cliente das filas) | NFDE01 — cache de consultas por CNPJ. A pilha `@nestjs/cache-manager` + `cache-manager` + `keyv` + `@keyv/redis`, prevista inicialmente, foi descartada: além de não resolver sozinha o requisito (degradação graciosa e orçamento de latência precisam de tratamento próprio em qualquer caso), ela traria o `@redis/client` como **segundo** driver de Redis ao lado do `ioredis` exigido pelo BullMQ, e as versões atuais não convivem — `cache-manager` 7 fixa `keyv` 5, enquanto o `@keyv/redis` 6 exige `keyv` 6. A superfície usada é `GET`/`SET EX`/`DEL`, que o `ioredis` já cobre |
-| Filas / jobs assíncronos | `@nestjs/bullmq`, `bullmq` (série 6), `ioredis` | Comunicação interna entre o core e os serviços de ingestão, ingestão periódica de evidências e scraping do GHG Protocol. A série 6 do BullMQ transformou o cliente de Redis em dependência *peer* opcional — ele passou a aceitar `ioredis`, `redis` ou até Postgres como backend —, de modo que o driver é escolhido explicitamente: `ioredis`, o de uso consolidado com BullMQ |
+| Filas / jobs assíncronos | `@nestjs/bullmq`, `bullmq` (série 6), `ioredis` | Comunicação interna entre quem pede e quem atende os jobs de ingestão (consumidores hospedados no core), ingestão periódica de evidências e scraping do GHG Protocol. A série 6 do BullMQ transformou o cliente de Redis em dependência *peer* opcional — ele passou a aceitar `ioredis`, `redis` ou até Postgres como backend —, de modo que o driver é escolhido explicitamente: `ioredis`, o de uso consolidado com BullMQ |
 | Rate limiting | `@nestjs/throttler`, com contadores em Redis (`ioredis`) | NFSE04 — limite geral por IP e limite da API pública por chave de API. Os contadores ficam em Redis para que o limite valha por consumidor, e não por instância da API. O adaptador de armazenamento da comunidade (`@nest-lab/throttler-storage-redis`) não foi adotado porque declara compatibilidade só até o NestJS 11; a interface `ThrottlerStorage` é de um único método e foi implementada sobre o mesmo cliente do cache |
 | Validação e serialização | `zod` (Standard Schema nativo do NestJS 12) | Schemas de request e response: validação de entrada (`StandardSchemaValidationPipe`), serialização de saída que descarta campos não declarados (`StandardSchemaSerializerInterceptor`) e geração do OpenAPI (`@nestjs/swagger`) a partir do mesmo schema |
 | Autenticação | `jsonwebtoken`, `@types/jsonwebtoken`, `bcryptjs` | RF02, NFSE05 — login e hash de senha. O access token é um JWT assinado com HMAC-SHA256 (HS256), segredo de 32 bytes em `AUTH_ACCESS_TOKEN_SECRET`, vida curta (`AUTH_ACCESS_TOKEN_LIFETIME`, padrão 15 minutos) e afirmações mínimas — `sub` (usuário), `sid` (elo da sessão), `role` e emissor —, sem dado pessoal. O algoritmo é fixado na verificação, o que barra `alg: none` e a troca de algoritmo. O token apenas identifica a sessão; a validade vem da consulta ao elo em `user_sessions`, feita a cada requisição por um guard global (`AccessTokenGuard`) que torna toda rota privada por padrão — as públicas se declaram com `@Public()` — e roda depois do limite de requisições. O refresh token é opaco, de 256 bits, e só o resumo SHA-256 é persistido |
@@ -87,11 +87,14 @@
 - **Playwright** ou **Cypress** — testes e2e de fluxo completo (a decidir entre os dois na
   Etapa 6, sem impacto na Etapa 5).
 
-### 5.3 Microsserviço (ingestão/scraping)
-- **Vitest** — mesmo test runner do back-end, por consistência;
-- **nock** ou **MSW (Mock Service Worker)** — simulação de respostas das APIs externas nos
-  testes de integração de cada adapter, sem depender da disponibilidade real da fonte durante
-  o CI;
+### 5.3 Adapters de fontes externas e consumidores de fila
+- **Vitest** — o mesmo test runner do back-end, pois os adapters e os consumidores são módulos
+  do próprio `bios-core-api`;
+- **Servidor HTTP local** (`node:http`, em porta livre) — simulação das APIs externas nos
+  testes e2e de cada adapter: a URL base da fonte, que fica no catálogo `data_sources`, é
+  apontada para ele, e o formato e o comportamento (sucesso, "não encontrado", erro, demora)
+  são configuráveis por teste. Nenhum teste chama a internet, então o CI não depende da
+  disponibilidade real da fonte;
 - **@faker-js/faker** — dados de todas as suítes de teste, com a mesma regra do back-end.
 
 ## 6. APIs Consumidas e Forma de Comunicação
@@ -108,9 +111,11 @@ A comunicação entre o BIOS e as fontes externas é majoritariamente **HTTPS co
 única exceção no GHG Protocol, que não expõe API formal — desvio já tratado como excepcional
 desde a definição das fontes de dados (hierarquia API First → dataset → download → scraping).
 
-A comunicação **interna** entre os componentes do próprio BIOS (core API ↔ serviços de
-ingestão ↔ serviço de fallback do GHG Protocol) ocorre **exclusivamente via filas BullMQ sobre
-o Redis**: os serviços de ingestão são aplicações NestJS *standalone*, sem camada HTTP exposta.
+A comunicação **interna** entre quem pede e quem atende os jobs de ingestão (cadastro por CNPJ,
+evidências ambientais, inventário do GHG Protocol) ocorre **exclusivamente via filas BullMQ
+sobre o Redis**. Os consumidores são hospedados no próprio `bios-core-api`, sem camada HTTP
+entre as partes; como o contrato do job é o único acoplamento, um consumidor pode ser movido
+para um processo próprio quando a carga pedir.
 Quando uma consulta exige resposta imediata (ex.: perfil de CNPJ ainda não presente em cache),
 o core enfileira o job e aguarda sua conclusão com timeout; jobs que não exigem resposta
 imediata (ex.: atualização periódica de evidências) são apenas enfileirados.

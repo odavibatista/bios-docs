@@ -306,7 +306,9 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 			<br>8 - O CNPJ é validado pelo formato e pelos dígitos verificadores, e pode ser numérico ou alfanumérico (formato adotado pela Receita Federal a partir de julho de 2026); é normalizado (sem pontuação, em maiúsculas) antes de ser usado em cache, fila e banco.</br>
 			<br>9 - Os provedores são consultados um por vez, na ordem de prioridade do catálogo de fontes (BrasilAPI, OpenCNPJ, Minha Receita); o seguinte só é consultado quando o anterior não serve, o que inclui "não encontrado", pois os espelhos da Receita se atualizam em ritmos diferentes. A empresa só é dada como não encontrada quando todos os provedores consultados dizem isso; se algum não pôde responder, a resposta é de indisponibilidade.</br>
 			<br>10 - A descrição de cada atividade econômica (CNAE) é a oficial do IBGE, para a mesma atividade ter o mesmo texto qualquer que seja o provedor; sem ela, vale a do provedor.</br>
-			<br>11 - A razão social e o nome fantasia de empresário individual e de MEI costumam trazer o CPF do titular ao lado do nome; o CPF (sequência de 11 dígitos) é mascarado antes de ser armazenado ou exibido ([INL02]).</br></td></tr>
+			<br>11 - A razão social e o nome fantasia de empresário individual e de MEI costumam trazer o CPF do titular ao lado do nome; o CPF (sequência de 11 dígitos) é mascarado antes de ser armazenado ou exibido ([INL02]).</br>
+			<br>12 - A busca por nome casa por início de palavra: a empresa entra quando cada palavra digitada começa alguma palavra da razão social ou do nome fantasia, em qualquer ordem; caixa, acentos e pontuação são ignorados. O texto tem até 100 caracteres e precisa de ao menos uma palavra com 3 caracteres ou mais, para a busca não varrer a base inteira.</br>
+			<br>13 - Os resultados vêm paginados, primeiro os que começam pela frase digitada e depois os demais, com desempate pela razão social e pelo CNPJ (paginação estável). A busca não chama provedor nem publica job; nenhum resultado é uma resposta válida, e não "empresa não encontrada". Como a razão social guardada já tem o CPF mascarado (regra 11), digitar um CPF não encontra o titular ([INL02]).</br></td></tr>
 </table>
 
 <br></br>
@@ -898,9 +900,10 @@ Observações de modelagem:
 
 ### 8.4.1 Consultar empresa por CNPJ (UC06 + UC07)
 
-Toda comunicação entre o `bios-core-api` e os serviços de ingestão ocorre exclusivamente via
-filas BullMQ (ver `14-Projeto-e-Arquitetura.md`, seção 2). Quando a consulta exige resposta
-imediata, o core enfileira o job e aguarda sua conclusão com timeout.
+Quem pede e quem atende os jobs de ingestão (consumidores de fila hospedados no próprio
+`bios-core-api`) conversam exclusivamente via filas BullMQ (ver `14-Projeto-e-Arquitetura.md`,
+seção 2). Quando a consulta exige resposta imediata, o core enfileira o job e aguarda sua
+conclusão com timeout. No diagrama, os consumidores são separados por assunto, e não por processo.
 
 <p align="center"><b>Diagrama 3 - Sequência: Consultar empresa por CNPJ</b></p>
 
@@ -911,9 +914,9 @@ sequenceDiagram
     participant FE as Front-end
     participant API as bios-core-api
     participant R as Redis (cache + BullMQ)
-    participant CNPJ as Ingestão CNPJ
-    participant AMB as Ingestão Ambiental
-    participant GHG as Fallback GHG
+    participant CNPJ as Consumidor cadastral
+    participant AMB as Consumidor ambiental
+    participant GHG as Consumidor GHG
     participant DB as MongoDB
 
     U->>FE: Informa CNPJ
@@ -969,7 +972,7 @@ sequenceDiagram
 sequenceDiagram
     autonumber
     participant Q as BullMQ (job repetível)
-    participant AMB as Ingestão Ambiental
+    participant AMB as Consumidor ambiental
     participant IB as IBAMA — Dados Abertos
     participant DB as MongoDB
 
@@ -1126,16 +1129,17 @@ O diagrama 9 detalha os contêineres do BIOS:
 | Contêiner | Tecnologia | Responsabilidade |
 | --- | --- | --- |
 | Front-end BIOS | Angular | SPA de consulta, filtros, ranking, explicação do score, exportação e painel de conta. |
-| `bios-core-api` | NestJS/TypeScript | Orquestração, API pública, contas e chaves de API, busca e filtros, explicabilidade e exportação XLSX. |
-| Serviço de Ingestão CNPJ | NestJS/TypeScript | Adapter `ReceitaDataSource` com cadeia de fallback BrasilAPI → OpenCNPJ → Minha Receita; CNAE via IBGE. |
-| Serviço de Ingestão Ambiental | NestJS/TypeScript + BullMQ | Adapters `IbamaDataSource` e `CguDataSource`; normaliza evidências e calcula índice e confiança por ODS. |
-| Serviço de Fallback GHG | NestJS/TypeScript | Adapter `GhgDataSource` isolado; consulta best-effort, não bloqueante, com timeout. |
+| `bios-core-api` | NestJS/TypeScript | Orquestração, API pública, contas e chaves de API, busca e filtros, explicabilidade e exportação XLSX. Hospeda também os módulos de ingestão e os consumidores de fila descritos abaixo. |
+| Ingestão cadastral (módulos do core) | NestJS/TypeScript + BullMQ | Adapter `ReceitaDataSource` com cadeia de fallback BrasilAPI → OpenCNPJ → Minha Receita; CNAE via IBGE. Consumidor da fila `company-profile`. |
+| Ingestão ambiental (módulos do core) | NestJS/TypeScript + BullMQ | Adapters `IbamaDataSource` e `CguDataSource`; normaliza evidências e calcula índice e confiança por ODS. |
+| Inventário GHG (módulo do core) | NestJS/TypeScript | Adapter `GhgDataSource` isolado; consulta best-effort, não bloqueante, com timeout. |
 | Cache e Filas | Redis | Cache de consultas por janela de validade; filas e jobs agendados do BullMQ. |
 | Banco de Dados | MongoDB (Prisma v6) | Coleções de evidências, perfis, ODS, contas e chaves de API (hash). |
 
-A comunicação entre o `bios-core-api` e os serviços de ingestão (CNPJ, Ambiental e Fallback
-GHG) ocorre exclusivamente via filas BullMQ sobre o Redis; os serviços de ingestão não expõem
-camada HTTP (ver `13-Ficha-Técnica.md`, seção 2).
+Os módulos de ingestão rodam no processo do `bios-core-api`, como consumidores de fila. Quem
+publica o job e quem o atende conversam exclusivamente via filas BullMQ sobre o Redis, sem
+chamada direta entre si; por isso um consumidor pode ser movido para um processo próprio sem
+alterar o contrato do job (ver `14-Projeto-e-Arquitetura.md`, seção 2).
 
 <p align="center"><b>Diagrama 9 - C4 Nível 2: Contêineres</b></p>
 
@@ -1144,3 +1148,7 @@ camada HTTP (ver `13-Ficha-Técnica.md`, seção 2).
 ![Diagrama de Contêineres C4 do BIOS](assets/diagrams/images/bios-architecture.svg)
 
 </div>
+
+> O diagrama separa a ingestão cadastral, a ambiental e o GHG como blocos distintos por assunto.
+> Na implementação, esses blocos são módulos e consumidores de fila do próprio `bios-core-api`,
+> como descrito na tabela acima.
