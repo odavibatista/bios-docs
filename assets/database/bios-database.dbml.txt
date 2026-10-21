@@ -446,8 +446,8 @@ Table evidence_raw {
   ingestion_run_id objectid [null, ref: > ingestion_runs.id_ingestion_run]
   cnpj varchar [null, note: 'CNPJ extraído do registro, quando identificável']
   external_reference varchar [null, note: 'Identificador do registro na fonte (ex.: número do auto de infração)']
-  payload json [note: 'Registro original da fonte, sem transformação']
-  payload_hash varchar [note: 'Hash do payload, usado para deduplicação entre execuções']
+  payload json [note: 'Registro da fonte, reduzido às colunas permitidas (sem nome de pessoa, texto livre nem geometria), sem outra transformação']
+  payload_hash varchar [note: 'Hash do conteúdo, usado para deduplicação entre execuções: o mesmo registro, na mesma fonte, é gravado uma vez só']
   collected_at timestamp
 
   Note: 'Camada bruta, mantida para auditoria (NFCO02). Registros de pessoa física (CPF) são descartados antes da persistência, inclusive nesta camada (INL02).'
@@ -461,7 +461,7 @@ Table evidence_raw {
 
 Table evidence_normalized {
   id_evidence objectid [primary key]
-  evidence_key varchar [note: 'Chave determinística para upsert idempotente: <slug da fonte>:<cnpj>:<referência externa> ou, para o resultado da consulta sem registro, <slug da fonte>:<cnpj>#NOT_FOUND / #UNKNOWN']
+  evidence_key varchar [note: 'Chave determinística para upsert idempotente: <slug da fonte>:<cnpj>:<identidade do registro, ou a referência externa quando a fonte não tem uma única> ou, para o resultado da consulta sem registro, <slug da fonte>:<cnpj>#NOT_FOUND / #UNKNOWN']
   cnpj varchar [ref: > company_profile.cnpj]
   data_source_id objectid [ref: > data_sources.id_data_source]
   evidence_raw_id objectid [null, ref: > evidence_raw.id_evidence_raw, note: 'Nulo em evidências NOT_FOUND e UNKNOWN, que não derivam de um registro bruto']
