@@ -335,7 +335,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>6 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Fluxos Alternativos:</b>
-		<br>1.1 - CNPJ ausente do índice local do IBAMA: o sistema enfileira um job avulso de ingestão para o CNPJ (UC14) e exibe a evidência do IBAMA como <code>UNKNOWN</code> até a conclusão do job.</br>
+		<br>1.1 - CNPJ sem resposta no índice local do IBAMA: se há lote completo ainda válido, concluído ou reconfirmado sem alteração, o sistema confirma <code>NOT_FOUND</code> com a data e a validade desse lote, sem novo download. Sem lote válido, enfileira um job avulso para o CNPJ (UC14), sem aguardar a conclusão, e mantém <code>UNKNOWN</code> enquanto a coleta está pendente. Respostas anteriores vencidas são preservadas como <code>OUTDATED</code> durante a atualização.</br>
 		<br>1.2 - CGU ou GHG Protocol indisponível (ou timeout do serviço de fallback GHG): o sistema exibe as evidências das demais fontes e marca a fonte afetada como <code>UNKNOWN</code> ([NFCO01]).</br></td></tr>
 	<tr>
         <td colspan="2"><b>Pós-condições:</b> Perfil ambiental exibido com rastreabilidade até a fonte de cada evidência.</td></tr>
@@ -572,7 +572,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>6 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Fluxos Alternativos:</b>
-		<br>1.1 - Job avulso: executa os passos 2 a 5 restritos a um único CNPJ, contra o mesmo dump oficial.</br>
+		<br>1.1 - Job avulso: lê integralmente os mesmos dois dumps oficiais, mantendo somente os achados do CNPJ solicitado. Após ambas as leituras terminarem sem erro, executa os passos 3 a 5 restritos a essa empresa; sem achados, confirma <code>NOT_FOUND</code>. Não encerra carga global nem remove evidências de outros CNPJs ou fontes.</br>
 		<br>2.1 - Fonte indisponível: o BullMQ reexecuta o job com backoff; esgotadas as tentativas, mantém as evidências anteriores e as marca como <code>OUTDATED</code> quando vencida sua janela de validade.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Pós-condições:</b> Evidências normalizadas atualizadas e perfis afetados recalculados.</td></tr>
@@ -585,15 +585,16 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>5 - A validade da evidência é a janela de cache da fonte no catálogo. Passada a validade, a evidência <code>CONFIRMED</code> ou <code>NOT_FOUND</code> é tratada como <code>OUTDATED</code> (estado derivado na leitura); <code>UNKNOWN</code> não envelhece e é reconsultada após uma janela curta (15 minutos).</br>
 		<br>6 - A categoria e o ODS de cada evidência vêm do cadastro da fonte, e o sinal (positivo/negativo) vem da categoria: o normalizador não os escolhe.</br>
 		<br>7 - Para decidir se um registro do IBAMA é de pessoa física, vale o documento, e não o rótulo de tipo de pessoa do dump: só um CNPJ válido entra, e CPF, documento ausente ou inválido são descartados e contados por motivo ([INL02]). O nome do autuado, os textos livres e as geometrias não são guardados: a empresa já é identificada pelo CNPJ.</br>
-		<br>8 - O dump baixado é identificado por um resumo (SHA-256) do arquivo; o dump é lido em fluxo, e uma mudança de formato (coluna que sumiu, arquivo cortado) faz a execução falhar, e não ingerir dado incompleto. Resposta 404 ao baixar um dump é falha da fonte, nunca "sem registro".</br>
+		<br>8 - Cada CSV tem seu cabeçalho validado mesmo sem linhas de dados; arquivo sem cabeçalho ou coluna obrigatória ausente faz a execução falhar, nunca confirma ausência. Cabeçalho válido sem registros representa um recurso vazio. O dump baixado é identificado por um resumo (SHA-256) do arquivo; o dump é lido em fluxo, e uma mudança de formato (coluna que sumiu, arquivo cortado) faz a execução falhar, e não ingerir dado incompleto. Resposta 404 ao baixar um dump é falha da fonte, nunca "sem registro".</br>
 		<br>9 - Auto de infração ou termo de embargo cancelado, excluído ou substituído por outro não é evidência (uma infração anulada não conta para o índice, [IND01]); o embargo suspenso (desembargado) continua sendo evidência, marcado como tal. O que passa a ser anulado deixa de ser evidência na carga seguinte.</br>
-		<br>10 - A carga do dump é em fluxo: cada registro é gravado ao chegar, em <code>evidence_raw</code> (uma vez por conteúdo; se o registro mudar na fonte, nasce uma nova versão) e em <code>evidence_normalized</code>. Ao final, só quando todos os recursos da fonte foram carregados, as evidências da fonte que a carga não renovou (registros que o órgão deixou de listar, empresas que saíram do dump) são removidas; uma carga que falha não remove nada.</br>
+		<br>10 - A carga diária do dump é em fluxo: cada registro é gravado ao chegar, em <code>evidence_raw</code> (uma vez por conteúdo; se o registro mudar na fonte, nasce uma nova versão) e em <code>evidence_normalized</code>. Ao final, só quando todos os recursos da fonte foram carregados, as evidências da fonte que a carga não renovou (registros que o órgão deixou de listar, empresas que saíram do dump) são removidas; uma carga que falha não remove nada.</br>
 		<br>11 - O número público do documento do IBAMA se repete no dump; a evidência é identificada pelo identificador interno do órgão (e, nos documentos novos, que não o têm, pelo número), com o recurso à frente, para que registros diferentes não se sobrescrevam.</br>
-		<br>12 - Cada execução do job é registrada em <code>ingestion_runs</code> (início, término, situação, contagens de registros lidos, gravados e descartados, e o motivo da falha). As repetições do mesmo job pelo BullMQ são uma execução só, e ela só passa a <code>FAILED</code> quando as tentativas se esgotam ou quando o erro não admite repetição (fonte desabilitada no catálogo); nas tentativas intermediárias segue <code>RUNNING</code>. Os descartes contados são os de pessoa física, sem documento, documento inválido e linha malformada, mais os registros anulados.</br>
-		<br>13 - Os dois dumps (autos de infração e termos de embargo) são baixados antes de qualquer decisão, e o resumo da execução é um só, combinado dos dois: muda se qualquer um deles mudar. Resumo igual ao da última execução bem-sucedida encerra o job como <code>SKIPPED_UNCHANGED</code>, sem reprocessar, mas renova a validade das evidências da fonte (o dado foi reconfirmado agora): sem isso, um dump republicado durante um fim de semana as deixaria <code>OUTDATED</code> sem que nada tivesse mudado.</br>
+		<br>12 - Cada execução do job é registrada em <code>ingestion_runs</code> (início, término, situação, contagens de registros lidos, gravados e descartados, e o motivo da falha). As repetições do mesmo job pelo BullMQ são uma execução só, e ela só passa a <code>FAILED</code> quando as tentativas se esgotam ou quando o erro não admite repetição (fonte desabilitada no catálogo); nas tentativas intermediárias segue <code>RUNNING</code>. Os descartes contados são os de pessoa física, sem documento, documento inválido e linha malformada, mais os registros anulados; no avulso incluem também os registros de outros CNPJs. A execução avulsa tem tipo <code>ON_DEMAND</code> e o CNPJ preenchido; seus downloads apontam a execução com trigger <code>ON_DEMAND_JOB</code>.</br>
+		<br>13 - Os dois dumps (autos de infração e termos de embargo) são baixados antes de qualquer decisão, e o resumo da execução é um só, combinado dos dois: muda se qualquer um deles mudar. No lote diário, resumo igual ao da última execução agendada bem-sucedida encerra o job como <code>SKIPPED_UNCHANGED</code>, sem reprocessar, mas renova a validade das evidências da fonte (o dado foi reconfirmado agora): sem isso, um dump republicado durante um fim de semana as deixaria <code>OUTDATED</code> sem que nada tivesse mudado.</br>
 		<br>14 - A carga só é encerrada (e o que o dump deixou de listar, removido) depois que os dois recursos foram carregados sem erro. Qualquer falha (fonte indisponível, dump fora do formato, banco) mantém as evidências anteriores, que envelhecem pela própria validade.</br>
 		<br>15 - O lote diário tem política de repetição própria: 5 tentativas com backoff exponencial de base 5 minutos (5, 10, 20 e 40 minutos entre elas), porque a indisponibilidade típica das fontes oficiais dura horas. Os demais jobs da mesma fila (por CNPJ) mantêm a política curta, pois há quem espere a resposta.</br>
-		<br>16 - O recálculo do índice dos CNPJs afetados (passo 5 do fluxo normal) é o gatilho de ingestão do UC15 e não faz parte do job de ingestão. O conjunto de afetados não é acumulado em memória: é uma consulta, pois toda evidência gravada por uma execução tem como data de coleta o início dela.</br></td></tr>
+		<br>16 - O recálculo do índice dos CNPJs afetados (passo 5 do fluxo normal) é o gatilho de ingestão do UC15 e não faz parte do job de ingestão. O conjunto de afetados não é acumulado em memória: é uma consulta, pois toda evidência gravada por uma execução tem como data de coleta o início dela.</br>
+		<br>17 - Ausência no índice só pode ser confirmada por lote agendado completo <code>SUCCEEDED</code> ou <code>SKIPPED_UNCHANGED</code> ainda válido; o sucesso de um avulso não comprova o índice inteiro. A consulta não renova a validade do lote. Quando o avulso é necessário, a publicação é deduplicada por CNPJ em janelas de 15 minutos, e <code>UNKNOWN</code> válido evita republicação nessa janela.</br></td></tr>
 </table>
 
 <br></br>
@@ -948,8 +949,13 @@ sequenceDiagram
             API->>R: Enfileira job de evidências
             R->>AMB: Entrega job
             AMB->>DB: Lê índice local do IBAMA
-            opt CNPJ ausente do índice do IBAMA
-                AMB->>R: Enfileira job avulso de ingestão (IBAMA = UNKNOWN até concluir)
+            opt CNPJ sem resposta local do IBAMA
+                alt Lote completo ainda válido
+                    AMB->>DB: Registra NOT_FOUND com data e validade do lote
+                else Sem lote completo válido
+                    AMB->>DB: Registra UNKNOWN quando não há resposta anterior
+                    AMB->>R: Enfileira job avulso sem aguardar a conclusão
+                end
             end
             AMB->>AMB: Consulta CEIS/CNEP
             AMB->>DB: Grava evidências
