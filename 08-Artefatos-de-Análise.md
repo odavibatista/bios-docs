@@ -588,7 +588,12 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>8 - O dump baixado é identificado por um resumo (SHA-256) do arquivo; o dump é lido em fluxo, e uma mudança de formato (coluna que sumiu, arquivo cortado) faz a execução falhar, e não ingerir dado incompleto. Resposta 404 ao baixar um dump é falha da fonte, nunca "sem registro".</br>
 		<br>9 - Auto de infração ou termo de embargo cancelado, excluído ou substituído por outro não é evidência (uma infração anulada não conta para o índice, [IND01]); o embargo suspenso (desembargado) continua sendo evidência, marcado como tal. O que passa a ser anulado deixa de ser evidência na carga seguinte.</br>
 		<br>10 - A carga do dump é em fluxo: cada registro é gravado ao chegar, em <code>evidence_raw</code> (uma vez por conteúdo; se o registro mudar na fonte, nasce uma nova versão) e em <code>evidence_normalized</code>. Ao final, só quando todos os recursos da fonte foram carregados, as evidências da fonte que a carga não renovou (registros que o órgão deixou de listar, empresas que saíram do dump) são removidas; uma carga que falha não remove nada.</br>
-		<br>11 - O número público do documento do IBAMA se repete no dump; a evidência é identificada pelo identificador interno do órgão (e, nos documentos novos, que não o têm, pelo número), com o recurso à frente, para que registros diferentes não se sobrescrevam.</br></td></tr>
+		<br>11 - O número público do documento do IBAMA se repete no dump; a evidência é identificada pelo identificador interno do órgão (e, nos documentos novos, que não o têm, pelo número), com o recurso à frente, para que registros diferentes não se sobrescrevam.</br>
+		<br>12 - Cada execução do job é registrada em <code>ingestion_runs</code> (início, término, situação, contagens de registros lidos, gravados e descartados, e o motivo da falha). As repetições do mesmo job pelo BullMQ são uma execução só, e ela só passa a <code>FAILED</code> quando as tentativas se esgotam ou quando o erro não admite repetição (fonte desabilitada no catálogo); nas tentativas intermediárias segue <code>RUNNING</code>. Os descartes contados são os de pessoa física, sem documento, documento inválido e linha malformada, mais os registros anulados.</br>
+		<br>13 - Os dois dumps (autos de infração e termos de embargo) são baixados antes de qualquer decisão, e o resumo da execução é um só, combinado dos dois: muda se qualquer um deles mudar. Resumo igual ao da última execução bem-sucedida encerra o job como <code>SKIPPED_UNCHANGED</code>, sem reprocessar, mas renova a validade das evidências da fonte (o dado foi reconfirmado agora): sem isso, um dump republicado durante um fim de semana as deixaria <code>OUTDATED</code> sem que nada tivesse mudado.</br>
+		<br>14 - A carga só é encerrada (e o que o dump deixou de listar, removido) depois que os dois recursos foram carregados sem erro. Qualquer falha (fonte indisponível, dump fora do formato, banco) mantém as evidências anteriores, que envelhecem pela própria validade.</br>
+		<br>15 - O lote diário tem política de repetição própria: 5 tentativas com backoff exponencial de base 5 minutos (5, 10, 20 e 40 minutos entre elas), porque a indisponibilidade típica das fontes oficiais dura horas. Os demais jobs da mesma fila (por CNPJ) mantêm a política curta, pois há quem espere a resposta.</br>
+		<br>16 - O recálculo do índice dos CNPJs afetados (passo 5 do fluxo normal) é o gatilho de ingestão do UC15 e não faz parte do job de ingestão. O conjunto de afetados não é acumulado em memória: é uma consulta, pois toda evidência gravada por uma execução tem como data de coleta o início dela.</br></td></tr>
 </table>
 
 <br></br>
@@ -988,19 +993,30 @@ sequenceDiagram
     AMB->>IB: Baixa dumps (autos de infração, termos de embargo)
     alt Download concluído
         IB-->>AMB: CSV/JSON
-        AMB->>AMB: Descarta registros de pessoa física (CPF)
-        AMB->>DB: Grava registros em evidence_raw
-        AMB->>AMB: Normaliza por CNPJ
-        AMB->>DB: Upsert em evidence_normalized (categoria, ODS 15, estado)
-        loop Para cada CNPJ afetado
-            AMB->>DB: Recalcula índice e confiança por ODS em company_ods_scores
+        AMB->>DB: Compara o resumo dos dois dumps com o da última execução bem-sucedida
+        alt Dumps idênticos
+            AMB->>DB: Renova a validade das evidências da fonte
+            AMB->>DB: Registra a execução como SKIPPED_UNCHANGED
+        else Dumps alterados
+            AMB->>AMB: Descarta registros de pessoa física (CPF)
+            AMB->>DB: Grava registros em evidence_raw
+            AMB->>AMB: Normaliza por CNPJ
+            AMB->>DB: Upsert em evidence_normalized (categoria, ODS 15, estado)
+            AMB->>DB: Remove o que o dump deixou de listar (só após os dois recursos)
+            AMB->>DB: Registra a execução como SUCCEEDED
+            loop Para cada CNPJ afetado
+                AMB->>DB: Recalcula índice e confiança por ODS em company_ods_scores
+            end
         end
         AMB-->>Q: Job concluído
     else Falha na fonte
-        AMB-->>Q: Falha
-        Q->>Q: Reagenda com backoff
+        AMB-->>Q: Falha (as evidências anteriores são mantidas)
+        Q->>Q: Reagenda com backoff (5 tentativas, base de 5 minutos)
+        AMB->>DB: Na última tentativa, registra a execução como FAILED
     end
 ```
+
+> O laço "para cada CNPJ afetado" é o gatilho de ingestão do UC15 e não faz parte do job de ingestão: o conjunto de afetados é uma consulta (evidências cuja data de coleta é o início da execução), derivada pelo recálculo por fila.
 
 ### 8.4.3 Efetuar login com bloqueio por tentativas (UC02)
 
