@@ -583,7 +583,9 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>3 - O registro bruto é mantido para auditoria ([NFCO02]).</br>
 		<br>4 - A coleta de uma fonte para uma empresa é um retrato: cada registro vira uma evidência <code>CONFIRMED</code> e o que a fonte deixou de listar é removido; fonte consultada sem registro gera <code>NOT_FOUND</code>; fonte que não respondeu gera <code>UNKNOWN</code> apenas quando não há coleta anterior que tenha respondido, e nunca apaga o que já se sabia. Repetir a coleta não duplica evidências ([RF08]).</br>
 		<br>5 - A validade da evidência é a janela de cache da fonte no catálogo. Passada a validade, a evidência <code>CONFIRMED</code> ou <code>NOT_FOUND</code> é tratada como <code>OUTDATED</code> (estado derivado na leitura); <code>UNKNOWN</code> não envelhece e é reconsultada após uma janela curta (15 minutos).</br>
-		<br>6 - A categoria e o ODS de cada evidência vêm do cadastro da fonte, e o sinal (positivo/negativo) vem da categoria: o normalizador não os escolhe.</br></td></tr>
+		<br>6 - A categoria e o ODS de cada evidência vêm do cadastro da fonte, e o sinal (positivo/negativo) vem da categoria: o normalizador não os escolhe.</br>
+		<br>7 - Para decidir se um registro do IBAMA é de pessoa física, vale o documento, e não o rótulo de tipo de pessoa do dump: só um CNPJ válido entra, e CPF, documento ausente ou inválido são descartados e contados por motivo ([INL02]). O nome do autuado, os textos livres e as geometrias não são guardados: a empresa já é identificada pelo CNPJ.</br>
+		<br>8 - O dump baixado é identificado por um resumo (SHA-256) do arquivo; o dump é lido em fluxo, e uma mudança de formato (coluna que sumiu, arquivo cortado) faz a execução falhar, e não ingerir dado incompleto. Resposta 404 ao baixar um dump é falha da fonte, nunca "sem registro".</br></td></tr>
 </table>
 
 <br></br>

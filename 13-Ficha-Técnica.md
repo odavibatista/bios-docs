@@ -57,7 +57,8 @@
 | Dados sintéticos | `@faker-js/faker` | RF21 — honeypot (dependência de **produção** no BIOS, onde é usada só em teste) |
 | Identificadores | ObjectId nativo do MongoDB (`@default(auto())`) | Chaves primárias: geradas pelo próprio banco, compactas e ordenadas por tempo de criação |
 | Datas | `date-fns` | Manipulação de datas de evidência |
-| HTTP client | `axios` | Consumo das APIs externas (Seção 6) |
+| HTTP client | `fetch` nativo do Node | Consumo das APIs externas (Seção 6), com tempo máximo da chamada inteira, sem redirecionamentos e com corpo limitado; os dumps em lote são baixados em fluxo para o disco, com limite de tamanho. O `axios`, previsto inicialmente, não foi adotado: o `fetch` cobre a necessidade sem dependência extra |
+| Leitura dos dumps do IBAMA | `csv-parse`, `yauzl` | UC14 — leitura em fluxo do CSV (separador `;`, texto com quebras de linha, BOM) e do `.zip` de CSVs, sem extrair para o disco nem carregar o arquivo na memória (o auto de infração passa de 700 MB descompactado). Bibliotecas de uso consolidado, sem dependências relevantes, em vez de um *parser* próprio de CSV e de `.zip` |
 
 ## 5. Bibliotecas de Teste
 
