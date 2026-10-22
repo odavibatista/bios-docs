@@ -327,8 +327,8 @@ Esta seção descreve todos os casos de uso do diagrama 1.
     </tr>
 	<tr>
         <td colspan="2"><b>Fluxo Normal:</b>
-		<br>1 - O sistema recupera as evidências da empresa: IBAMA a partir do índice local do lote diário; CEIS/CNEP e GHG Protocol a partir de cache ou consulta sob demanda.</br>
-		<br>2 - O sistema exibe as evidências agrupadas por categoria, com fonte, estado, data de publicação, data de coleta e link da fonte original.</br>
+		<br>1 - O sistema recupera as evidências da empresa: IBAMA a partir do índice local do lote diário; CEIS/CNEP e GHG Protocol a partir de persistência válida, cache ou consulta sob demanda. A leitura local e as solicitações CGU/GHG são iniciadas em paralelo; a CGU usa a fila ambiental e o GHG sua fila exclusiva, ambas com espera limitada.</br>
+		<br>2 - O sistema exibe as evidências agrupadas por categoria, com fonte, estado, data de publicação, data de coleta, validade e link ou referência da fonte original. Na resposta consolidada, somente <code>CONFIRMED</code> traz sinal positivo/negativo; <code>NOT_FOUND</code>, <code>UNKNOWN</code> e <code>OUTDATED</code> trazem sinal nulo, sem alterar o histórico persistido.</br>
 		<br>3 - O sistema exibe, para cada ODS, o índice de aderência e o nível de confiança, lado a lado e nunca combinados.</br>
 		<br>4 - O usuário seleciona a explicação do score de um ODS.</br>
 		<br>5 - O sistema lista as evidências que compuseram o índice, com peso e sinal (positivo/negativo).</br>
@@ -946,21 +946,25 @@ sequenceDiagram
         CNPJ->>DB: Grava dados cadastrais
         CNPJ-->>R: Conclui job
         R-->>API: Job concluído
-        par Evidências IBAMA e CEIS/CNEP
-            API->>R: Enfileira job de evidências
-            R->>AMB: Entrega job
-            AMB->>DB: Lê índice local do IBAMA
+        par Índice local do IBAMA
+            API->>DB: Lê evidências locais válidas
             opt CNPJ sem resposta local do IBAMA
                 alt Lote completo ainda válido
-                    AMB->>DB: Registra NOT_FOUND com data e validade do lote
+                    API->>DB: Registra NOT_FOUND com data e validade do lote
                 else Sem lote completo válido
-                    AMB->>DB: Registra UNKNOWN quando não há resposta anterior
-                    AMB->>R: Enfileira job avulso sem aguardar a conclusão
+                    API->>DB: Preserva resposta anterior ou registra UNKNOWN
+                    API->>R: Enfileira job avulso IBAMA sem aguardar
                 end
             end
-            AMB->>AMB: Consulta CEIS/CNEP
-            AMB->>DB: Grava evidências
-            AMB-->>R: Conclui job
+        and Evidências CEIS/CNEP
+            API->>DB: Reutiliza coleta local válida por cadastro
+            opt Atualização necessária
+                API->>R: Enfileira job CGU e aguarda com timeout
+                R->>AMB: Entrega job CGU
+                AMB->>AMB: Consulta CEIS e CNEP em paralelo, isoladamente
+                AMB->>DB: Grava evidências de cada cadastro
+                AMB-->>R: Conclui job CGU
+            end
         and Evidência GHG
             API->>R: Enfileira job de inventário
             R->>GHG: Entrega job
@@ -969,9 +973,10 @@ sequenceDiagram
         end
         alt Jobs concluídos dentro do timeout
             R-->>API: Jobs concluídos
-        else Timeout ou falha do GHG
-            API->>API: GHG = UNKNOWN (não bloqueante)
+        else Timeout ou falha de fonte
+            API->>API: Preserva resposta anterior; UNKNOWN se nunca respondeu
         end
+        API->>DB: Relê evidências e agrupa por categoria
         API->>R: Enfileira recálculo de índices por ODS e aguarda
         R->>AMB: Entrega job
         AMB->>DB: Recalcula índice e confiança por ODS em company_ods_scores

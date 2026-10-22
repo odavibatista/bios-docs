@@ -7,7 +7,7 @@
 | Receita Federal (cadastro/CNAE) | Espelho comunitário dos dumps abertos da RFB, sem API institucional | `GET brasilapi.com.br/api/cnpj/v1/{cnpj}` (principal); `GET api.opencnpj.org/{cnpj}` (1º fallback); `GET minhareceita.org/{cnpj}` (fallback final) | Nenhuma | Síncrono sob demanda, com cache |
 | IBGE (CNAE — apoio) | API pública oficial | `GET servicodados.ibge.gov.br/api/v2/cnae/...` | Nenhuma | Síncrono sob demanda, com cache |
 | IBAMA (autuações e embargos) | Dados abertos (CKAN) | Dumps CSV/JSON/XML em URL fixa por recurso, hospedados no armazenamento do IBAMA (`.zip` de CSVs por ano para os autos; `.csv` para os embargos) — **sem endpoint de consulta por CNPJ** | Nenhuma | Batch assíncrono (job diário) |
-| CGU — Portal da Transparência (CEIS/CNEP) | API REST oficial (Swagger documentado) | `GET api.portaldatransparencia.gov.br/api-de-dados/ceis` e `/cnep`, paginado, filtro por CNPJ | Header `chave-api-dados`, token gratuito via conta gov.br | Síncrono sob demanda, com cache |
+| CGU — Portal da Transparência (CEIS/CNEP) | API REST oficial (Swagger documentado) | `GET api.portaldatransparencia.gov.br/api-de-dados/ceis` e `/cnep`, paginado, filtro por CNPJ | Header `chave-api-dados`, token gratuito via conta gov.br | Sob demanda pela fila ambiental, com cache e espera limitada |
 | GHG Protocol — Registro Público de Emissões | Serviços públicos usados pelo portal, sem contrato REST oficial estável | Catálogo JSON em `registropublicodeemissoesapi.fgv.br` e relatório PDF em `sistema-registropublicodeemissoesapi.fgv.br` | Nenhuma | Fallback best-effort na fila exclusiva `ghg-inventory`, com prazo próprio |
 
 Observações por fonte:
@@ -23,7 +23,7 @@ Decisão: **BullMQ + Redis para tudo**, sem broker adicional. BullMQ já cobre n
 
 A mesma decisão vale para a comunicação **interna**: a ingestão (cadastro por CNPJ, evidências ambientais e inventário GHG) **não é um conjunto de serviços à parte**, e sim de módulos do próprio `bios-core-api` — um módulo por fonte externa (`brasil-api`, `opencnpj`, `minha-receita`, `ibge-cnae`, e os que virão para IBAMA, CGU e GHG), mais um consumidor de fila por assunto (por exemplo, o `CompanyProfileProcessor`, que atende a fila `company-profile`). Quem pede e quem atende conversam **exclusivamente via filas BullMQ**, sem chamar um ao outro diretamente: o contrato do job (nome, payload e resultado) é o único acoplamento. Isso mantém o ganho que a separação em serviços traria — o consumidor pode ser movido para um processo próprio sem tocar em quem publica o job — sem o custo de operar vários deployáveis, o que seria contrário à diretriz de viabilidade solo do projeto. Quando a consulta do usuário exige resposta imediata, o core enfileira o job e aguarda sua conclusão com timeout (sequência em `08-Artefatos-de-Análise.md`, seção 8.4.1); estourado o timeout de uma fonte não bloqueante (GHG), a evidência correspondente é exibida como `UNKNOWN`.
 
-O *retry* com *backoff* é configurado **por fila** e, quando necessário, **por agendamento**: a fila `environmental-evidences` é compartilhada pelo lote diário do IBAMA (minutos por tentativa, fonte que costuma ficar horas fora do ar) e, adiante, pelos jobs por CNPJ (que erram rápido, pois há quem espere a resposta). O lote diário declara a própria política — 5 tentativas com *backoff* exponencial de base 5 minutos — sem alterar a dos demais jobs da fila. A execução de cada job agendado é registrada em `ingestion_runs` e só é marcada como falha quando as tentativas se esgotam; as evidências anteriores seguem valendo até o fim da janela de validade (UC14, fluxo 2.1).
+O *retry* com *backoff* é configurado **por fila** e, quando necessário, **por agendamento**: a fila `environmental-evidences` é compartilhada pelo lote diário do IBAMA (minutos por tentativa, fonte que costuma ficar horas fora do ar) e pelos jobs por CNPJ (que erram rápido, pois há quem espere a resposta). O lote diário declara a própria política — 5 tentativas com *backoff* exponencial de base 5 minutos — sem alterar a dos demais jobs da fila. A execução de cada job agendado é registrada em `ingestion_runs` e só é marcada como falha quando as tentativas se esgotam; as evidências anteriores seguem valendo até o fim da janela de validade (UC14, fluxo 2.1).
 
 O isolamento de cada fonte, que o [NFPD02] exige, vem do **adapter próprio** (`DataSourceInterface`), do **limite de requisições e do tempo máximo por fonte** (catálogo `data_sources`, alterável sem deploy) e do **resultado de falha esperada** (a fonte indisponível volta como resultado, não como exceção que derrube a consulta). No caso do GHG Protocol, a indisponibilidade da fonte nunca bloqueia a consulta porque a evidência é best-effort, com prazo próprio, e não porque roda em outro processo.
 
@@ -44,7 +44,29 @@ verificável, o resultado é `UNKNOWN`, nunca `NOT_FOUND`. A data de publicaçã
 nula quando não informada: ano inventariado e data de geração do PDF não a
 substituem. Guarda-se somente o retrato reduzido aos campos permitidos, com
 referência organização/ciclo e URL oficial do relatório; o PDF temporário é
-removido após a leitura. A integração à consolidação/perfil é uma etapa posterior.
+removido após a leitura. A consolidação já reúne essa evidência; a exposição no perfil é uma etapa posterior.
+
+A consolidação por CNPJ inicia em paralelo a consulta local IBAMA e os produtores
+CGU/GHG. O único consumidor de `environmental-evidences`,
+`EnvironmentalEvidencesProcessor`, despacha lote diário IBAMA, coleta avulsa IBAMA
+e `fetch-cgu-evidences` pelo nome do job, com concorrência 3. CEIS e CNEP são
+consultados em paralelo dentro do job CGU e persistidos independentemente; esse
+job não altera execuções de ingestão IBAMA. A espera CGU respeita
+`QUEUE_WAIT_TIMEOUT_MS`; o job pode concluir depois. As duas fontes CGU válidas
+na persistência dispensam publicação; a validade é verificada por cadastro e o
+reaproveitamento não renova as datas. A publicação CGU é deduplicada por CNPJ e
+janela de 15 minutos. O produtor prepara desconhecimento antes de publicar e o
+worker não confunde esse marcador com resposta já coletada.
+
+Após as esperas limitadas, a consolidação relê a persistência e devolve as três
+categorias, com fonte, ODS, estado, publicação, coleta, validade e referência/link
+original. Falha de uma fonte preserva as outras e solicita `UNKNOWN` quando não
+há resposta anterior; respostas anteriores conservam suas datas e vencem como
+`OUTDATED`. Somente `CONFIRMED` traz sinal na resposta agrupada; os demais
+estados têm sinal nulo, sem apagar o sinal histórico da persistência. Não há
+veredito de sustentabilidade ou cálculo de índice nesse contrato. Falha global
+de leitura/gravação do banco continua sendo erro de infraestrutura: não prova
+ausência de evidências.
 
 Caso de CNPJ não indexado localmente (miss no índice do lote diário do IBAMA): reaproveita o mesmo adapter/parser do job diário, disparado sob demanda como job avulso do BullMQ para aquele CNPJ específico, contra o mesmo dump oficial. Isso **não** reintroduz webscraping nem um segundo mecanismo de ingestão — é o mesmo pipeline, com gatilho diferente.
 
