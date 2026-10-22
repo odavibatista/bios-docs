@@ -70,6 +70,25 @@ ausência de evidências.
 
 Caso de CNPJ não indexado localmente (miss no índice do lote diário do IBAMA): reaproveita o mesmo adapter/parser do job diário, disparado sob demanda como job avulso do BullMQ para aquele CNPJ específico, contra o mesmo dump oficial. Isso **não** reintroduz webscraping nem um segundo mecanismo de ingestão — é o mesmo pipeline, com gatilho diferente.
 
+A consulta autenticada `GET /companies/{cnpj}/evidences` expõe as categorias e a
+proveniência das evidências (RF09), sem compor o perfil completo ou calcular score.
+O campo `source` traz o nome público atual do catálogo, acompanhado de
+`source_slug`, `source_reference` e `source_url`. O schema de resposta exige URL
+absoluta HTTPS quando informada; links com credenciais embutidas são rejeitados.
+O endereço original é preservado, inclusive o dataset oficial do IBAMA quando
+não há link individual. Uma referência sem URL continua utilizável para auditoria;
+o sistema não fabrica um endereço. Recursos da CGU podem exigir autenticação no
+próprio órgão, sem que a chave do BIOS seja incluída na resposta.
+
+Na projeção, uma evidência guardada como `CONFIRMED` sem identificador não vazio
+nem link HTTPS válido é exibida como `UNKNOWN`, sem sinal, resumo ou detalhes
+confirmatórios. A regra também é validada pelo schema de resposta. O registro
+persistido e suas datas permanecem intactos para futura atualização pela fonte.
+`UNKNOWN`, `NOT_FOUND` e `OUTDATED` conservam seus estados e podem ter referências
+nulas; isso não autoriza inventar registros ou converter falta de informação em
+ausência confirmada. A rota exige sessão JWT e documenta resposta e erros no
+OpenAPI. A composição cadastral/evidências/índices permanece uma etapa posterior.
+
 ## 3. Camadas de dados
 
 Mantido conforme já esboçado no README (seção 4), sem alteração: três coleções Mongo — `evidence_raw` (bruto por fonte) → `evidence_normalized` → `company_profile` (agregado, pronto para busca/score/exportação) —, sem infraestrutura de streaming dedicada. Cada fonte isolada atrás de um adapter próprio (`DataSourceInterface` → `ReceitaDataSource`, `IbamaDataSource`, `CguDataSource`, `GhgDataSource`), conforme já previsto em [NFPD02].
