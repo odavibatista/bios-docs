@@ -37,7 +37,10 @@ pode concluir depois do timeout de quem espera. Dentro do adapter, um orçamento
 O reaproveitamento do cache não renova a data nem a validade da coleta original.
 
 O catálogo público GHG não informa CNPJ: razão social/nome fantasia do cadastro
-local servem apenas para selecionar candidatos. O relatório do ano mais recente
+local servem apenas para selecionar candidatos. O cadastro de organizações do portal
+é sincronizado uma vez por dia (job agendado na fila `ghg-inventory`, guardado no cache
+por sete dias, nunca substituído por um cadastro incompleto) e lido localmente pela
+coleta de cada CNPJ; somente a falta do cadastro o sincroniza na hora. O relatório do ano mais recente
 precisa conter o CNPJ exato e o mesmo ano listado no catálogo. Não se atribui
 inventário de matriz, grupo ou outra empresa por semelhança do nome. Sem vínculo
 verificável, o resultado é `UNKNOWN`, nunca `NOT_FOUND`. A data de publicação fica

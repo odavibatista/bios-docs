@@ -116,7 +116,9 @@ O adapter GHG lista o cadastro de organizações do portal pela busca paginada
 (`SearchAllOrganizations`, até 1000 por página) e baixa o relatório PDF do
 inventário mais recente de cada candidato (até três candidatos pelo nome cadastral
 local). A rota `GetAllOrganizations` não serve de cadastro: devolve só uma amostra
-de 10 organizações. O nome apenas localiza: só o CNPJ exato e o ano inventariado do PDF permitem
+de 10 organizações. A listagem é sincronizada uma vez por dia por um job agendado na fila
+`ghg-inventory` e guardada no cache (Redis) por sete dias; a coleta de cada CNPJ a lê
+dali, sem chamada externa para localizar candidatos. O nome apenas localiza: só o CNPJ exato e o ano inventariado do PDF permitem
 confirmar a evidência. A extração usa `pdfjs-dist` em thread descartável, com prazo e
 memória limitados; somente CNPJ, identificadores da organização/ciclo e ano são
 mantidos, sem contatos nem texto integral do PDF. Ausência de correspondência,
