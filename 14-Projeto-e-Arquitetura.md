@@ -127,6 +127,43 @@ Essa separação existe para que uma sanção administrativa genérica do CEIS/C
 
 Justificativa da escolha pelo ODS 15 e não pelo ODS 13: tanto o IBAMA quanto o CEIS/CNEP registram sanções administrativas aplicadas por órgãos públicos, ou seja, sinais de mesma natureza (negativa, sancionatória), o que mantém o índice do ODS 15 internamente coerente. Vinculá-la ao ODS 13 misturaria um sinal sancionatório sem relação com o clima a uma fonte de natureza oposta (publicação voluntária de inventário de emissões).
 
+### 4.1 Regras fixas do índice por ODS (RF10, versão `rf10-v1`)
+
+O motor interno carrega os ODS ativos da coleção `ods`. Cada ODS ativo precisa de
+regras explícitas no código; incluir uma seed sem regras interrompe o cálculo
+antes de gravar. A escala é **assinada de −100 a 100**: pontos positivos indicam
+evidências de transparência climática no ODS 13, e negativos indicam autuações
+ambientais ou sanções complementares no ODS 15. Não existe índice geral, nem
+comparação direta entre ODS 13 e 15. O zero não é usado como substituto de falta
+de dados: sem contribuição conclusiva, `score_value` é nulo.
+
+| ODS | Categoria | Sinal | Peso por evidência | Teto absoluto da categoria |
+| --- | --- | --- | ---: | ---: |
+| 13 | `EMISSAO_GEE` | positivo | 60 | 100 |
+| 15 | `INFRACAO_AMBIENTAL` | negativo | 40 | 80 |
+| 15 | `CONDUTA_ADMINISTRATIVA` | negativo | 5 | 20 |
+
+Uma evidência só pontua quando está `CONFIRMED`, dentro da validade e é
+rastreável por identificador não vazio ou URL HTTPS original válida. A categoria
+e o sinal devem corresponder à regra do ODS. `NOT_FOUND` não dá bônus;
+`UNKNOWN`, `OUTDATED` e confirmação sem rastreabilidade não pontuam. Em ordem
+determinística por categoria e chave, cada evidência elegível grava uma
+contribuição com ID, categoria, sinal, peso fixo e pontos efetivos. Ao atingir o
+teto da categoria, contribuições posteriores continuam auditáveis com zero ponto.
+Assim, a soma exata dos pontos reproduz o índice, limitado a −100…100, e o total
+de sanções administrativas nunca supera 20 pontos negativos.
+
+`company_ods_scores` contém um documento por empresa e ODS ativo, atualizado
+atomicamente por CNPJ. O recálculo mantém o ID/data de criação e remove scores
+de ODS desativados; `rules_version` identifica a regra usada. UF, cidade e CNAEs
+vêm do perfil, quando ele existe, ou ficam nulos/vazios. A confiança fica em campo
+separado. Nesta versão inicial, sem contribuições ela é zero; com `N`
+contribuições e `I` evidências `UNKNOWN`, `OUTDATED`, inconsistentes ou sem
+rastreabilidade, vale `teto × N/(N + I + 1)`, com teto 0,25 para ODS 13 e 0,8
+para ODS 15. O detalhamento da confiança por cobertura/qualidade das fontes é a
+etapa RF11 (#78). O motor é um caso de uso interno; ligação automática ao perfil
+e apresentação ao usuário são etapas posteriores (#81).
+
 ## 5. Estados de evidência — decisão
 
 O README (seção 4) e o RF08 formal (`05-Requisitos-Funcionais.md`) chegaram a listar números diferentes de estados (seis vs. quatro). Decisão: os quatro estados do RF08 (`CONFIRMED`, `NOT_FOUND`, `UNKNOWN`, `OUTDATED`) são o modelo definitivo do MVP. `NOT_APPLICABLE` e `CONFLICTING` ficam descartados do escopo atual e registrados aqui como trabalho futuro, não perdidos. O README foi atualizado (seção 4) para refletir essa decisão.
