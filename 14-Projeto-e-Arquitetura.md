@@ -127,7 +127,7 @@ Essa separação existe para que uma sanção administrativa genérica do CEIS/C
 
 Justificativa da escolha pelo ODS 15 e não pelo ODS 13: tanto o IBAMA quanto o CEIS/CNEP registram sanções administrativas aplicadas por órgãos públicos, ou seja, sinais de mesma natureza (negativa, sancionatória), o que mantém o índice do ODS 15 internamente coerente. Vinculá-la ao ODS 13 misturaria um sinal sancionatório sem relação com o clima a uma fonte de natureza oposta (publicação voluntária de inventário de emissões).
 
-### 4.1 Regras fixas do índice por ODS (RF10, versão `rf10-v1`)
+### 4.1 Regras fixas do índice por ODS (RF10)
 
 O motor interno carrega os ODS ativos da coleção `ods`. Cada ODS ativo precisa de
 regras explícitas no código; incluir uma seed sem regras interrompe o cálculo
@@ -157,12 +157,37 @@ de sanções administrativas nunca supera 20 pontos negativos.
 atomicamente por CNPJ. O recálculo mantém o ID/data de criação e remove scores
 de ODS desativados; `rules_version` identifica a regra usada. UF, cidade e CNAEs
 vêm do perfil, quando ele existe, ou ficam nulos/vazios. A confiança fica em campo
-separado. Nesta versão inicial, sem contribuições ela é zero; com `N`
-contribuições e `I` evidências `UNKNOWN`, `OUTDATED`, inconsistentes ou sem
-rastreabilidade, vale `teto × N/(N + I + 1)`, com teto 0,25 para ODS 13 e 0,8
-para ODS 15. O detalhamento da confiança por cobertura/qualidade das fontes é a
-etapa RF11 (#78). O motor é um caso de uso interno; ligação automática ao perfil
-e apresentação ao usuário são etapas posteriores (#81).
+separado, conforme RF11 abaixo. A versão conjunta das regras do cálculo é
+`rf10-rf11-v2`; os pesos do índice da versão `rf10-v1` permanecem iguais. O motor
+é um caso de uso interno; ligação automática ao perfil e apresentação ao usuário
+são etapas posteriores (#81).
+
+### 4.2 Nível de confiança por ODS (RF11, versão `rf10-rf11-v2`)
+
+Para cada ODS, a confiança é calculada independentemente do valor e da magnitude
+do índice, entre 0 e 1. Sem achado `CONFIRMED` vigente, rastreável e com sinal
+compatível, vale **0**, inclusive quando todas as fontes responderam
+`NOT_FOUND`. Com ao menos um achado, a fórmula é:
+
+`confiança = teto × (S/M) × (N/(N+1)) × ((1+Q)/(2+Q)) × (S/(S+U+O))`
+
+| Símbolo | Definição |
+| --- | --- |
+| `M` | Fontes esperadas: 1 para ODS 13 (`GHG_PROTOCOL`); 3 para ODS 15 (`IBAMA`, `CGU_CEIS`, `CGU_CNEP`). |
+| `S` | Fontes distintas com resposta vigente: `CONFIRMED` elegível ao índice ou `NOT_FOUND`. A ausência confirmada cobre a fonte, mas não cria contribuição nem índice. |
+| `N` | Número de contribuições confirmadas, incluindo as de zero ponto após o teto da categoria; não depende da magnitude do índice. |
+| `Q` | Soma de qualidade das contribuições: IBAMA 1, CGU CEIS/CNEP 0,25 por achado, GHG 1. A sanção genérica tem qualidade menor que a infração ambiental direta. |
+| `U` e `O` | Número de fontes distintas com `UNKNOWN` e `OUTDATED`, respectivamente. Uma confirmação/ausência com validade vencida conta em `O`; `UNKNOWN` não envelhece. |
+| `teto` | 0,25 para ODS 13, pela cobertura estruturalmente pequena do GHG Protocol; 1 para ODS 15. |
+
+Os fatores medem, respectivamente, cobertura das fontes, quantidade de achados,
+qualidade dos sinais e penalidade por fonte inconclusiva ou desatualizada. Fontes
+sem evidência não ampliam `S`; uma fonte pode ter resposta válida e registro
+desatualizado, caso em que ambos os estados entram nos fatores. Registros de fonte
+ou categoria incompatível com o ODS são ignorados na confiança. Adicionar um
+achado elegível não reduz a confiança; adicionar `UNKNOWN` ou `OUTDATED` não a
+aumenta. Esses estados nunca alteram o índice. Índice e confiança são persistidos
+lado a lado em `company_ods_scores`, sem fusão em um número único.
 
 ## 5. Estados de evidência — decisão
 
