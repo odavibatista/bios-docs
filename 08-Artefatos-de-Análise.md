@@ -327,7 +327,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
     </tr>
 	<tr>
         <td colspan="2"><b>Fluxo Normal:</b>
-		<br>1 - O sistema recupera as evidências da empresa: IBAMA a partir do índice local do lote diário; CEIS/CNEP e GHG Protocol a partir de persistência válida, cache ou consulta sob demanda. A leitura local e as solicitações CGU/GHG são iniciadas em paralelo; a CGU usa a fila ambiental e o GHG sua fila exclusiva, ambas com espera limitada.</br>
+		<br>1 - O sistema confirma a existência de um perfil cadastral local para o CNPJ antes de ler evidências ou iniciar coletas. Sem perfil, responde 404 sem gravar nem publicar jobs. Com perfil, recupera as evidências da empresa: IBAMA a partir do índice local do lote diário; CEIS/CNEP e GHG Protocol a partir de persistência válida, cache ou consulta sob demanda. A leitura local e as solicitações CGU/GHG são iniciadas em paralelo; a CGU usa a fila ambiental e o GHG sua fila exclusiva, ambas com espera limitada. A rota de evidências limita a 20 consultas por minuto por IP, além do limite global.</br>
 		<br>2 - O sistema exibe as evidências agrupadas por categoria, com fonte, estado, data de publicação, data de coleta, validade e link ou referência da fonte original. Na resposta consolidada, somente <code>CONFIRMED</code> traz sinal positivo/negativo; <code>NOT_FOUND</code>, <code>UNKNOWN</code> e <code>OUTDATED</code> trazem sinal nulo, sem alterar o histórico persistido.</br>
 		<br>3 - O sistema exibe, para cada ODS, o índice de aderência e o nível de confiança, lado a lado e nunca combinados.</br>
 		<br>4 - O usuário seleciona a explicação do score de um ODS.</br>
