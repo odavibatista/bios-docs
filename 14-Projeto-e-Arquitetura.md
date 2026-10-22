@@ -8,7 +8,7 @@
 | IBGE (CNAE — apoio) | API pública oficial | `GET servicodados.ibge.gov.br/api/v2/cnae/...` | Nenhuma | Síncrono sob demanda, com cache |
 | IBAMA (autuações e embargos) | Dados abertos (CKAN) | Dumps CSV/JSON/XML em URL fixa por recurso, hospedados no armazenamento do IBAMA (`.zip` de CSVs por ano para os autos; `.csv` para os embargos) — **sem endpoint de consulta por CNPJ** | Nenhuma | Batch assíncrono (job diário) |
 | CGU — Portal da Transparência (CEIS/CNEP) | API REST oficial (Swagger documentado) | `GET api.portaldatransparencia.gov.br/api-de-dados/ceis` e `/cnep`, paginado, filtro por CNPJ | Header `chave-api-dados`, token gratuito via conta gov.br | Síncrono sob demanda, com cache |
-| GHG Protocol — Registro Público de Emissões | Sem API pública | Portal web (`registropublicodeemissoes.fgv.br`) | N/A | Fallback best-effort, isolado, não bloqueante |
+| GHG Protocol — Registro Público de Emissões | Serviços públicos usados pelo portal, sem contrato REST oficial estável | Catálogo JSON em `registropublicodeemissoesapi.fgv.br` e relatório PDF em `sistema-registropublicodeemissoesapi.fgv.br` | Nenhuma | Fallback best-effort na fila exclusiva `ghg-inventory`, com prazo próprio |
 
 Observações por fonte:
 
@@ -26,6 +26,25 @@ A mesma decisão vale para a comunicação **interna**: a ingestão (cadastro po
 O *retry* com *backoff* é configurado **por fila** e, quando necessário, **por agendamento**: a fila `environmental-evidences` é compartilhada pelo lote diário do IBAMA (minutos por tentativa, fonte que costuma ficar horas fora do ar) e, adiante, pelos jobs por CNPJ (que erram rápido, pois há quem espere a resposta). O lote diário declara a própria política — 5 tentativas com *backoff* exponencial de base 5 minutos — sem alterar a dos demais jobs da fila. A execução de cada job agendado é registrada em `ingestion_runs` e só é marcada como falha quando as tentativas se esgotam; as evidências anteriores seguem valendo até o fim da janela de validade (UC14, fluxo 2.1).
 
 O isolamento de cada fonte, que o [NFPD02] exige, vem do **adapter próprio** (`DataSourceInterface`), do **limite de requisições e do tempo máximo por fonte** (catálogo `data_sources`, alterável sem deploy) e do **resultado de falha esperada** (a fonte indisponível volta como resultado, não como exceção que derrube a consulta). No caso do GHG Protocol, a indisponibilidade da fonte nunca bloqueia a consulta porque a evidência é best-effort, com prazo próprio, e não porque roda em outro processo.
+
+O consumidor GHG tem fila própria (`ghg-inventory`) e concorrência 1, sem competir
+com o consumidor ambiental. O produtor reutiliza a coleta local válida e, quando
+necessário, publica um job por CNPJ/janela de 15 minutos, aguardando com o prazo do
+catálogo. Timeout, falha do job ou indisponibilidade da fila devolvem `UNKNOWN`
+quando não há resposta anterior; respostas vencidas permanecem `OUTDATED`. O job
+pode concluir depois do timeout de quem espera. Dentro do adapter, um orçamento
+único cobre as chamadas HTTP e o parser: cada etapa usa somente o prazo restante.
+O reaproveitamento do cache não renova a data nem a validade da coleta original.
+
+O catálogo público GHG não informa CNPJ: razão social/nome fantasia do cadastro
+local servem apenas para selecionar candidatos. O relatório do ano mais recente
+precisa conter o CNPJ exato e o mesmo ano listado no catálogo. Não se atribui
+inventário de matriz, grupo ou outra empresa por semelhança do nome. Sem vínculo
+verificável, o resultado é `UNKNOWN`, nunca `NOT_FOUND`. A data de publicação fica
+nula quando não informada: ano inventariado e data de geração do PDF não a
+substituem. Guarda-se somente o retrato reduzido aos campos permitidos, com
+referência organização/ciclo e URL oficial do relatório; o PDF temporário é
+removido após a leitura. A integração à consolidação/perfil é uma etapa posterior.
 
 Caso de CNPJ não indexado localmente (miss no índice do lote diário do IBAMA): reaproveita o mesmo adapter/parser do job diário, disparado sob demanda como job avulso do BullMQ para aquele CNPJ específico, contra o mesmo dump oficial. Isso **não** reintroduz webscraping nem um segundo mecanismo de ingestão — é o mesmo pipeline, com gatilho diferente.
 

@@ -106,11 +106,19 @@
 | IBGE (`servicodados.ibge.gov.br`) | HTTPS + JSON | REST, sem autenticação |
 | IBAMA — Dados Abertos | HTTPS + JSON | API CKAN (Action API), sem autenticação |
 | CGU — Portal da Transparência (CEIS/CNEP) | HTTPS + JSON | REST, autenticação por chave de API em header |
-| GHG Protocol — Registro Público de Emissões | HTTPS + HTML/CSV | **Exceção documentada** — sem API REST oficial; acesso via download estruturado, não é JSON |
+| GHG Protocol — Registro Público de Emissões | HTTPS + JSON/PDF | **Exceção documentada** — catálogo público usado pelo portal (sem contrato REST oficial estável) e download do relatório PDF; o CNPJ e o ano do relatório confirmam a identidade |
 
 CEIS/CNEP usam o token `CGU_API_KEY`, obrigatório e validado no ambiente da API,
 enviado somente no header `chave-api-dados`. A chave real não integra o repositório
 nem os logs; o cadastro ocorre pela conta gov.br no Portal da Transparência.
+
+O adapter GHG lê o catálogo JSON público do portal e baixa o relatório PDF do
+inventário mais recente de cada candidato (até três candidatos pelo nome cadastral
+local). O nome apenas localiza: só o CNPJ exato e o ano inventariado do PDF permitem
+confirmar a evidência. A extração usa `pdfjs-dist` em thread descartável, com prazo e
+memória limitados; somente CNPJ, identificadores da organização/ciclo e ano são
+mantidos, sem contatos nem texto integral do PDF. Ausência de correspondência,
+formato inválido e indisponibilidade resultam em `UNKNOWN`.
 
 A comunicação entre o BIOS e as fontes externas é majoritariamente **HTTPS com JSON**, com
 única exceção no GHG Protocol, que não expõe API formal — desvio já tratado como excepcional

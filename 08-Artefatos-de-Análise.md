@@ -344,7 +344,8 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>1 - O sistema nunca afirma que a empresa "é" ou "não é" sustentável ([IND01]).</br>
 		<br>2 - <code>UNKNOWN</code> nunca é apresentado nem pontuado como evidência negativa ([IND02]).</br>
 		<br>3 - Sanções do CEIS/CNEP são exibidas como conduta administrativa, nunca como infração ambiental. A consulta lê todas as páginas antes de substituir o retrato da fonte para o CNPJ; resposta completa sem registros confirma <code>NOT_FOUND</code>, sem bônus no índice. Sanções ainda retornadas pela fonte com data final vencida são preservadas como registros históricos confirmados, com suas datas explícitas; isso não afirma vigência jurídica. O reaproveitamento do cache mantém a data e a validade da coleta original.</br>
-		<br>4 - Os índices dos ODS 13 e 15 não são comparáveis entre si e não são combinados em índice geral.</br></td></tr>
+		<br>4 - Os índices dos ODS 13 e 15 não são comparáveis entre si e não são combinados em índice geral.</br>
+        <br>5 - O GHG é coletado somente pelo consumidor da fila própria <code>ghg-inventory</code>, com prazo do catálogo. O nome cadastral localiza candidatos, mas apenas CNPJ exato e ano inventariado do relatório público confirmam a evidência positiva de publicação do inventário mais recente. Sem correspondência verificável, sem inventário ou em falha, o resultado é <code>UNKNOWN</code>, nunca <code>NOT_FOUND</code>; respostas anteriores são preservadas. Coleta válida é reutilizada sem renovar artificialmente suas datas. O ano do inventário não é data de publicação, que permanece nula quando ausente. Não são armazenados contatos nem texto integral do PDF ([INL02]).</br></td></tr>
 </table>
 
 <br></br>
