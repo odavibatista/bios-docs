@@ -189,6 +189,24 @@ achado elegível não reduz a confiança; adicionar `UNKNOWN` ou `OUTDATED` não
 aumenta. Esses estados nunca alteram o índice. Índice e confiança são persistidos
 lado a lado em `company_ods_scores`, sem fusão em um número único.
 
+### 4.3 Explicação auditável do índice (RF12)
+
+A consulta autenticada `GET /companies/{cnpj}/scores/{odsNumber}/explanation`
+lê o retrato já calculado, sem acionar coleta ou recálculo. Para cada item de
+`contributions`, expõe a evidência referenciada, sua categoria e fonte pública,
+referência ou link HTTPS original, sinal, peso e pontos efetivos. A soma de
+`points` é o `score_value`; o `confidence_value` permanece separado. A categoria
+`CONDUTA_ADMINISTRATIVA` não é rotulada como infração ambiental.
+
+`state = CONFIRMED` descreve o estado da evidência quando ela compôs o índice;
+`current_state` pode ser `OUTDATED` após a validade da coleta. O retorno informa
+também a data e a versão do cálculo. Um índice gravado sem contribuição responde
+com `index_status = UNAVAILABLE`, valor nulo e lista vazia. Sem score gravado
+para empresa/ODS, a rota responde 404. Se a contribuição aponta a uma evidência
+que foi removida, mudou de categoria/sinal ou perdeu a proveniência, responde
+409 em vez de omitir a linha; o recálculo é tarefa da etapa UC15/#80.
+Nenhum desses números constitui veredito de sustentabilidade (IND01).
+
 ## 5. Estados de evidência — decisão
 
 O README (seção 4) e o RF08 formal (`05-Requisitos-Funcionais.md`) chegaram a listar números diferentes de estados (seis vs. quatro). Decisão: os quatro estados do RF08 (`CONFIRMED`, `NOT_FOUND`, `UNKNOWN`, `OUTDATED`) são o modelo definitivo do MVP. `NOT_APPLICABLE` e `CONFLICTING` ficam descartados do escopo atual e registrados aqui como trabalho futuro, não perdidos. O README foi atualizado (seção 4) para refletir essa decisão.
