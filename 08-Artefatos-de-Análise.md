@@ -336,14 +336,14 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 	<tr>
         <td colspan="2"><b>Fluxos Alternativos:</b>
 		<br>1.1 - CNPJ sem resposta no índice local do IBAMA: se há lote completo ainda válido, concluído ou reconfirmado sem alteração, o sistema confirma <code>NOT_FOUND</code> com a data e a validade desse lote, sem novo download. Sem lote válido, enfileira um job avulso para o CNPJ (UC14), sem aguardar a conclusão, e mantém <code>UNKNOWN</code> enquanto a coleta está pendente. Respostas anteriores vencidas são preservadas como <code>OUTDATED</code> durante a atualização.</br>
-		<br>1.2 - CGU ou GHG Protocol indisponível (ou timeout do serviço de fallback GHG): o sistema exibe as evidências das demais fontes e marca a fonte afetada como <code>UNKNOWN</code> ([NFCO01]).</br></td></tr>
+		<br>1.2 - CGU ou GHG Protocol indisponível (ou timeout do serviço de fallback GHG): o sistema exibe as evidências das demais fontes. Sem resposta anterior da fonte afetada, registra <code>UNKNOWN</code>; uma resposta anterior é preservada e passa a <code>OUTDATED</code> quando vence ([NFCO01]). CEIS e CNEP são tratados separadamente; falha em uma página não confirma ausência nem substitui a coleta anterior.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Pós-condições:</b> Perfil ambiental exibido com rastreabilidade até a fonte de cada evidência.</td></tr>
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - O sistema nunca afirma que a empresa "é" ou "não é" sustentável ([IND01]).</br>
 		<br>2 - <code>UNKNOWN</code> nunca é apresentado nem pontuado como evidência negativa ([IND02]).</br>
-		<br>3 - Sanções do CEIS/CNEP são exibidas como conduta administrativa, nunca como infração ambiental.</br>
+		<br>3 - Sanções do CEIS/CNEP são exibidas como conduta administrativa, nunca como infração ambiental. A consulta lê todas as páginas antes de substituir o retrato da fonte para o CNPJ; resposta completa sem registros confirma <code>NOT_FOUND</code>, sem bônus no índice. Sanções ainda retornadas pela fonte com data final vencida são preservadas como registros históricos confirmados, com suas datas explícitas; isso não afirma vigência jurídica. O reaproveitamento do cache mantém a data e a validade da coleta original.</br>
 		<br>4 - Os índices dos ODS 13 e 15 não são comparáveis entre si e não são combinados em índice geral.</br></td></tr>
 </table>
 

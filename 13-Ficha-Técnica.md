@@ -108,6 +108,10 @@
 | CGU — Portal da Transparência (CEIS/CNEP) | HTTPS + JSON | REST, autenticação por chave de API em header |
 | GHG Protocol — Registro Público de Emissões | HTTPS + HTML/CSV | **Exceção documentada** — sem API REST oficial; acesso via download estruturado, não é JSON |
 
+CEIS/CNEP usam o token `CGU_API_KEY`, obrigatório e validado no ambiente da API,
+enviado somente no header `chave-api-dados`. A chave real não integra o repositório
+nem os logs; o cadastro ocorre pela conta gov.br no Portal da Transparência.
+
 A comunicação entre o BIOS e as fontes externas é majoritariamente **HTTPS com JSON**, com
 única exceção no GHG Protocol, que não expõe API formal — desvio já tratado como excepcional
 desde a definição das fontes de dados (hierarquia API First → dataset → download → scraping).
