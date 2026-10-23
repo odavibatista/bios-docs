@@ -459,6 +459,18 @@ Table evidence_raw {
   }
 }
 
+Table evidence_collection_clocks {
+  id_evidence_collection_clock objectid [primary key]
+  scope_key varchar [note: 'Fonte e CNPJ; * representa o dump completo da fonte']
+  collected_at timestamp [note: 'Última coleta aceita; impede regressão temporal do retrato']
+
+  Note: 'Relógio de publicação por fonte/CNPJ, inclusive retrato vazio; a transação do retrato disputa este documento.'
+
+  Indexes {
+    scope_key [unique, name: 'idx_evidence_collection_clocks_scope_key']
+  }
+}
+
 Table evidence_normalized {
   id_evidence objectid [primary key]
   evidence_key varchar [note: 'Chave determinística para upsert idempotente: <slug da fonte>:<cnpj>:<identidade do registro, ou a referência externa quando a fonte não tem uma única> ou, para o resultado da consulta sem registro, <slug da fonte>:<cnpj>#NOT_FOUND / #UNKNOWN']
