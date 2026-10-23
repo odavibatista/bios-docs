@@ -101,6 +101,11 @@ autor) foi analisado como contraexemplo — mesma base de template, mas que dege
 especificação de tela em prosa livre a partir do `Home.md`; decisão explícita de **não
 repetir esse padrão** no BIOS.
 
+Os requisitos (documentos 05, 06 e 07) são redigidos na sintaxe da ISO/IEC/IEEE 29148:2011 —
+[Condição] [Sujeito] [Ação] [Objeto] [Restrição] —, com rastreabilidade para os casos de uso, e
+os RNF são classificados pelas características da ISO/IEC 25010:2023. As heurísticas de redação
+estão no início de `05-Requisitos-Funcionais.md`.
+
 Mapeamento da estrutura de documentação adotada → estrutura exigida pela A3 (item 8 da
 proposta da disciplina):
 
