@@ -23,6 +23,17 @@ em: https://portaldatransparencia.gov.br/api-de-dados. Acesso em: 2026.
 GHG PROTOCOL BRASIL. **Registro Público de Emissões**. Disponível em:
 https://registropublicodeemissoes.fgv.br. Acesso em: 2026.
 
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION; INTERNATIONAL ELECTROTECHNICAL COMMISSION;
+INSTITUTE OF ELECTRICAL AND ELECTRONICS ENGINEERS. **ISO/IEC/IEEE 29148:2011** — Systems and
+software engineering — Life cycle processes — Requirements engineering. Disponível em:
+https://www.iso.org/standard/45171.html. Acesso em: 2026.
+
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. **ISO/IEC 25010:2011** — Systems and
+software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE) —
+System and software quality models. Disponível em: https://www.iso.org/standard/35733.html.
+Acesso em: 2026. (Edição de 2011, vigente na ementa da disciplina; substituída pela edição de
+2023 abaixo, que é a adotada na classificação do `06-Requisitos-Nao-Funcionais.md`.)
+
 INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. **ISO/IEC 25010:2023** — Systems and
 software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE) —
 Product quality model. Disponível em: https://iso.org/standard/78176.html. Acesso em: 2026.
@@ -35,3 +46,7 @@ Computação, 2022.
 
 SBC. **IV Seminário dos Grandes Desafios da Computação no Brasil: Trabalhos Apresentados**.
 Sociedade Brasileira de Computação, 2024.
+
+PEREIRA, Sidny de Almeida Molina. **Aula 04: Engenharia de Requisitos**. Modelos, Métodos e
+Técnicas da Engenharia de Software. Material didático (slides). Universidade São Judas Tadeu
+(USJT), 2026.
