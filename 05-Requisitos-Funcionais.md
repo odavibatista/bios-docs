@@ -25,6 +25,10 @@ Heurísticas de redação aplicadas a todos os RF:
 - **Uma sentença por comportamento.** O RF que reúne mais de um comportamento do mesmo caso de
   uso traz uma sentença completa por comportamento, numerada (a), (b)..., cada uma com seus
   próprios elementos. Condição, objeto e restrição são omitidos quando não se aplicam.
+- **Elementos explícitos.** Abaixo de cada declaração, a linha "Decomposição" aponta qual trecho
+  é [Condição], [Sujeito], [Ação], [Objeto] e [Restrição] de cada sentença. Trechos entre
+  colchetes são implícitos na frase (ex.: o objeto de um pronome); elementos ausentes não se
+  aplicam à sentença.
 - **Texto normativo separado das notas.** A linha "Requisito" contém só o que é exigido e
   verificável; justificativas, dependências e decisões de escopo ficam na linha "Observações".
 - **O quê, não o como.** Tecnologias só aparecem como restrição de projeto definida pela
@@ -47,6 +51,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU01. |
 | **Requisitos associados:** | [RF02], [RF22], [RF28]. |
 | **Requisito:** | (a) Quando uma pessoa informar nome (de 2 a 100 caracteres), e-mail e senha (de 8 a 128 caracteres, com ao menos uma letra e um número), o sistema deve criar uma conta inativa, com papel `USER`.<br>(b) Quando o e-mail informado já estiver cadastrado, o sistema deve exibir a mesma resposta dada a um e-mail novo, sem revelar a existência da conta. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando uma pessoa informar nome (de 2 a 100 caracteres), e-mail e senha (de 8 a 128 caracteres, com ao menos uma letra e um número) · **Sujeito:** o sistema · **Ação:** deve criar · **Objeto:** uma conta inativa · **Restrição:** com papel `USER`<br>(b) **Condição:** Quando o e-mail informado já estiver cadastrado · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** a mesma resposta dada a um e-mail novo · **Restrição:** sem revelar a existência da conta |
 
 
 <p align="center"><b>[RF02] Autenticar usuário</b></p>
@@ -58,6 +63,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU03. |
 | **Requisitos associados:** | [RF01], [RF19], [RF20], [RF32]. |
 | **Requisito:** | (a) Quando um usuário com conta ativa informar e-mail e senha válidos, o sistema deve autenticá-lo e abrir uma sessão própria do dispositivo.<br>(b) Quando o e-mail ou a senha informados forem inválidos, o sistema deve exibir uma mensagem de credenciais inválidas que não distingue e-mail inexistente de senha incorreta.<br>(c) Quando uma requisição não trouxer sessão válida, o sistema deve recusá-la, exceto nas rotas de acesso anônimo (cadastro, confirmação de e-mail, login, renovação de sessão, recuperação de senha e health check). |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando um usuário com conta ativa informar e-mail e senha válidos · **Sujeito:** o sistema · **Ação:** deve autenticá-lo e abrir · **Objeto:** uma sessão própria do dispositivo<br>(b) **Condição:** Quando o e-mail ou a senha informados forem inválidos · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** uma mensagem de credenciais inválidas · **Restrição:** que não distingue e-mail inexistente de senha incorreta<br>(c) **Condição:** Quando uma requisição não trouxer sessão válida · **Sujeito:** o sistema · **Ação:** deve recusá-la · **Objeto:** [a requisição] · **Restrição:** exceto nas rotas de acesso anônimo (cadastro, confirmação de e-mail, login, renovação de sessão, recuperação de senha e health check) |
 
 
 <p align="center"><b>[RF03] Buscar empresa por CNPJ</b></p>
@@ -69,6 +75,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU11. |
 | **Requisitos associados:** | [RF02], [RF05], [RF07]. |
 | **Requisito:** | (a) Quando o usuário autenticado informar um CNPJ (numérico ou alfanumérico) com formato e dígitos verificadores válidos, o sistema deve localizar a empresa correspondente, consultando as fontes cadastrais na ordem de prioridade do catálogo de fontes.<br>(b) Quando o CNPJ informado for inválido, o sistema deve exibir erro de validação.<br>(c) Quando nenhuma fonte cadastral consultada encontrar o CNPJ, o sistema deve informar que a empresa não foi encontrada. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário autenticado informar um CNPJ (numérico ou alfanumérico) com formato e dígitos verificadores válidos · **Sujeito:** o sistema · **Ação:** deve localizar · **Objeto:** a empresa correspondente · **Restrição:** consultando as fontes cadastrais na ordem de prioridade do catálogo de fontes<br>(b) **Condição:** Quando o CNPJ informado for inválido · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** erro de validação<br>(c) **Condição:** Quando nenhuma fonte cadastral consultada encontrar o CNPJ · **Sujeito:** o sistema · **Ação:** deve informar · **Objeto:** que a empresa não foi encontrada |
 
 
 <p align="center"><b>[RF04] Buscar empresa por razão social/nome fantasia</b></p>
@@ -80,6 +87,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU12. |
 | **Requisitos associados:** | [RF03]. |
 | **Requisito:** | Quando o usuário autenticado informar um texto de até 100 caracteres, com ao menos uma palavra de 3 ou mais caracteres, o sistema deve listar, de forma paginada, as empresas da base local em que cada palavra digitada inicie alguma palavra da razão social ou do nome fantasia, em qualquer ordem e ignorando caixa, acentos e pontuação. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o usuário autenticado informar um texto de até 100 caracteres, com ao menos uma palavra de 3 ou mais caracteres · **Sujeito:** o sistema · **Ação:** deve listar · **Objeto:** as empresas da base local em que cada palavra digitada inicie alguma palavra da razão social ou do nome fantasia · **Restrição:** de forma paginada; em qualquer ordem e ignorando caixa, acentos e pontuação |
 
 
 <p align="center"><b>[RF05] Exibir dados cadastrais da empresa</b></p>
@@ -91,6 +99,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU11, HU13. |
 | **Requisitos associados:** | [RF03], [RF06]. |
 | **Requisito:** | Quando o perfil cadastral de uma empresa for localizado, o sistema deve exibir ao usuário a razão social, a situação cadastral, o porte, o endereço e o CNAE (principal e secundários) da empresa consultada, sem dado pessoal de sócio ou administrador ([INL02]). |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o perfil cadastral de uma empresa for localizado · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** ao usuário a razão social, a situação cadastral, o porte, o endereço e o CNAE (principal e secundários) da empresa consultada · **Restrição:** sem dado pessoal de sócio ou administrador ([INL02]) |
 
 
 <p align="center"><b>[RF06] Exibir descrição textual do CNAE</b></p>
@@ -102,6 +111,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU14. |
 | **Requisitos associados:** | [RF05]. |
 | **Requisito:** | Quando o sistema exibir um código CNAE, ele deve exibir junto a descrição da atividade econômica correspondente, adotando a descrição oficial do IBGE e, na sua ausência, a do provedor cadastral. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o sistema exibir um código CNAE · **Sujeito:** ele [o sistema] · **Ação:** deve exibir junto · **Objeto:** a descrição da atividade econômica correspondente · **Restrição:** adotando a descrição oficial do IBGE e, na sua ausência, a do provedor cadastral |
 
 
 <p align="center"><b>[RF07] Consolidar evidências ambientais</b></p>
@@ -113,6 +123,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU15. |
 | **Requisitos associados:** | [RF03], [RF08], [RF10]. |
 | **Requisito:** | Quando o perfil ambiental de uma empresa com perfil cadastral local for solicitado, o sistema deve consolidar, por CNPJ, as evidências ambientais das fontes públicas IBAMA, CEIS/CNEP (CGU) e GHG Protocol — Registro Público de Emissões, mantendo as evidências das demais fontes quando uma delas estiver indisponível ([NFCO01]). |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o perfil ambiental de uma empresa com perfil cadastral local for solicitado · **Sujeito:** o sistema · **Ação:** deve consolidar · **Objeto:** as evidências ambientais das fontes públicas IBAMA, CEIS/CNEP (CGU) e GHG Protocol — Registro Público de Emissões · **Restrição:** por CNPJ; mantendo as evidências das demais fontes quando uma delas estiver indisponível ([NFCO01]) |
 
 
 <p align="center"><b>[RF08] Registrar metadados da evidência</b></p>
@@ -124,6 +135,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU16, HU18. |
 | **Requisitos associados:** | [RF07]. |
 | **Requisito:** | Quando o sistema registrar uma evidência, ele deve gravar a fonte, a categoria, a data de coleta, a data de publicação e o estado (`CONFIRMED`, `NOT_FOUND`, `UNKNOWN` ou `OUTDATED`) da evidência, sem duplicá-la quando a coleta for repetida. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o sistema registrar uma evidência · **Sujeito:** ele [o sistema] · **Ação:** deve gravar · **Objeto:** a fonte, a categoria, a data de coleta, a data de publicação e o estado (`CONFIRMED`, `NOT_FOUND`, `UNKNOWN` ou `OUTDATED`) da evidência · **Restrição:** sem duplicá-la quando a coleta for repetida |
 
 
 <p align="center"><b>[RF09] Exibir referência à fonte original</b></p>
@@ -135,6 +147,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU17. |
 | **Requisitos associados:** | [RF07], [RF08]. |
 | **Requisito:** | (a) Quando o sistema exibir uma evidência, ele deve exibir o nome público da fonte e o link ou identificador do órgão de origem, para auditoria, com link em URL HTTPS absoluta e sem credenciais.<br>(b) Quando uma evidência não tiver identificador não vazio nem link válido, o sistema deve exibi-la como `UNKNOWN`, sem sinal, resumo nem detalhes confirmatórios. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o sistema exibir uma evidência · **Sujeito:** ele [o sistema] · **Ação:** deve exibir · **Objeto:** o nome público da fonte e o link ou identificador do órgão de origem · **Restrição:** com link em URL HTTPS absoluta e sem credenciais<br>(b) **Condição:** Quando uma evidência não tiver identificador não vazio nem link válido · **Sujeito:** o sistema · **Ação:** deve exibi-la · **Objeto:** [a evidência] como `UNKNOWN` · **Restrição:** sem sinal, resumo nem detalhes confirmatórios |
 
 
 <p align="center"><b>[RF10] Calcular índice de aderência ambiental</b></p>
@@ -146,6 +159,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU19. |
 | **Requisitos associados:** | [RF07], [RF11]. |
 | **Requisito:** | Quando as evidências normalizadas de uma empresa forem criadas ou atualizadas, o sistema deve calcular, por empresa, um índice de aderência ambiental para cada ODS de referência do MVP — ODS 13 (Ação Contra a Mudança Global do Clima) e ODS 15 (Vida Terrestre) —, a partir das evidências vinculadas a cada ODS, sem combiná-los em índice geral. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando as evidências normalizadas de uma empresa forem criadas ou atualizadas · **Sujeito:** o sistema · **Ação:** deve calcular · **Objeto:** um índice de aderência ambiental para cada ODS de referência do MVP — ODS 13 (Ação Contra a Mudança Global do Clima) e ODS 15 (Vida Terrestre) · **Restrição:** por empresa; a partir das evidências vinculadas a cada ODS; sem combiná-los em índice geral |
 | **Observações:** | Os ODS de referência são entidades próprias do banco de dados, populadas via seed (ver `14-Projeto-e-Arquitetura.md`, seção 3.1). |
 
 
@@ -157,7 +171,8 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC07, UC15. |
 | **Necessidade (história de usuário):** | HU20. |
 | **Requisitos associados:** | [RF10]. |
-| **Requisito:** | (a) Quando o sistema calcular o índice de um ODS, ele deve calcular, para esse índice, um nível de confiança separado, a partir da quantidade e da qualidade das evidências disponíveis para o ODS, e exibi-los lado a lado, nunca combinados.<br>(b) Quando não houver evidência conclusiva para um ODS, o sistema deve registrar o índice como indisponível, com a confiança mínima. |
+| **Requisito:** | (a) Quando o sistema calcular o índice de um ODS, ele deve calcular, para esse índice, um nível de confiança separado, a partir da quantidade e da qualidade das evidências disponíveis para o ODS.<br>(b) Quando o sistema exibir o índice e o nível de confiança de um ODS, ele deve exibi-los lado a lado, nunca combinados.<br>(c) Quando não houver evidência conclusiva para um ODS, o sistema deve registrar o índice como indisponível, com a confiança mínima. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o sistema calcular o índice de um ODS · **Sujeito:** ele [o sistema] · **Ação:** deve calcular · **Objeto:** um nível de confiança separado · **Restrição:** para esse índice; a partir da quantidade e da qualidade das evidências disponíveis para o ODS<br>(b) **Condição:** Quando o sistema exibir o índice e o nível de confiança de um ODS · **Sujeito:** ele [o sistema] · **Ação:** deve exibi-los · **Objeto:** [o índice e o nível de confiança] · **Restrição:** lado a lado, nunca combinados<br>(c) **Condição:** Quando não houver evidência conclusiva para um ODS · **Sujeito:** o sistema · **Ação:** deve registrar · **Objeto:** o índice como indisponível · **Restrição:** com a confiança mínima |
 
 
 <p align="center"><b>[RF12] Explicar composição do score</b></p>
@@ -169,6 +184,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU21. |
 | **Requisitos associados:** | [RF10]. |
 | **Requisito:** | Quando o usuário selecionar a explicação do score de um ODS, o sistema deve listar, separadamente para esse ODS, as evidências que contribuíram para o índice, com o peso e o sinal (positivo ou negativo) de cada uma. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o usuário selecionar a explicação do score de um ODS · **Sujeito:** o sistema · **Ação:** deve listar · **Objeto:** as evidências que contribuíram para o índice · **Restrição:** separadamente para esse ODS; com o peso e o sinal (positivo ou negativo) de cada uma |
 
 
 <p align="center"><b>[RF13] Filtrar empresas</b></p>
@@ -180,6 +196,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU23, HU24. |
 | **Requisitos associados:** | [RF10]. |
 | **Requisito:** | Quando o usuário informar critérios de pesquisa, o sistema deve listar, de forma paginada, as empresas da base local que atendam aos filtros de CNAE, UF e município e, para um único ODS selecionado, ao índice mínimo e à confiança mínima informados. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o usuário informar critérios de pesquisa · **Sujeito:** o sistema · **Ação:** deve listar · **Objeto:** as empresas da base local que atendam aos filtros de CNAE, UF e município e, para um único ODS selecionado, ao índice mínimo e à confiança mínima informados · **Restrição:** de forma paginada |
 
 
 <p align="center"><b>[RF14] Ordenar resultados por score</b></p>
@@ -191,6 +208,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU24. |
 | **Requisitos associados:** | [RF13]. |
 | **Requisito:** | Quando o usuário escolher a ordenação de uma pesquisa, o sistema deve ordenar os resultados pelo índice do ODS selecionado, em ordem ascendente ou descendente, conforme a escolha. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o usuário escolher a ordenação de uma pesquisa · **Sujeito:** o sistema · **Ação:** deve ordenar · **Objeto:** os resultados · **Restrição:** pelo índice do ODS selecionado, em ordem ascendente ou descendente, conforme a escolha |
 
 
 <p align="center"><b>[RF15] Exportar lista em XLSX</b></p>
@@ -202,6 +220,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU25. |
 | **Requisitos associados:** | [RF13]. |
 | **Requisito:** | Quando o usuário solicitar a exportação de uma pesquisa com ao menos um resultado, o sistema deve gerar um arquivo em formato XLSX com a lista filtrada e ordenada, com o índice e o nível de confiança em colunas separadas por ODS, sem dado pessoal ou de contato de indivíduo ([INL02]). |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o usuário solicitar a exportação de uma pesquisa com ao menos um resultado · **Sujeito:** o sistema · **Ação:** deve gerar · **Objeto:** um arquivo em formato XLSX com a lista filtrada e ordenada · **Restrição:** com o índice e o nível de confiança em colunas separadas por ODS; sem dado pessoal ou de contato de indivíduo ([INL02]) |
 
 
 <p align="center"><b>[RF16] Gerenciar chaves de API</b></p>
@@ -212,7 +231,8 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC11. |
 | **Necessidade (história de usuário):** | HU30. |
 | **Requisitos associados:** | [RF01], [RF17]. |
-| **Requisito:** | (a) Quando o usuário autenticado informar um nome de identificação (de 2 a 60 caracteres), o sistema deve gerar uma chave de API e exibir o valor completo uma única vez, até o limite de 10 chaves ativas por usuário.<br>(b) Quando o usuário autenticado solicitar a listagem, o sistema deve exibir, para cada chave ativa, apenas o nome, o prefixo, a data de criação e a data do último uso.<br>(c) Quando o usuário autenticado confirmar a revogação de uma chave própria, o sistema deve invalidá-la imediatamente. |
+| **Requisito:** | (a) Quando o usuário autenticado informar um nome de identificação (de 2 a 60 caracteres), o sistema deve gerar uma chave de API, até o limite de 10 chaves ativas por usuário.<br>(b) Quando o sistema gerar uma chave de API, ele deve exibir o valor completo da chave uma única vez.<br>(c) Quando o usuário autenticado solicitar a listagem, o sistema deve exibir, para cada chave ativa, apenas o nome, o prefixo, a data de criação e a data do último uso.<br>(d) Quando o usuário autenticado confirmar a revogação de uma chave própria, o sistema deve invalidá-la imediatamente. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário autenticado informar um nome de identificação (de 2 a 60 caracteres) · **Sujeito:** o sistema · **Ação:** deve gerar · **Objeto:** uma chave de API · **Restrição:** até o limite de 10 chaves ativas por usuário<br>(b) **Condição:** Quando o sistema gerar uma chave de API · **Sujeito:** ele [o sistema] · **Ação:** deve exibir · **Objeto:** o valor completo da chave · **Restrição:** uma única vez<br>(c) **Condição:** Quando o usuário autenticado solicitar a listagem · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** o nome, o prefixo, a data de criação e a data do último uso · **Restrição:** para cada chave ativa; apenas<br>(d) **Condição:** Quando o usuário autenticado confirmar a revogação de uma chave própria · **Sujeito:** o sistema · **Ação:** deve invalidá-la · **Objeto:** [a chave] · **Restrição:** imediatamente |
 
 
 <p align="center"><b>[RF17] Expor API pública documentada</b></p>
@@ -224,6 +244,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU31. |
 | **Requisitos associados:** | [RF16], [RF05], [RF10]. |
 | **Requisito:** | (a) Quando um sistema de terceiros enviar uma requisição com chave de API ativa ao endpoint de perfil, o sistema deve retornar o perfil da empresa em JSON (dados cadastrais, evidências e, por ODS, índice, confiança e explicação), dentro do limite de requisições por chave.<br>(b) Quando a chave for ausente, inválida ou revogada, o sistema deve responder HTTP 401, sem indicar o motivo.<br>(c) Quando o limite de requisições por chave for excedido, o sistema deve responder HTTP 429, informando em `Retry-After` quando a chamada pode ser repetida.<br>(d) O sistema deve documentar os endpoints públicos em OpenAPI/Swagger. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando um sistema de terceiros enviar uma requisição com chave de API ativa ao endpoint de perfil · **Sujeito:** o sistema · **Ação:** deve retornar · **Objeto:** o perfil da empresa em JSON (dados cadastrais, evidências e, por ODS, índice, confiança e explicação) · **Restrição:** dentro do limite de requisições por chave<br>(b) **Condição:** Quando a chave for ausente, inválida ou revogada · **Sujeito:** o sistema · **Ação:** deve responder · **Objeto:** HTTP 401 · **Restrição:** sem indicar o motivo<br>(c) **Condição:** Quando o limite de requisições por chave for excedido · **Sujeito:** o sistema · **Ação:** deve responder · **Objeto:** HTTP 429 · **Restrição:** informando em `Retry-After` quando a chamada pode ser repetida<br>(d) **Sujeito:** o sistema · **Ação:** deve documentar · **Objeto:** os endpoints públicos · **Restrição:** em OpenAPI/Swagger |
 
 
 <p align="center"><b>[RF18] Disparar e-mails transacionais</b></p>
@@ -235,6 +256,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU02, HU06, HU09, HU35. |
 | **Requisitos associados:** | [RF01], [RF16], [RF25], [RF28], [RF32]. |
 | **Requisito:** | (a) Quando uma conta for criada ou o e-mail de uma conta for alterado, o sistema deve enviar ao endereço informado um e-mail transacional de confirmação.<br>(b) Quando um usuário solicitar a redefinição de senha de uma conta ativa, o sistema deve enviar ao e-mail cadastrado um e-mail transacional com o link de redefinição.<br>(c) Quando uma conta for bloqueada por tentativas de login malsucedidas ou o reuso de um refresh token for detectado, o sistema deve enviar ao titular da conta um e-mail transacional de alerta de login suspeito.<br>(d) O sistema deve compor os e-mails transacionais a partir de templates Handlebars, enviados via Nodemailer. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando uma conta for criada ou o e-mail de uma conta for alterado · **Sujeito:** o sistema · **Ação:** deve enviar · **Objeto:** um e-mail transacional de confirmação · **Restrição:** ao endereço informado<br>(b) **Condição:** Quando um usuário solicitar a redefinição de senha de uma conta ativa · **Sujeito:** o sistema · **Ação:** deve enviar · **Objeto:** um e-mail transacional com o link de redefinição · **Restrição:** ao e-mail cadastrado<br>(c) **Condição:** Quando uma conta for bloqueada por tentativas de login malsucedidas ou o reuso de um refresh token for detectado · **Sujeito:** o sistema · **Ação:** deve enviar · **Objeto:** um e-mail transacional de alerta de login suspeito · **Restrição:** ao titular da conta<br>(d) **Sujeito:** o sistema · **Ação:** deve compor · **Objeto:** os e-mails transacionais · **Restrição:** a partir de templates Handlebars, enviados via Nodemailer |
 
 
 <p align="center"><b>[RF19] Registrar tentativas de login</b></p>
@@ -246,6 +268,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU09. |
 | **Requisitos associados:** | [RF02], [RF20]. |
 | **Requisito:** | Quando uma tentativa de autenticação for concluída, o sistema deve registrar o IP de origem, a data e a hora e o resultado (sucesso ou falha) da tentativa. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando uma tentativa de autenticação for concluída · **Sujeito:** o sistema · **Ação:** deve registrar · **Objeto:** o IP de origem, a data e a hora e o resultado (sucesso ou falha) da tentativa |
 
 
 <p align="center"><b>[RF20] Bloquear temporariamente após tentativas de login malsucedidas</b></p>
@@ -257,6 +280,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU09. |
 | **Requisitos associados:** | [RF19]. |
 | **Requisito:** | Quando um mesmo IP ou um mesmo usuário acumular 5 (cinco) tentativas consecutivas de autenticação malsucedidas, o sistema deve bloquear novas tentativas de autenticação desse IP ou usuário por 15 (quinze) minutos, informando o tempo restante do bloqueio. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando um mesmo IP ou um mesmo usuário acumular 5 (cinco) tentativas consecutivas de autenticação malsucedidas · **Sujeito:** o sistema · **Ação:** deve bloquear · **Objeto:** novas tentativas de autenticação desse IP ou usuário · **Restrição:** por 15 (quinze) minutos; informando o tempo restante do bloqueio |
 
 
 <p align="center"><b>[RF21] Expor endpoints/tabelas isca (honeypot)</b></p>
@@ -268,6 +292,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU34. |
 | **Requisitos associados:** | [RF17], [RF20]. |
 | **Requisito:** | (a) Quando um chamador acessar um endpoint isca, o sistema deve retornar dados sintéticos de empresas, com CNPJs válidos, gerados com Faker.js e um gerador de CNPJ válido, em no máximo 10 registros por página.<br>(b) Quando um chamador acessar um endpoint isca, o sistema deve registrar e bloquear o IP do chamador, por meio de um decorator dedicado. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando um chamador acessar um endpoint isca · **Sujeito:** o sistema · **Ação:** deve retornar · **Objeto:** dados sintéticos de empresas, com CNPJs válidos · **Restrição:** gerados com Faker.js e um gerador de CNPJ válido; em no máximo 10 registros por página<br>(b) **Condição:** Quando um chamador acessar um endpoint isca · **Sujeito:** o sistema · **Ação:** deve registrar e bloquear · **Objeto:** o IP do chamador · **Restrição:** por meio de um decorator dedicado |
 
 
 <p align="center"><b>[RF22] Manter blacklist de domínios de e-mail</b></p>
@@ -279,6 +304,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU01, HU33. |
 | **Requisitos associados:** | [RF01], [RF29]. |
 | **Requisito:** | (a) Quando um cadastro ou uma troca de e-mail for solicitado, o sistema deve recusar o e-mail cujo domínio conste na lista de domínios bloqueados.<br>(b) O sistema deve manter a lista de domínios bloqueados como entidade persistida em banco de dados, inicializada a partir de um arquivo JSON de sementes (seed) e atualizável sem novo deploy. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando um cadastro ou uma troca de e-mail for solicitado · **Sujeito:** o sistema · **Ação:** deve recusar · **Objeto:** o e-mail cujo domínio conste na lista de domínios bloqueados<br>(b) **Sujeito:** o sistema · **Ação:** deve manter · **Objeto:** a lista de domínios bloqueados · **Restrição:** como entidade persistida em banco de dados, inicializada a partir de um arquivo JSON de sementes (seed) e atualizável sem novo deploy |
 
 
 <p align="center"><b>[RF23] Encerrar sessão</b></p>
@@ -290,6 +316,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU04. |
 | **Requisitos associados:** | [RF02], [RF32]. |
 | **Requisito:** | (a) Quando o usuário autenticado solicitar sair, o sistema deve encerrar a sessão do dispositivo atual, com efeito imediato sobre os tokens já emitidos.<br>(b) Se o usuário escolher sair de todos os dispositivos, o sistema deve encerrar todas as suas sessões ativas, com efeito imediato sobre os tokens já emitidos. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário autenticado solicitar sair · **Sujeito:** o sistema · **Ação:** deve encerrar · **Objeto:** a sessão do dispositivo atual · **Restrição:** com efeito imediato sobre os tokens já emitidos<br>(b) **Condição:** Se o usuário escolher sair de todos os dispositivos · **Sujeito:** o sistema · **Ação:** deve encerrar · **Objeto:** todas as suas sessões ativas · **Restrição:** com efeito imediato sobre os tokens já emitidos |
 
 
 <p align="center"><b>[RF24] Alterar senha</b></p>
@@ -300,7 +327,8 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC04. |
 | **Necessidade (história de usuário):** | HU05. |
 | **Requisitos associados:** | [RF02], [RF23]. |
-| **Requisito:** | Quando o usuário autenticado informar a senha atual correta e uma nova senha válida (mesma política do cadastro e diferente da atual), o sistema deve gravar a nova senha e revogar todas as sessões ativas do usuário ao concluir a troca. |
+| **Requisito:** | (a) Quando o usuário autenticado informar a senha atual correta e uma nova senha válida (mesma política do cadastro e diferente da atual), o sistema deve gravar a nova senha.<br>(b) Quando o sistema gravar a nova senha de uma alteração, ele deve revogar todas as sessões ativas do usuário. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário autenticado informar a senha atual correta e uma nova senha válida (mesma política do cadastro e diferente da atual) · **Sujeito:** o sistema · **Ação:** deve gravar · **Objeto:** a nova senha<br>(b) **Condição:** Quando o sistema gravar a nova senha de uma alteração · **Sujeito:** ele [o sistema] · **Ação:** deve revogar · **Objeto:** todas as sessões ativas do usuário |
 
 
 <p align="center"><b>[RF25] Recuperar senha esquecida</b></p>
@@ -311,7 +339,8 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC04. |
 | **Necessidade (história de usuário):** | HU06. |
 | **Requisitos associados:** | [RF01], [RF18]. |
-| **Requisito:** | (a) Quando um usuário solicitar a redefinição de senha informando o e-mail de uma conta ativa, o sistema deve enviar a esse e-mail um link com token de uso único, válido por 2 horas por padrão (configurável), e exibir sempre a mesma mensagem de confirmação, exista ou não conta com o e-mail informado.<br>(b) Quando o usuário acessar um link válido e informar uma nova senha válida, o sistema deve gravar a nova senha e revogar todas as sessões ativas do usuário. |
+| **Requisito:** | (a) Quando um usuário solicitar a redefinição de senha informando o e-mail de uma conta ativa, o sistema deve enviar a esse e-mail um link com token de uso único, válido por 2 horas por padrão (configurável).<br>(b) Quando um usuário solicitar a redefinição de senha, o sistema deve exibir sempre a mesma mensagem de confirmação, exista ou não conta com o e-mail informado.<br>(c) Quando o usuário acessar um link válido e informar uma nova senha válida, o sistema deve gravar a nova senha.<br>(d) Quando o sistema gravar a nova senha de uma redefinição, ele deve revogar todas as sessões ativas do usuário. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando um usuário solicitar a redefinição de senha informando o e-mail de uma conta ativa · **Sujeito:** o sistema · **Ação:** deve enviar · **Objeto:** um link com token de uso único · **Restrição:** a esse e-mail; válido por 2 horas por padrão (configurável)<br>(b) **Condição:** Quando um usuário solicitar a redefinição de senha · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** a mesma mensagem de confirmação · **Restrição:** sempre; exista ou não conta com o e-mail informado<br>(c) **Condição:** Quando o usuário acessar um link válido e informar uma nova senha válida · **Sujeito:** o sistema · **Ação:** deve gravar · **Objeto:** a nova senha<br>(d) **Condição:** Quando o sistema gravar a nova senha de uma redefinição · **Sujeito:** ele [o sistema] · **Ação:** deve revogar · **Objeto:** todas as sessões ativas do usuário |
 
 
 <p align="center"><b>[RF26] Editar dados da conta</b></p>
@@ -322,7 +351,8 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC05. |
 | **Necessidade (história de usuário):** | HU07. |
 | **Requisitos associados:** | [RF02], [RF28]. |
-| **Requisito:** | (a) Quando o usuário autenticado alterar o nome ou o endereço, o sistema deve gravar os dados, com o endereço armazenado de forma cifrada.<br>(b) Quando o usuário autenticado alterar o e-mail informando a senha atual, o sistema deve enviar um link de confirmação ao novo endereço e só efetivar a troca após a confirmação ([RF28]). |
+| **Requisito:** | (a) Quando o usuário autenticado alterar o nome ou o endereço, o sistema deve gravar os dados, com o endereço armazenado de forma cifrada.<br>(b) Quando o usuário autenticado alterar o e-mail informando a senha atual, o sistema deve enviar um link de confirmação ao novo endereço, efetivando a troca somente após a confirmação ([RF28]). |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário autenticado alterar o nome ou o endereço · **Sujeito:** o sistema · **Ação:** deve gravar · **Objeto:** os dados · **Restrição:** com o endereço armazenado de forma cifrada<br>(b) **Condição:** Quando o usuário autenticado alterar o e-mail informando a senha atual · **Sujeito:** o sistema · **Ação:** deve enviar · **Objeto:** um link de confirmação ao novo endereço · **Restrição:** efetivando a troca somente após a confirmação ([RF28]) |
 
 
 <p align="center"><b>[RF27] Excluir conta</b></p>
@@ -333,7 +363,8 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC05. |
 | **Necessidade (história de usuário):** | HU08. |
 | **Requisitos associados:** | [RF02], [RF16], [RF23]. |
-| **Requisito:** | Quando o usuário autenticado confirmar a exclusão da própria conta com sua senha, o sistema deve remover seus dados pessoais, revogar todas as suas chaves de API e encerrar todas as suas sessões ativas, atendendo ao direito de eliminação do titular previsto na LGPD ([NFSE02]). |
+| **Requisito:** | (a) Quando o usuário autenticado confirmar a exclusão da própria conta com sua senha, o sistema deve remover os dados pessoais do usuário, atendendo ao direito de eliminação do titular previsto na LGPD ([NFSE02]).<br>(b) Quando o usuário autenticado confirmar a exclusão da própria conta com sua senha, o sistema deve revogar todas as chaves de API do usuário.<br>(c) Quando o usuário autenticado confirmar a exclusão da própria conta com sua senha, o sistema deve encerrar todas as sessões ativas do usuário. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário autenticado confirmar a exclusão da própria conta com sua senha · **Sujeito:** o sistema · **Ação:** deve remover · **Objeto:** os dados pessoais do usuário · **Restrição:** atendendo ao direito de eliminação do titular previsto na LGPD ([NFSE02])<br>(b) **Condição:** Quando o usuário autenticado confirmar a exclusão da própria conta com sua senha · **Sujeito:** o sistema · **Ação:** deve revogar · **Objeto:** todas as chaves de API do usuário<br>(c) **Condição:** Quando o usuário autenticado confirmar a exclusão da própria conta com sua senha · **Sujeito:** o sistema · **Ação:** deve encerrar · **Objeto:** todas as sessões ativas do usuário |
 
 
 <p align="center"><b>[RF28] Confirmar e-mail de cadastro</b></p>
@@ -345,6 +376,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU02, HU07. |
 | **Requisitos associados:** | [RF01], [RF18]. |
 | **Requisito:** | (a) Enquanto o e-mail informado no cadastro não for confirmado, o sistema deve manter a conta inativa, recusando seu login.<br>(b) Quando o usuário acessar o link de confirmação, enviado por e-mail transacional ([RF18]) com token de uso único válido por 24 horas por padrão (configurável), o sistema deve ativar a conta. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Enquanto o e-mail informado no cadastro não for confirmado · **Sujeito:** o sistema · **Ação:** deve manter · **Objeto:** a conta inativa · **Restrição:** recusando seu login<br>(b) **Condição:** Quando o usuário acessar o link de confirmação, enviado por e-mail transacional ([RF18]) com token de uso único válido por 24 horas por padrão (configurável) · **Sujeito:** o sistema · **Ação:** deve ativar · **Objeto:** a conta |
 
 
 <p align="center"><b>[RF29] Gerenciar blacklist de domínios de e-mail</b></p>
@@ -355,7 +387,8 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC13. |
 | **Necessidade (história de usuário):** | HU33. |
 | **Requisitos associados:** | [RF22]. |
-| **Requisito:** | Quando um usuário com papel de administrador solicitar, o sistema deve consultar, adicionar e remover domínios da blacklist mantida pelo [RF22], recusando domínio inválido ou já cadastrado, com efeito imediato e sem novo deploy. |
+| **Requisito:** | (a) Quando um usuário com papel de administrador solicitar a consulta, o sistema deve listar os domínios da blacklist mantida pelo [RF22].<br>(b) Quando um usuário com papel de administrador informar um domínio válido e ainda não cadastrado, o sistema deve adicioná-lo à blacklist, com efeito imediato e sem novo deploy.<br>(c) Quando um usuário com papel de administrador confirmar a remoção de um domínio, o sistema deve removê-lo da blacklist, com efeito imediato e sem novo deploy.<br>(d) Quando o domínio informado for inválido ou já estiver cadastrado, o sistema deve recusar a inclusão, exibindo erro. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando um usuário com papel de administrador solicitar a consulta · **Sujeito:** o sistema · **Ação:** deve listar · **Objeto:** os domínios da blacklist mantida pelo [RF22]<br>(b) **Condição:** Quando um usuário com papel de administrador informar um domínio válido e ainda não cadastrado · **Sujeito:** o sistema · **Ação:** deve adicioná-lo · **Objeto:** à blacklist · **Restrição:** com efeito imediato e sem novo deploy<br>(c) **Condição:** Quando um usuário com papel de administrador confirmar a remoção de um domínio · **Sujeito:** o sistema · **Ação:** deve removê-lo · **Objeto:** da blacklist · **Restrição:** com efeito imediato e sem novo deploy<br>(d) **Condição:** Quando o domínio informado for inválido ou já estiver cadastrado · **Sujeito:** o sistema · **Ação:** deve recusar · **Objeto:** a inclusão · **Restrição:** exibindo erro |
 
 
 <p align="center"><b>[RF30] Consultar evolução do índice médio por setor</b></p>
@@ -367,6 +400,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU26. |
 | **Requisitos associados:** | [RF06], [RF10]. |
 | **Requisito:** | Quando o usuário selecionar um CNAE e um ODS, o sistema deve exibir a evolução do índice de aderência ambiental médio do setor entre janelas de tempo sucessivas, agregada por CNAE e nunca por empresa individual. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o usuário selecionar um CNAE e um ODS · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** a evolução do índice de aderência ambiental médio do setor entre janelas de tempo sucessivas · **Restrição:** agregada por CNAE e nunca por empresa individual |
 | **Observações:** | Conforme o indicador [IA05] e sua nota de restrição em `15-Impacto-Ambiental.md`. Depende da decisão de armazenamento de série histórica registrada na seção 15.4. |
 
 
@@ -379,6 +413,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Necessidade (história de usuário):** | HU32. |
 | **Requisitos associados:** | [RF16], [RF17]. |
 | **Requisito:** | Quando um CRM de terceiros enviar uma lista de CNPJs com chave de API ativa, o sistema deve retornar o perfil ambiental de cada pessoa jurídica (dados cadastrais, índice, confiança e evidências) em formato de importação de contas, sem exportar dado de contato nem dado pessoal de indivíduo ([INL02]). |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando um CRM de terceiros enviar uma lista de CNPJs com chave de API ativa · **Sujeito:** o sistema · **Ação:** deve retornar · **Objeto:** o perfil ambiental de cada pessoa jurídica (dados cadastrais, índice, confiança e evidências) · **Restrição:** em formato de importação de contas; sem exportar dado de contato nem dado pessoal de indivíduo ([INL02]) |
 | **Observações:** | Requisito bônus: entra apenas se houver folga no cronograma após a entrega dos requisitos essenciais e importantes, e não compõe o escopo mínimo do MVP. |
 
 
@@ -390,4 +425,5 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC17. |
 | **Necessidade (história de usuário):** | HU35. |
 | **Requisitos associados:** | [RF02], [RF18], [RF23]. |
-| **Requisito:** | (a) Quando o usuário apresentar um refresh token válido, o sistema deve trocá-lo por um novo par de access token e refresh token, invalidando o refresh token apresentado (uso único, com rotação).<br>(b) Quando for apresentado um refresh token já rotacionado, o sistema deve revogar todas as sessões do usuário e disparar o alerta de login suspeito por e-mail ([RF18]). |
+| **Requisito:** | (a) Quando o usuário apresentar um refresh token válido, o sistema deve trocá-lo por um novo par de access token e refresh token, invalidando o refresh token apresentado (uso único, com rotação).<br>(b) Quando for apresentado um refresh token já rotacionado, o sistema deve revogar todas as sessões do usuário.<br>(c) Quando for apresentado um refresh token já rotacionado, o sistema deve disparar o alerta de login suspeito por e-mail ([RF18]). |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário apresentar um refresh token válido · **Sujeito:** o sistema · **Ação:** deve trocá-lo · **Objeto:** por um novo par de access token e refresh token · **Restrição:** invalidando o refresh token apresentado (uso único, com rotação)<br>(b) **Condição:** Quando for apresentado um refresh token já rotacionado · **Sujeito:** o sistema · **Ação:** deve revogar · **Objeto:** todas as sessões do usuário<br>(c) **Condição:** Quando for apresentado um refresh token já rotacionado · **Sujeito:** o sistema · **Ação:** deve disparar · **Objeto:** o alerta de login suspeito · **Restrição:** por e-mail ([RF18]) |
