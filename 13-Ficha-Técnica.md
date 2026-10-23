@@ -96,6 +96,13 @@
   apontada para ele, e o formato e o comportamento (sucesso, "não encontrado", erro, demora)
   são configuráveis por teste. Nenhum teste chama a internet, então o CI não depende da
   disponibilidade real da fonte;
+- **Testes de contrato** (Vitest, `test/contract/`) — como a simulação reproduz a forma que o
+  código supõe, uma mudança de formato da fonte real passaria despercebida (um cadastro de
+  1029 organizações lido como uma amostra de 10 escapou assim). Um workflow agendado e manual
+  do GitHub Actions, **fora do CI de pull request** e não bloqueante, consulta IBAMA, CGU e GHG
+  com os mesmos leitores da produção e confere campos, paginação, tamanho e cabeçalhos; a
+  credencial da CGU vem só de secret do repositório. As imagens do MongoDB e do Redis do CI
+  são fixadas por digest;
 - **@faker-js/faker** — dados de todas as suítes de teste, com a mesma regra do back-end.
 
 ## 6. APIs Consumidas e Forma de Comunicação
