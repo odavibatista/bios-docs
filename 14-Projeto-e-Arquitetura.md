@@ -50,8 +50,11 @@ referência organização/ciclo e URL oficial do relatório; o PDF temporário �
 removido após a leitura. A consolidação já reúne essa evidência; a exposição no perfil é uma etapa posterior.
 
 A consolidação por CNPJ inicia em paralelo a consulta local IBAMA e os produtores
-CGU/GHG. O consumidor de `environmental-evidences`,
-`EnvironmentalEvidencesProcessor`, atende só `fetch-cgu-evidences`, com concorrência 3.
+CGU/GHG. Esse despachante mora num módulo de nível mais alto, `environmental-intelligence`, que
+depende das fontes (`ibama`, `cgu`, `ghg`) e do armazenamento (`evidences`), sem dependência
+inversa: o armazenamento não conhece as fontes que o alimentam. O consumidor de
+`environmental-evidences`, `EnvironmentalEvidencesProcessor`, atende só `fetch-cgu-evidences`, com
+concorrência 3.
 Lote diário e coleta avulsa do IBAMA vão para a fila própria `ibama-ingestion`, com
 um consumidor de concorrência 1 (um download de dumps por vez) e reaproveitamento
 dos dumps por 10 minutos, para que avulsos de CNPJs distintos não façam um download
