@@ -156,12 +156,23 @@ teto da categoria, contribuições posteriores continuam auditáveis com zero po
 Assim, a soma exata dos pontos reproduz o índice, limitado a −100…100, e o total
 de sanções administrativas nunca supera 20 pontos negativos.
 
+Sanção CEIS/CNEP cujo `details.endDate` precede o dia civil da apuração em
+`America/Sao_Paulo` recebe 25% do peso (−1,25). Termo de embargo IBAMA com
+`details.resource = TERMO_EMBARGO` e `details.lifted = true` também recebe
+25% (−10). A sanção com fim no dia da apuração, o embargo ativo, o auto de
+infração e a sanção sem data de fim mantêm o peso integral. Esses registros
+continuam `CONFIRMED` se a coleta estiver vigente: fim da sanção e levantamento
+do embargo não são vencimento da coleta. O teto de cada categoria é aplicado
+depois do redutor, e cada contribuição guarda o peso efetivo, os pontos e
+`weight_reason` (`CGU_SANCTION_EXPIRED`, `IBAMA_EMBARGO_LIFTED` ou nulo).
+A confiança RF11 continua independente da magnitude dos pontos.
+
 `company_ods_scores` contém um documento por empresa e ODS ativo, atualizado
 atomicamente por CNPJ. O recálculo mantém o ID/data de criação e remove scores
 de ODS desativados; `rules_version` identifica a regra usada. UF, cidade e CNAEs
 vêm do perfil, quando ele existe, ou ficam nulos/vazios. A confiança fica em campo
 separado, conforme RF11 abaixo. A versão conjunta das regras do cálculo é
-`rf10-rf11-v2`; os pesos do índice da versão `rf10-v1` permanecem iguais. O motor
+`rf10-rf11-v3`; os pesos integrais da versão `rf10-rf11-v2` permanecem iguais. O motor
 é um caso de uso interno; ligação automática ao perfil e apresentação ao usuário
 são etapas posteriores (#81).
 
@@ -198,8 +209,10 @@ A consulta autenticada `GET /companies/{cnpj}/scores/{odsNumber}/explanation`
 lê o retrato já calculado, sem acionar coleta ou recálculo. Para cada item de
 `contributions`, expõe a evidência referenciada, sua categoria e fonte pública,
 referência ou link HTTPS original, sinal, peso e pontos efetivos. A soma de
-`points` é o `score_value`; o `confidence_value` permanece separado. A categoria
-`CONDUTA_ADMINISTRATIVA` não é rotulada como infração ambiental.
+`points` é o `score_value`; o `confidence_value` permanece separado. O campo
+`weight_reason` explicita o redutor histórico quando aplicado, sem apagar a
+evidência. A categoria `CONDUTA_ADMINISTRATIVA` não é rotulada como infração
+ambiental.
 
 `state = CONFIRMED` descreve o estado da evidência quando ela compôs o índice;
 `current_state` pode ser `OUTDATED` após a validade da coleta. O retorno informa

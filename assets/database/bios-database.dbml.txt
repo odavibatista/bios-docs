@@ -543,7 +543,8 @@ Table score_contribution {
   evidence_id objectid [ref: > evidence_normalized.id_evidence]
   category evidence_category
   signal evidence_signal
-  weight double [note: 'Peso aplicado à evidência (fixo no código na v1)']
+  weight double [note: 'Peso efetivo após eventual redutor histórico; base fixa no código']
+  weight_reason varchar [null, note: 'Motivo do peso reduzido: CGU_SANCTION_EXPIRED ou IBAMA_EMBARGO_LIFTED']
   points double [note: 'Contribuição efetiva ao índice, já com o sinal aplicado']
 
   Note: 'Subdocumento embutido (sem coleção própria). Cada item é uma linha da explicação do score (RF12).'
