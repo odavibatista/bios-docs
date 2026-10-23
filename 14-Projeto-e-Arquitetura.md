@@ -179,8 +179,14 @@ de ODS desativados; `rules_version` identifica a regra usada. UF, cidade e CNAEs
 vêm do perfil, quando ele existe, ou ficam nulos/vazios. A confiança fica em campo
 separado, conforme RF11 abaixo. A versão conjunta das regras do cálculo é
 `rf10-rf11-v3`; os pesos integrais da versão `rf10-rf11-v2` permanecem iguais. O motor
-é um caso de uso interno; ligação automática ao perfil e apresentação ao usuário
-são etapas posteriores (#81).
+é um caso de uso interno, executado pelo job `recalculate-scores(cnpj)` da fila `ods-scoring`
+(UC15, #80), que o fim da ingestão do IBAMA (um job por CNPJ afetado, em lotes), a consulta sob
+demanda (aguardável com prazo, diagrama 3) e a atualização do perfil cadastral (reescrita dos campos
+desnormalizados) acionam. Pedidos simultâneos do mesmo CNPJ viram um job só enquanto ele não
+começou, e um recálculo mais antigo nunca sobrescreve um mais novo. Alterar a versão das regras
+dispara um recálculo em lote, por varredura agendada; ao final de cada recálculo, o cache derivado
+do CNPJ (perfil, evidências e notas) é invalidado, e os retratos das fontes, não. A apresentação ao
+usuário e a composição do perfil são etapas posteriores (#81).
 
 ### 4.2 Nível de confiança por ODS (RF11, versão `rf10-rf11-v2`)
 
