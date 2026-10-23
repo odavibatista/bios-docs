@@ -23,7 +23,7 @@ Decisão: **BullMQ + Redis para tudo**, sem broker adicional. BullMQ já cobre n
 
 A mesma decisão vale para a comunicação **interna**: a ingestão (cadastro por CNPJ, evidências ambientais e inventário GHG) **não é um conjunto de serviços à parte**, e sim de módulos do próprio `bios-core-api` — um módulo por fonte externa (`brasil-api`, `opencnpj`, `minha-receita`, `ibge-cnae`, e os que virão para IBAMA, CGU e GHG), mais um consumidor de fila por assunto (por exemplo, o `CompanyProfileProcessor`, que atende a fila `company-profile`). Quem pede e quem atende conversam **exclusivamente via filas BullMQ**, sem chamar um ao outro diretamente: o contrato do job (nome, payload e resultado) é o único acoplamento. Isso mantém o ganho que a separação em serviços traria — o consumidor pode ser movido para um processo próprio sem tocar em quem publica o job — sem o custo de operar vários deployáveis, o que seria contrário à diretriz de viabilidade solo do projeto. Quando a consulta do usuário exige resposta imediata, o core enfileira o job e aguarda sua conclusão com timeout (sequência em `08-Artefatos-de-Análise.md`, seção 8.4.1); estourado o timeout de uma fonte não bloqueante (GHG), a evidência correspondente é exibida como `UNKNOWN`.
 
-O *retry* com *backoff* é configurado **por fila** e, quando necessário, **por agendamento**: a fila `environmental-evidences` é compartilhada pelo lote diário do IBAMA (minutos por tentativa, fonte que costuma ficar horas fora do ar) e pelos jobs por CNPJ (que erram rápido, pois há quem espere a resposta). O lote diário declara a própria política — 5 tentativas com *backoff* exponencial de base 5 minutos — sem alterar a dos demais jobs da fila. A execução de cada job agendado é registrada em `ingestion_runs` e só é marcada como falha quando as tentativas se esgotam; as evidências anteriores seguem valendo até o fim da janela de validade (UC14, fluxo 2.1).
+O *retry* com *backoff* é configurado **por fila** e, quando necessário, **por agendamento**: a fila `ibama-ingestion` é compartilhada pelo lote diário do IBAMA (minutos por tentativa, fonte que costuma ficar horas fora do ar) e pelos jobs por CNPJ (que erram rápido, pois há quem espere a resposta). O lote diário declara a própria política — 5 tentativas com *backoff* exponencial de base 5 minutos — sem alterar a dos demais jobs da fila. A execução de cada job agendado é registrada em `ingestion_runs` e só é marcada como falha quando as tentativas se esgotam; as evidências anteriores seguem valendo até o fim da janela de validade (UC14, fluxo 2.1).
 
 O isolamento de cada fonte, que o [NFPD02] exige, vem do **adapter próprio** (`DataSourceInterface`), do **limite de requisições e do tempo máximo por fonte** (catálogo `data_sources`, alterável sem deploy) e do **resultado de falha esperada** (a fonte indisponível volta como resultado, não como exceção que derrube a consulta). No caso do GHG Protocol, a indisponibilidade da fonte nunca bloqueia a consulta porque a evidência é best-effort, com prazo próprio, e não porque roda em outro processo.
 
@@ -50,9 +50,12 @@ referência organização/ciclo e URL oficial do relatório; o PDF temporário �
 removido após a leitura. A consolidação já reúne essa evidência; a exposição no perfil é uma etapa posterior.
 
 A consolidação por CNPJ inicia em paralelo a consulta local IBAMA e os produtores
-CGU/GHG. O único consumidor de `environmental-evidences`,
-`EnvironmentalEvidencesProcessor`, despacha lote diário IBAMA, coleta avulsa IBAMA
-e `fetch-cgu-evidences` pelo nome do job, com concorrência 3. CEIS e CNEP são
+CGU/GHG. O consumidor de `environmental-evidences`,
+`EnvironmentalEvidencesProcessor`, atende só `fetch-cgu-evidences`, com concorrência 3.
+Lote diário e coleta avulsa do IBAMA vão para a fila própria `ibama-ingestion`, com
+um consumidor de concorrência 1 (um download de dumps por vez) e reaproveitamento
+dos dumps por 10 minutos, para que avulsos de CNPJs distintos não façam um download
+cada nem disputem workers com a CGU (#262). CEIS e CNEP são
 consultados em paralelo dentro do job CGU e persistidos independentemente; esse
 job não altera execuções de ingestão IBAMA. A espera CGU respeita
 `QUEUE_WAIT_TIMEOUT_MS`; o job pode concluir depois. As duas fontes CGU válidas
