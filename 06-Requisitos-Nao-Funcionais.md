@@ -25,7 +25,8 @@ de qualidade em uso da edição de 2011 (efetividade, eficiência, satisfação,
 riscos e cobertura de contexto) só pode ser avaliado com o produto em uso real e, no BIOS,
 depende da camada de front-end ainda não detalhada.
 
-Cada RNF traz a **verificação** prevista, conforme os métodos da ISO/IEC/IEEE 29148:2011:
+Cada RNF indica a necessidade que o origina (história de usuário, em
+`04-Atores-e-Histórias-dos-Usuários.md`) e traz a **verificação** prevista, conforme os métodos da ISO/IEC/IEEE 29148:2011:
 *teste* (execução com entradas controladas), *inspeção* (exame de artefato ou configuração) ou
 *análise* (avaliação de dados coletados, como relatórios).
 
@@ -35,6 +36,7 @@ Cada RNF traz a **verificação** prevista, conforme os métodos da ISO/IEC/IEEE
 
 | Característica: | Adequação Funcional — Correção Funcional (*Functional Correctness*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU17, HU21. |
 | **Relacionados:** | UC14, UC15; [RF09], [RF10], [RF12]. |
 | **Requisito:** | Quando o sistema calcular um score, ele deve vinculá-lo às evidências que o compuseram, de modo que toda contribuição seja derivável de uma evidência auditável, rastreável até o registro bruto mantido da fonte, e nenhum score seja gravado sem evidência rastreável. |
 | **Verificação:** | Teste. |
@@ -46,6 +48,7 @@ Cada RNF traz a **verificação** prevista, conforme os métodos da ISO/IEC/IEEE
 
 | Característica: | Eficiência de Desempenho — Comportamento Temporal (*Time Behaviour*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU28. |
 | **Relacionados:** | UC06; [RF03]. |
 | **Requisito:** | Quando uma consulta solicitar um CNPJ cujo cadastro esteja guardado dentro da janela de validade da fonte que o respondeu, o sistema deve servir o cadastro guardado, sem nova chamada à fonte externa. |
 | **Verificação:** | Teste. |
@@ -55,6 +58,7 @@ Cada RNF traz a **verificação** prevista, conforme os métodos da ISO/IEC/IEEE
 
 | Característica: | Eficiência de Desempenho — Comportamento Temporal (*Time Behaviour*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU28. |
 | **Relacionados:** | UC06; [RF03], [RF05]. |
 | **Requisito:** | Quando a consulta de perfil de uma empresa for atendida a partir do cache, o sistema deve responder em até 2 (dois) segundos. |
 | **Verificação:** | Teste (medição do tempo de resposta). |
@@ -66,6 +70,7 @@ Cada RNF traz a **verificação** prevista, conforme os métodos da ISO/IEC/IEEE
 
 | Característica: | Compatibilidade — Interoperabilidade (*Interoperability*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto). |
 | **Relacionados:** | UC06, UC14; [RF03], [RF07]. |
 | **Requisito:** | Quando o sistema consultar uma fonte externa, ele deve respeitar o limite de requisições dessa fonte registrado no catálogo de fontes, compartilhando um único job entre as consultas simultâneas, ou repetidas em até 60 segundos, do mesmo CNPJ. |
 | **Verificação:** | Teste. |
@@ -85,6 +90,7 @@ camada de front-end for detalhada.
 
 | Característica: | Confiabilidade — Tolerância a Falhas (*Fault Tolerance*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU27. |
 | **Relacionados:** | UC06, UC07; [RF07]. |
 | **Requisito:** | Quando uma fonte externa estiver indisponível, o sistema deve concluir a consulta com as evidências das demais fontes, registrando `UNKNOWN` para a fonte afetada, ou preservando a resposta anterior dela (como `OUTDATED` após o vencimento), sem falhar a consulta inteira. |
 | **Verificação:** | Teste. |
@@ -96,6 +102,7 @@ camada de front-end for detalhada.
 
 | Característica: | Segurança — Confidencialidade (*Confidentiality*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU30. |
 | **Relacionados:** | UC11; [RF16]. |
 | **Requisito:** | Quando o sistema gerar uma chave de API, ele deve armazenar somente o hash SHA-256 do seu valor completo, nunca o texto plano, e não deve reexibir o valor completo após a geração. |
 | **Verificação:** | Teste e inspeção do esquema de dados. |
@@ -105,6 +112,7 @@ camada de front-end for detalhada.
 
 | Característica: | Segurança — Confidencialidade (*Confidentiality*). Formalmente uma exigência regulatória, sem sub-característica dedicada na norma — enquadrada aqui por ser o item mais próximo do modelo. |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU08, HU29. |
 | **Relacionados:** | UC05, UC06, UC14; [RF27]; [INL02]. |
 | **Requisito:** | Quando o sistema coletar, armazenar ou exibir dados de uma empresa, ele deve limitá-los a dados públicos da pessoa jurídica, sem dado pessoal de indivíduo. |
 | **Verificação:** | Inspeção (modelo de dados e respostas da API) e teste. |
@@ -114,6 +122,7 @@ camada de front-end for detalhada.
 
 | Característica: | Segurança — Confidencialidade (*Confidentiality*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU10. |
 | **Relacionados:** | UC01, UC05; [RF01], [RF26]. |
 | **Requisito:** | Quando o sistema persistir o e-mail e o endereço de um usuário, ele deve cifrá-los com AES-256 e, quando persistir a senha, deve armazenar o hash bcrypt dela, cifrado em seguida com AES-256. |
 | **Verificação:** | Teste e inspeção do esquema de dados. |
@@ -123,6 +132,7 @@ camada de front-end for detalhada.
 
 | Característica: | Segurança — Resistência (*Resistance*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU31. |
 | **Relacionados:** | UC07, UC12; [RF17]. |
 | **Requisito:** | Quando um IP ou uma chave de API exceder o limite de requisições de um endpoint público, o sistema (ThrottlerModule do NestJS) deve recusar as requisições excedentes com HTTP 429, informando em `Retry-After` quando repeti-las. O limite é contado por chave de API na consulta de perfil via API e é de 20 consultas por minuto por IP na rota de evidências. |
 | **Verificação:** | Teste. |
@@ -132,6 +142,7 @@ camada de front-end for detalhada.
 
 | Característica: | Segurança — Autenticidade (*Authenticity*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU04, HU05, HU35. |
 | **Relacionados:** | UC02, UC03, UC17; [RF02], [RF23], [RF32]. |
 | **Requisito:** | (a) Quando o sistema emitir um access token JWT, ele deve fixar sua validade em 15 minutos por padrão (configurável, no máximo 60) e validá-lo contra a sessão a cada requisição, de modo que a revogação (logout, troca de senha) tenha efeito imediato.<br>(b) Quando o sistema emitir um refresh token, ele deve gerá-lo opaco e de uso único, com validade de 7 dias por padrão (configurável), armazenar somente o seu hash e rotacioná-lo a cada renovação.<br>(c) Quando um refresh token já rotacionado for reapresentado, o sistema deve detectar o reuso e revogar as sessões do usuário. |
 | **Verificação:** | Teste. |
@@ -141,6 +152,7 @@ camada de front-end for detalhada.
 
 | Característica: | Segurança — Resistência (*Resistance*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU09. |
 | **Relacionados:** | UC02; [RF19], [RF20]. |
 | **Requisito:** | Quando um mesmo IP ou usuário acumular 5 (cinco) tentativas consecutivas de login malsucedidas, o sistema deve bloqueá-lo por 15 (quinze) minutos. |
 | **Verificação:** | Teste. |
@@ -150,8 +162,9 @@ camada de front-end for detalhada.
 
 | Característica: | Segurança — Resistência (*Resistance*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU34. |
 | **Relacionados:** | [RF21]. |
-| **Requisito:** | O sistema deve manter os endpoints isca isolados dos endpoints reais, de modo que a baixa disponibilidade proposital dos endpoints isca não reduza a disponibilidade dos endpoints reais. |
+| **Requisito:** | O sistema deve manter os endpoints isca isolados dos endpoints reais, de modo que a indisponibilidade dos endpoints isca, mantida de propósito, não reduza a disponibilidade dos endpoints reais. |
 | **Verificação:** | Teste. |
 
 
@@ -159,6 +172,7 @@ camada de front-end for detalhada.
 
 | Característica: | Segurança — Resistência (*Resistance*). Detalhe operacional na Etapa de Gerência de Configuração. |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto). |
 | **Relacionados:** | `10-Gerenciamento-do-Projeto.md`; `13-Ficha-Técnica.md`. |
 | **Requisito:** | O projeto deve monitorar as vulnerabilidades de suas dependências por meio do GitHub Dependabot. |
 | **Verificação:** | Inspeção da configuração do repositório. |
@@ -170,6 +184,7 @@ camada de front-end for detalhada.
 
 | Característica: | Manutenibilidade — Modularidade (*Modularity*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto). |
 | **Relacionados:** | UC14; [RF07]; `14-Projeto-e-Arquitetura.md`. |
 | **Requisito:** | O sistema deve isolar cada fonte externa em um módulo próprio (adapter), acessando-a exclusivamente por ele. |
 | **Verificação:** | Inspeção da estrutura de módulos. |
@@ -179,6 +194,7 @@ camada de front-end for detalhada.
 
 | Característica: | Manutenibilidade — Testabilidade (*Testability*). |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto). |
 | **Relacionados:** | `10-Gerenciamento-do-Projeto.md`; `13-Ficha-Técnica.md`. |
 | **Requisito:** | O projeto deve manter cobertura mínima de 75% (setenta e cinco por cento) entre testes unitários, de integração, de componente, e2e e funcionais, no back-end e no front-end. |
 | **Verificação:** | Análise do relatório de cobertura. |
@@ -188,6 +204,7 @@ camada de front-end for detalhada.
 
 | Característica: | Manutenibilidade — Modificabilidade (*Modifiability*). Detalhe operacional na Etapa de Gerência de Configuração. |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto). |
 | **Relacionados:** | `10-Gerenciamento-do-Projeto.md`; `13-Ficha-Técnica.md`. |
 | **Requisito:** | Antes de cada commit, o projeto deve executar a barreira de qualidade configurada no Husky. |
 | **Verificação:** | Inspeção da configuração do repositório. |
@@ -197,6 +214,7 @@ camada de front-end for detalhada.
 
 | Característica: | Manutenibilidade — Analisabilidade (*Analysability*). Detalhe operacional na Etapa de Gerência de Configuração. |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto). |
 | **Relacionados:** | `10-Gerenciamento-do-Projeto.md`; `13-Ficha-Técnica.md`. |
 | **Requisito:** | O projeto deve submeter o código-fonte à análise estática do ESLint. |
 | **Verificação:** | Inspeção da configuração do repositório. |
@@ -206,6 +224,7 @@ camada de front-end for detalhada.
 
 | Característica: | Manutenibilidade — Modificabilidade (*Modifiability*). Detalhe operacional na Etapa de Gerência de Configuração. |
 | :----------- | :----------- |
+| **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto). |
 | **Relacionados:** | `10-Gerenciamento-do-Projeto.md`; `13-Ficha-Técnica.md`. |
 | **Requisito:** | O projeto deve manter protegidas as branches `main` e `pre-prod`. |
 | **Verificação:** | Inspeção da configuração do repositório. |
