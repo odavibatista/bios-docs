@@ -203,6 +203,25 @@ achado elegível não reduz a confiança; adicionar `UNKNOWN` ou `OUTDATED` não
 aumenta. Esses estados nunca alteram o índice. Índice e confiança são persistidos
 lado a lado em `company_ods_scores`, sem fusão em um número único.
 
+**Cobertura das fontes (decisão #253).** A ausência confirmada em todas as fontes
+continua sem índice e com confiança 0: `NOT_FOUND` não é evidência de boa conduta
+(IND02) e não ganha pontos nem confiança própria. Para o usuário distinguir "consultado
+e sem registros" de "sem dados", o retrato guarda à parte um `coverage_status` e a lista
+`sources_without_records`, calculados no mesmo recálculo e sem efeito sobre índice ou
+confiança (a fórmula e o RF11 não mudam). Uma fonte conta como sem registros quando sua
+ausência está dentro da validade e ela não tem achado confirmado vigente no ODS.
+
+| `coverage_status` | Significado |
+| --- | --- |
+| `HAS_RECORDS` | Há ao menos uma contribuição ao índice. |
+| `NO_RECORDS_IN_ALL_SOURCES` | Sem contribuição e todas as fontes esperadas do ODS responderam `NOT_FOUND` vigente. |
+| `NO_RECORDS_IN_SOME_SOURCES` | Sem contribuição; só parte das fontes tem ausência vigente, as demais estão `UNKNOWN`, `OUTDATED` ou sem coleta. |
+| `NO_DATA` | Sem contribuição e sem ausência vigente em nenhuma fonte. |
+
+Retratos gravados antes desta regra têm `coverage_status` nulo até o próximo recálculo (#80).
+A mensagem ao usuário deve dizer "sem registros nas fontes consultadas", nunca "empresa
+sem infrações" ou veredito de conduta (IND01).
+
 ### 4.3 Explicação auditável do índice (RF12)
 
 A consulta autenticada `GET /companies/{cnpj}/scores/{odsNumber}/explanation`
@@ -217,7 +236,8 @@ ambiental.
 `state = CONFIRMED` descreve o estado da evidência quando ela compôs o índice;
 `current_state` pode ser `OUTDATED` após a validade da coleta. O retorno informa
 também a data e a versão do cálculo. Um índice gravado sem contribuição responde
-com `index_status = UNAVAILABLE`, valor nulo e lista vazia. Sem score gravado
+com `index_status = UNAVAILABLE`, valor nulo e lista vazia, acompanhado de
+`coverage_status` e `sources_without_records` (seção 4.2). Sem score gravado
 para empresa/ODS, a rota responde 404. Se a contribuição aponta a uma evidência
 que foi removida, mudou de categoria/sinal ou perdeu a proveniência, responde
 409 em vez de omitir a linha; o recálculo é tarefa da etapa UC15/#80.

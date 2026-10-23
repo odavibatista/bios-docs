@@ -559,6 +559,8 @@ Table company_ods_scores {
   confidence_value double [note: 'Nível de confiança entre 0 e 1, calculado à parte do índice (RF11)']
   evidence_count int [default: 0]
   contributions score_contribution[] [null]
+  coverage_status varchar [null, note: 'Cobertura das fontes, separada do índice e da confiança: HAS_RECORDS, NO_RECORDS_IN_ALL_SOURCES, NO_RECORDS_IN_SOME_SOURCES ou NO_DATA; nulo em scores anteriores ao recálculo']
+  sources_without_records varchar[] [note: 'Slugs das fontes com ausência confirmada vigente (NOT_FOUND) para o ODS']
   rules_version varchar [note: 'Versão das regras de pontuação usadas no cálculo, para rastrear recálculos']
   uf varchar [null, note: 'Desnormalizado de company_profile.address.uf; nulo para CNPJ com evidência e ainda sem perfil cadastral']
   city varchar [null, note: 'Desnormalizado de company_profile.address.city; nulo para CNPJ ainda sem perfil cadastral']
