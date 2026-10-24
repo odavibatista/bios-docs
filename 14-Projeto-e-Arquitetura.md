@@ -80,7 +80,11 @@ ausência de evidências.
 Caso de CNPJ não indexado localmente (miss no índice do lote diário do IBAMA): reaproveita o mesmo adapter/parser do job diário, disparado sob demanda como job avulso do BullMQ para aquele CNPJ específico, contra o mesmo dump oficial. Isso **não** reintroduz webscraping nem um segundo mecanismo de ingestão — é o mesmo pipeline, com gatilho diferente.
 
 A consulta autenticada `GET /companies/{cnpj}/evidences` expõe as categorias e a
-proveniência das evidências (RF09), sem compor o perfil completo ou calcular score.
+proveniência das evidências (RF09), sem calcular score. O perfil completo (cadastro, evidências e,
+por ODS, índice, confiança e explicação) é composto pelo módulo de orquestração ambiental e servido
+por `GET /companies/{cnpj}` e `GET /v1/companies/{cnpj}` (UC06 + UC07, #81): cadastro primeiro, depois
+evidências e recálculo, depois a leitura dos índices gravados; as partes ambientais ficam em cache por
+cinco minutos, apagadas pelo recálculo do índice.
 O campo `source` traz o nome público atual do catálogo, acompanhado de
 `source_slug`, `source_reference` e `source_url`. O schema de resposta exige URL
 absoluta HTTPS quando informada; links com credenciais embutidas são rejeitados.
@@ -185,8 +189,8 @@ demanda (aguardável com prazo, diagrama 3) e a atualização do perfil cadastra
 desnormalizados) acionam. Pedidos simultâneos do mesmo CNPJ viram um job só enquanto ele não
 começou, e um recálculo mais antigo nunca sobrescreve um mais novo. Alterar a versão das regras
 dispara um recálculo em lote, por varredura agendada; ao final de cada recálculo, o cache derivado
-do CNPJ (perfil, evidências e notas) é invalidado, e os retratos das fontes, não. A apresentação ao
-usuário e a composição do perfil são etapas posteriores (#81).
+do CNPJ (perfil, evidências e notas) é invalidado, e os retratos das fontes, não. O perfil completo
+(#81) lê esses retratos e não recalcula; ODS ainda sem retrato aparece como pendente, sem número.
 
 ### 4.2 Nível de confiança por ODS (RF11, versão `rf10-rf11-v2`)
 
