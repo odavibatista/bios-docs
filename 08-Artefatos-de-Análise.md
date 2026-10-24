@@ -384,7 +384,8 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 			<br>3 - Os critérios (nome, UF, município, CNAE e ODS) são opcionais, mas ao menos um é exigido; os informados se somam, e a empresa precisa atender a todos. Índice mínimo e confiança mínima só existem com o ODS selecionado.</br>
 			<br>4 - A UF é a sigla de uma das 27 unidades da federação. O município é o nome inteiro, sem distinguir acento, caixa ou pontuação. O CNAE é um código de 2 a 7 dígitos (divisão, grupo, classe ou subclasse), casado como prefixo do CNAE principal ou de algum secundário.</br>
 			<br>5 - Com um ODS selecionado, cada empresa da lista traz o índice e a confiança desse ODS, em campos separados e nulos quando o ODS ainda não foi calculado para ela. Empresa sem índice calculado no ODS não atende a índice mínimo, e sem confiança calculada não atende a confiança mínima.</br>
-			<br>6 - A lista traz o resumo da empresa e o índice e a confiança do ODS selecionado, sem as contribuições que os explicam, que pertencem ao perfil (UC07).</br></td></tr>
+			<br>6 - A lista traz o resumo da empresa e o índice e a confiança do ODS selecionado, sem as contribuições que os explicam, que pertencem ao perfil (UC07).</br>
+			<br>7 - A ordenação pelo índice do ODS selecionado pode ser ascendente ou descendente. Empresa sem índice calculado no ODS aparece sempre ao fim da lista, nos dois sentidos, porque ausência de índice não é o menor nem o maior índice ([IND02]). Entre índices iguais, vem primeiro a empresa de maior confiança, e o desempate final é a razão social e o CNPJ. Sem ordenação escolhida, a lista segue a proximidade com o nome digitado e, depois, a razão social.</br></td></tr>
 </table>
 
 <br></br>
