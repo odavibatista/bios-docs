@@ -765,6 +765,7 @@ classDiagram
         PASSWORD_CHANGE
         PASSWORD_RESET
         REUSE_DETECTED
+        ROLE_CHANGE
     }
 
     class User {

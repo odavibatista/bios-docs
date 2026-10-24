@@ -65,6 +65,7 @@ Enum session_revocation_reason {
   PASSWORD_CHANGE
   PASSWORD_RESET
   REUSE_DETECTED [note: 'Refresh token já rotacionado foi reapresentado: indício de vazamento (RF32)']
+  ROLE_CHANGE [note: 'Troca do papel da conta pelo operador, fora da API (#329): o papel viaja no access token, então as sessões abertas são encerradas']
 }
 
 Enum login_failure_reason {
