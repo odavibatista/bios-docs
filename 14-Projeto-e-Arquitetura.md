@@ -100,7 +100,7 @@ persistido e suas datas permanecem intactos para futura atualização pela fonte
 `UNKNOWN`, `NOT_FOUND` e `OUTDATED` conservam seus estados e podem ter referências
 nulas; isso não autoriza inventar registros ou converter falta de informação em
 ausência confirmada. A rota exige sessão JWT e documenta resposta e erros no
-OpenAPI. A composição cadastral/evidências/índices permanece uma etapa posterior.
+OpenAPI. O contrato publicado em OpenAPI (RF17) é feito para gerar cliente: cada modelo de requisição e de resposta é um componente nomeado (os de erro, um só, `ErrorResponse`), cada operação tem `operationId` explícito e estável, e o documento traz a URL base (`API_BASE_URL`) e a versão do pacote. O CI o publica como artefato para o front gerar o cliente sem subir a API.
 
 ## 3. Camadas de dados
 
