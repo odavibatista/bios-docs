@@ -120,7 +120,7 @@ Cada evidência normalizada referencia o ODS ao qual se vincula, e os resultados
 Limitações assumidas e registradas:
 
 - **ODS 13 com cobertura estruturalmente baixa.** A única fonte é o GHG Protocol (~600 organizações reportando por ano — ver seção 1), sem API e tratada, em tempo de execução, como fallback best-effort isolado (sua ingestão é prioridade Essencial de entrega — ver `10-Gerenciamento-do-Projeto.md` —, mas sua indisponibilidade nunca bloqueia a consulta). Para a grande maioria das empresas, o índice do ODS 13 terá estado `UNKNOWN` e confiança baixa. Isso não é falha de coleta e não pode ser tratado como evidência negativa (RIN [IND02]); é exatamente o cenário que a separação índice/confiança (RF11) existe para comunicar.
-- **Sinais unilaterais.** Nas fontes do MVP, o ODS 13 dispõe apenas de sinal positivo e o ODS 15 apenas de sinal negativo. Os dois índices, portanto, não são comparáveis entre si nem combinados em um índice geral único; filtros e ordenação (RF13, RF14) operam sempre sobre um ODS selecionado.
+- **Sinais unilaterais.** Nas fontes do MVP, o ODS 13 dispõe apenas de sinal positivo e o ODS 15 apenas de sinal negativo. Os dois índices, portanto, não são comparáveis entre si nem combinados em um índice geral único; filtros e ordenação (RF13, RF14) operam sempre sobre um ODS selecionado. A pesquisa filtra `company_profile` por nome, UF, município e CNAE e, com um ODS selecionado, junta o documento daquele ODS em `company_ods_scores` pelo CNPJ para devolver o índice e a confiança e aplicar os mínimos; a lista traz só o resumo, e as contribuições continuam no perfil.
 
 ## 4. Categorização de evidências (campo `categoria` do RF08)
 
