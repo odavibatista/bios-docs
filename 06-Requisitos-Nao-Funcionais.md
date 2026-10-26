@@ -66,15 +66,15 @@ Cada RNF indica a necessidade que o origina (história de usuário, em
 | **Verificação:** | Teste. |
 
 
-<p align="center"><b>[NFDE02] Tempo de resposta do perfil em cache</b></p>
+<p align="center"><b>[NFDE02] Tempo de resposta do perfil completo</b></p>
 
 | Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
 | :----------- | :----------- |
 | **Característica:** | Eficiência de Desempenho — Comportamento Temporal (*Time Behaviour*). |
 | **Necessidade (história de usuário):** | HU28. |
-| **Relacionados:** | UC06; [RF03], [RF05]. |
-| **Requisito:** | Quando a consulta de perfil de uma empresa for atendida a partir do cache, o sistema deve responder em até 2 (dois) segundos. |
-| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando a consulta de perfil de uma empresa for atendida a partir do cache · **Sujeito:** o sistema · **Ação:** deve responder · **Restrição:** em até 2 (dois) segundos |
+| **Relacionados:** | UC06, UC07; [RF03], [RF05], [RF07]. |
+| **Requisito:** | Quando o perfil completo (cadastro, evidências e índices por ODS) estiver em cache, o sistema deve responder em até 2 (dois) segundos. Sem cache completo, a espera conjunta por cadastro, coleta e recálculo deve obedecer ao orçamento configurado em `COMPANY_PROFILE_REQUEST_TIMEOUT_MS` (padrão 15 segundos), devolvendo o retrato persistido com indicação de pendência quando houver cadastro local, ou indisponibilidade temporária quando o cadastro não puder ser obtido. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o perfil completo estiver em cache, ou quando depender de atualização · **Sujeito:** o sistema · **Ação:** deve responder · **Restrição:** em até 2 segundos no cache; sem cache, com espera conjunta limitada por `COMPANY_PROFILE_REQUEST_TIMEOUT_MS`, padrão 15 segundos, e resposta parcial ou indisponibilidade temporária ao esgotar o prazo |
 | **Verificação:** | Teste (medição do tempo de resposta). |
 
 

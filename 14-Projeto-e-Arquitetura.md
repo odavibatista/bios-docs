@@ -85,6 +85,10 @@ por ODS, índice, confiança e explicação) é composto pelo módulo de orquest
 por `GET /companies/{cnpj}` e `GET /v1/companies/{cnpj}` (UC06 + UC07, #81): cadastro primeiro, depois
 evidências e recálculo, depois a leitura dos índices gravados; as partes ambientais ficam em cache por
 cinco minutos, apagadas pelo recálculo do índice.
+Um orçamento único (`COMPANY_PROFILE_REQUEST_TIMEOUT_MS`, padrão 15 segundos) limita a espera
+conjunta; se a coleta não terminar, a resposta usa o retrato persistido e informa a origem ou
+pendência de cada fonte em `provenance.sources`, com `retry_after_seconds` para orientar a
+reconsulta. A conclusão tardia dos jobs atualiza o retrato para uma consulta posterior.
 O campo `source` traz o nome público atual do catálogo, acompanhado de
 `source_slug`, `source_reference` e `source_url`. O schema de resposta exige URL
 absoluta HTTPS quando informada; links com credenciais embutidas são rejeitados.
