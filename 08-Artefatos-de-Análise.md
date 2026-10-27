@@ -368,12 +368,13 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Fluxo Normal:</b>
 		<br>1 - O usuário acessa a tela de pesquisa.</br>
 		<br>2 - Informa filtros de CNAE, UF e/ou município.</br>
-		<br>3 - Seleciona um ODS e, opcionalmente, índice mínimo e confiança mínima para esse ODS.</br>
+		<br>3 - Seleciona um ODS, entre os que o sistema calcula, e, opcionalmente, índice mínimo e confiança mínima para esse ODS.</br>
 		<br>4 - Escolhe a ordenação pelo índice do ODS selecionado (ascendente ou descendente).</br>
 		<br>5 - O sistema exibe a lista paginada de empresas.</br>
 		<br>6 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Fluxos Alternativos:</b>
+		<br>3.1 - ODS que o sistema não calcula (inexistente ou desativado): o sistema recusa a pesquisa e informa os ODS disponíveis.</br>
 		<br>5.1 - Nenhum resultado: o sistema informa que nenhuma empresa atende aos filtros.</br>
 		<br>5.2 - O usuário seleciona exportar: estende para UC09.</br></td></tr>
 	<tr>
@@ -386,7 +387,8 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 			<br>4 - A UF é a sigla de uma das 27 unidades da federação. O município é o nome inteiro, sem distinguir acento, caixa ou pontuação. O CNAE é um código de 2 a 7 dígitos (divisão, grupo, classe ou subclasse), casado como prefixo do CNAE principal ou de algum secundário.</br>
 			<br>5 - Com um ODS selecionado, cada empresa da lista traz o índice e a confiança desse ODS, em campos separados e nulos quando o ODS ainda não foi calculado para ela. Empresa sem índice calculado no ODS não atende a índice mínimo, e sem confiança calculada não atende a confiança mínima.</br>
 			<br>6 - A lista traz o resumo da empresa e o índice e a confiança do ODS selecionado, sem as contribuições que os explicam, que pertencem ao perfil (UC07).</br>
-			<br>7 - A ordenação pelo índice do ODS selecionado pode ser ascendente ou descendente. Empresa sem índice calculado no ODS aparece sempre ao fim da lista, nos dois sentidos, porque ausência de índice não é o menor nem o maior índice ([IND02]). Entre índices iguais, vem primeiro a empresa de maior confiança, e o desempate final é o CNPJ. As empresas sem índice vêm depois de todas as que têm, em ordem de razão social e CNPJ. Sem ordenação escolhida, a lista segue a proximidade com o nome digitado e, depois, a razão social.</br></td></tr>
+			<br>7 - A ordenação pelo índice do ODS selecionado pode ser ascendente ou descendente. Empresa sem índice calculado no ODS aparece sempre ao fim da lista, nos dois sentidos, porque ausência de índice não é o menor nem o maior índice ([IND02]). Entre índices iguais, vem primeiro a empresa de maior confiança, e o desempate final é o CNPJ. As empresas sem índice vêm depois de todas as que têm, em ordem de razão social e CNPJ. Sem ordenação escolhida, a lista segue a proximidade com o nome digitado e, depois, a razão social.</br>
+			<br>8 - O ODS selecionável é um dos ODS ativos no cálculo de índices, que o sistema lista para a tela montar o seletor. Um ODS que o sistema não calcula é recusado, com a lista dos disponíveis, e não responde como se existisse: ausência de cálculo do ODS não é resultado da pesquisa ([IND02]). A mesma conferência vale para a exportação (UC09). ODS ativo em que a empresa ainda não tem índice continua válido, e a empresa aparece com índice e confiança nulos (regra 5).</br></td></tr>
 </table>
 
 <br></br>
