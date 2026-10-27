@@ -421,7 +421,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>2 - O arquivo não contém nenhum dado pessoal ou de contato de indivíduo ([INL02]).</br>
 			<br>3 - O arquivo traz uma linha por empresa, na ordem da pesquisa, com os dados cadastrais e, para cada ODS ativo, o índice e a confiança em colunas separadas, e não só para o ODS selecionado na pesquisa. O que não foi calculado fica em branco, e nunca é preenchido com zero.</br>
 			<br>4 - A exportação aplica os mesmos critérios e a mesma ordenação da pesquisa (UC08), sem paginação: o arquivo traz a lista inteira.</br>
-			<br>5 - Se nenhuma empresa atende aos critérios, o arquivo não é gerado e o sistema informa que não há lista para exportar. Se a lista passa de 5000 empresas, o arquivo não é gerado e o sistema pede que os critérios sejam refinados.</br>
+			<br>5 - Se nenhuma empresa atende aos critérios, o arquivo não é gerado e o sistema informa que não há lista para exportar. Se a lista passa do teto de empresas por arquivo (5000 por padrão, configurável), o arquivo não é gerado e o sistema pede que os critérios sejam refinados.</br>
 			<br>6 - Os textos do arquivo são gravados como texto: nenhum campo é interpretado como fórmula ao abrir a planilha.</br></td></tr>
 </table>
 
