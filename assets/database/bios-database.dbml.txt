@@ -600,8 +600,8 @@ Table sector_score_snapshots {
   cnae_division varchar [note: 'Divisão CNAE (2 dígitos), granularidade de setor adotada para evitar amostras pequenas']
   window_start timestamp
   window_end timestamp
-  average_score double [null]
-  average_confidence double
+  average_score double [null, note: 'Média das empresas com índice; nula com menos empresas que SECTOR_SNAPSHOT_MIN_COMPANIES (IA05)']
+  average_confidence double [null, note: 'Média de todas as empresas do setor; nula com menos empresas que SECTOR_SNAPSHOT_MIN_COMPANIES (IA05)']
   company_count int [note: 'Empresas do setor com documento em company_ods_scores na janela']
   scored_company_count int [note: 'Empresas com índice não nulo na janela']
   rules_version varchar

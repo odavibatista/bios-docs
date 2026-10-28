@@ -34,3 +34,17 @@ O indicador [IA05] exige manter série histórica de scores, não apenas o valor
 3. **(adotada no modelo de dados)** Persistir apenas os agregados setoriais por janela de tempo na coleção `sector_score_snapshots` (média do índice e da confiança por ODS e divisão CNAE), calculados por job periódico a partir de `company_ods_scores`. Atende o [IA05] sem guardar série histórica por empresa individual — coerente com a restrição da nota do [IA05] — e com custo de armazenamento independente do número de empresas.
 
 Não bloqueia o MVP (RF10/RF11 não exigem histórico; [RF30], que expõe [IA05] ao usuário, é Desejável), mas precisa ser decidido antes de implementar [IA05] em nível de código.
+
+**Implementação da opção 3** (bios-core-api, #89 e #90):
+
+- **Janela mensal** (mês civil, em UTC). Um job diário regrava o agregado do mês corrente a partir dos
+  índices atuais; virado o mês, o anterior fica como estava. Como `company_ods_scores` guarda só o índice
+  atual de cada empresa, a série começa no primeiro mês em que o job roda e cresce daí em diante.
+- **Setor = divisão CNAE do CNAE principal** do cadastro (2 dígitos). Empresas sem perfil cadastral não têm
+  setor e ficam de fora; só entram os índices calculados pela versão de regras vigente, porque médias de
+  versões diferentes não se comparam.
+- **Amostra mínima** (padrão: 5 empresas, configurável). Abaixo dela, o índice médio e a confiança média do
+  setor ficam nulos, e só as contagens aparecem: com poucas empresas, a média revelaria o índice de uma
+  empresa individual, o que a nota do [IA05] proíbe.
+- **Consulta:** a evolução de um ODS num setor lista as janelas da mais antiga à mais recente; com menos de
+  duas janelas, informa que ainda não há histórico suficiente.
