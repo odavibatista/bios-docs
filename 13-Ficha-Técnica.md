@@ -66,6 +66,10 @@
 - **Vitest 4** (test runner, padrão do NestJS 12) — API de mocks equivalente à do Jest
   (`vi.fn`, `vi.spyOn`), execução nativa de TypeScript/ESM sem transformador dedicado e
   cobertura via `@vitest/coverage-v8`, com limite mínimo de 75% configurado ([NFPD03]).
+  Os testes rodam em três momentos: no commit, os afetados pelos arquivos em stage
+  ([NFSE09]); no push, a verificação de tipos, o lint do projeto inteiro e os unitários
+  afetados pelos arquivos enviados; no CI, a suíte inteira com cobertura e os e2e, que é a
+  verificação exigida para o merge ([NFSE11]).
   A série 5 fica adiada: ela exige o binário nativo do Rolldown já na inicialização, e esse
   binário é declarado como dependência opcional *e* peer — combinação que o npm não instala
   a partir do lockfile, deixando o runner sem como subir.
