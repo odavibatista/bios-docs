@@ -527,7 +527,8 @@ Table company_profile {
   cnpj varchar [note: '14 dígitos, sem máscara']
   legal_name varchar [note: 'Razão social']
   trade_name varchar [null, note: 'Nome fantasia']
-  registration_status varchar [note: 'Situação cadastral na Receita Federal']
+  registration_status varchar [note: 'Situação cadastral na Receita Federal, em conjunto fechado: ATIVA, SUSPENSA, INAPTA, BAIXADA, NULA ou NAO_RECONHECIDA']
+  registration_status_unrecognized varchar [null, note: 'Situação informada pelo provedor, como veio, quando não está no conjunto (NAO_RECONHECIDA)']
   company_size varchar [null, note: 'Porte']
   address company_address
   main_cnae company_cnae
