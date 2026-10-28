@@ -562,7 +562,9 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - Somente usuários com papel <code>ADMIN</code> acessam este caso de uso.</br>
 		<br>2 - A lista é inicializada a partir de seed JSON na criação do banco.</br>
-		<br>3 - A alteração não afeta contas já existentes.</br></td></tr>
+		<br>3 - A alteração não afeta contas já existentes.</br>
+		<br>4 - Remover um domínio é remoção lógica: ele deixa de bloquear na hora, e reincluí-lo restaura o mesmo registro, agora em nome do administrador que o reincluiu, em vez de duplicá-lo.</br>
+		<br>5 - Sem sessão, o acesso é recusado como não autenticado; com sessão de usuário comum, como sem permissão. O domínio é gravado em minúsculas e sem @, e a lista é exibida em ordem alfabética, paginada.</br></td></tr>
 </table>
 
 <br></br>

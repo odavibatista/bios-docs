@@ -57,6 +57,10 @@ permissões nas quais ela está incluída.
   A promoção de um usuário a `ADMIN` é feita pelo comando `npm run account:promote` (#329), sem
   interface no MVP: o comando exige a conta com o e-mail confirmado, encerra as sessões abertas dela
   (o papel viaja no access token) e não rebaixa o último administrador ativo.
+- **Papel conferido em cada requisição.** A permissão exclusiva de um papel (hoje, `[P12]`)
+  é conferida depois da autenticação, a partir do papel registrado na sessão: sem sessão, a
+  resposta é de não autenticado; com sessão de outro papel, de acesso negado. Como a promoção
+  e o rebaixamento encerram as sessões da conta, nenhuma sessão aberta carrega papel antigo.
 - **Chave de API sem acesso à conta.** Uma chave não autentica no front-end nem acessa
   `[P03]`, `[P09]` ou `[P12]`; se a conta do titular for excluída, todas as suas chaves são
   revogadas (UC05).
