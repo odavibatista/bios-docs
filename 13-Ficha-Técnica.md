@@ -69,7 +69,9 @@
   Os testes rodam em três momentos: no commit, os afetados pelos arquivos em stage
   ([NFSE09]); no push, a verificação de tipos, o lint do projeto inteiro e os unitários
   afetados pelos arquivos enviados; no CI, a suíte inteira com cobertura e os e2e, que é a
-  verificação exigida para o merge ([NFSE11]).
+  verificação exigida para o merge ([NFSE11]). Os e2e rodam em paralelo, com banco MongoDB,
+  banco Redis e pasta temporária próprios para cada worker; com 4 workers, a suíte cai de
+  642 s para 187–206 s, sem nenhum teste removido ou afrouxado.
   A série 5 fica adiada: ela exige o binário nativo do Rolldown já na inicialização, e esse
   binário é declarado como dependência opcional *e* peer — combinação que o npm não instala
   a partir do lockfile, deixando o runner sem como subir.
