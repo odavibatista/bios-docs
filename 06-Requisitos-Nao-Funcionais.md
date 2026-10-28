@@ -87,8 +87,8 @@ Cada RNF indica a necessidade que o origina (história de usuário, em
 | **Característica:** | Compatibilidade — Interoperabilidade (*Interoperability*). |
 | **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto). |
 | **Relacionados:** | UC06, UC14; [RF03], [RF07]. |
-| **Requisito:** | Quando o sistema consultar uma fonte externa, ele deve respeitar o limite de requisições dessa fonte registrado no catálogo de fontes, compartilhando um único job entre as consultas simultâneas, ou repetidas em até 60 segundos, do mesmo CNPJ. |
-| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o sistema consultar uma fonte externa · **Sujeito:** ele [o sistema] · **Ação:** deve respeitar · **Objeto:** o limite de requisições dessa fonte registrado no catálogo de fontes · **Restrição:** compartilhando um único job entre as consultas simultâneas, ou repetidas em até 60 segundos, do mesmo CNPJ |
+| **Requisito:** | (a) Quando o sistema consultar uma fonte externa, ele deve respeitar o limite de requisições dessa fonte registrado no catálogo de fontes, compartilhando um único job entre as consultas simultâneas, ou repetidas em até 60 segundos, do mesmo CNPJ.<br>(b) Quando um sistema de terceiros consultar o perfil pela API pública, o sistema deve responder sem aguardar a coleta nas fontes externas, publicando a atualização do que falta e informando o que está pendente. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o sistema consultar uma fonte externa · **Sujeito:** ele [o sistema] · **Ação:** deve respeitar · **Objeto:** o limite de requisições dessa fonte registrado no catálogo de fontes · **Restrição:** compartilhando um único job entre as consultas simultâneas, ou repetidas em até 60 segundos, do mesmo CNPJ<br>(b) **Condição:** Quando um sistema de terceiros consultar o perfil pela API pública · **Sujeito:** o sistema · **Ação:** deve responder · **Objeto:** a consulta · **Restrição:** sem aguardar a coleta nas fontes externas, publicando a atualização do que falta e informando o que está pendente |
 | **Verificação:** | Teste. |
 
 

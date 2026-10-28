@@ -508,8 +508,8 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Fluxo Normal:</b>
 		<br>1 - O sistema de terceiros envia requisição ao endpoint de perfil, com a chave de API no cabeçalho.</br>
 		<br>2 - O sistema valida a chave e o limite de requisições.</br>
-		<br>3 - O sistema executa a mesma lógica de UC06 e UC07.</br>
-		<br>4 - O sistema retorna o perfil em JSON: dados cadastrais, evidências e, por ODS, índice, confiança e explicação.</br>
+		<br>3 - O sistema executa a mesma lógica de UC06 e UC07, mas sem aguardar a coleta nas fontes externas: usa o que está guardado e válido e publica a atualização do que falta.</br>
+		<br>4 - O sistema retorna o perfil em JSON: dados cadastrais, evidências e, por ODS, índice, confiança e explicação, com o que ainda está pendente indicado.</br>
 		<br>5 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Fluxos Alternativos:</b>
@@ -525,7 +525,8 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>4 - O limite de requisições é contado por chave, e a resposta HTTP 429 informa em <code>Retry-After</code> quando a chamada pode ser repetida. Tentativas com chaves inválidas também consomem o limite.</br>
 		<br>5 - A data de último uso da chave tem precisão de 1 minuto: chamadas dentro desse intervalo não a atualizam de novo.</br>
 		<br>6 - A sessão de usuário não substitui a chave de API nesta consulta, e a chave de API não substitui a sessão nas telas do painel.</br>
-		<br>7 - A resposta é o perfil completo: os dados cadastrais na raiz, as evidências agrupadas por categoria e, por ODS, índice, confiança e explicação. A explicação vem embutida em cada ODS porque a API pública não expõe a consulta de explicação do painel.</br></td></tr>
+		<br>7 - A resposta é o perfil completo: os dados cadastrais na raiz, as evidências agrupadas por categoria e, por ODS, índice, confiança e explicação. A explicação vem embutida em cada ODS porque a API pública não expõe a consulta de explicação do painel.</br>
+		<br>8 - A consulta pela API pública não espera as fontes externas nem o recálculo dos índices ([NFPD01], b). Serve o que está guardado e válido, publica a atualização do que falta e indica, na proveniência, o que está pendente e quando repetir a consulta; só o cadastro é aguardado, porque o perfil não existe sem ele. Assim, um integrador que consulta muitos CNPJs não prende conexões nem multiplica a espera nas fontes: a carga sobre elas é a dos jobs publicados, no limite de cada fonte (NFPD01, a) e no ritmo do limite por chave (NFSE04). O índice só é apresentado como atual quando é posterior à última coleta da empresa.</br></td></tr>
 </table>
 
 <br></br>
