@@ -65,6 +65,14 @@ O honeypot ([RF21]) e o bloqueio de IP não aparecem como casos de uso porque n�
 nenhum ator legítimo: são mecanismos de defesa, descritos em `06-Requisitos-Nao-Funcionais.md`
 ([NFSE07]) e no fluxo alternativo do UC02.
 
+Como funciona o honeypot: as rotas isca imitam uma versão da API pública que não existe e ficam
+fora da documentação, então só chega a elas quem varre caminhos. Elas respondem empresas
+sintéticas (no máximo 10 por página, com CNPJ válido) e falham ou demoram numa parte das chamadas,
+de propósito. Antes de responder, a chamada é registrada e o IP de quem chamou passa a ser
+recusado em toda a API, sem prazo. O IP é o informado pelo proxy reverso declarado na
+configuração, e endereços internos (proxy, monitoramento) nunca são bloqueados. Se o registro ou
+a consulta do bloqueio falharem, as rotas reais seguem funcionando ([NFSE07]).
+
 ## 8.2 Descrição dos Casos de Uso
 
 Esta seção descreve todos os casos de uso do diagrama 1.
