@@ -61,8 +61,8 @@ Cada RNF indica a necessidade que o origina (história de usuário, em
 | **Característica:** | Eficiência de Desempenho — Comportamento Temporal (*Time Behaviour*). |
 | **Necessidade (história de usuário):** | HU28. |
 | **Relacionados:** | UC06; [RF03]. |
-| **Requisito:** | Quando uma consulta solicitar um CNPJ cujo cadastro esteja guardado dentro da janela de validade da fonte que o respondeu, o sistema deve servir o cadastro guardado, sem nova chamada à fonte externa. |
-| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando uma consulta solicitar um CNPJ cujo cadastro esteja guardado dentro da janela de validade da fonte que o respondeu · **Sujeito:** o sistema · **Ação:** deve servir · **Objeto:** o cadastro guardado · **Restrição:** sem nova chamada à fonte externa |
+| **Requisito:** | (a) Quando uma consulta solicitar um CNPJ cujo cadastro esteja guardado dentro da janela de validade da fonte que o respondeu, o sistema deve servir o cadastro guardado, sem nova chamada à fonte externa.<br>(b) Quando uma consulta solicitar o perfil completo de uma empresa cujas evidências e índices por ODS estejam guardados há até 5 (cinco) minutos, o sistema deve servi-los sem nova coleta, descartando-os quando o índice da empresa for recalculado. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando uma consulta solicitar um CNPJ cujo cadastro esteja guardado dentro da janela de validade da fonte que o respondeu · **Sujeito:** o sistema · **Ação:** deve servir · **Objeto:** o cadastro guardado · **Restrição:** sem nova chamada à fonte externa<br>(b) **Condição:** Quando uma consulta solicitar o perfil completo de uma empresa cujas evidências e índices por ODS estejam guardados há até 5 minutos · **Sujeito:** o sistema · **Ação:** deve servi-los · **Objeto:** as evidências e os índices guardados · **Restrição:** sem nova coleta, descartando-os quando o índice da empresa for recalculado |
 | **Verificação:** | Teste. |
 
 
@@ -73,8 +73,8 @@ Cada RNF indica a necessidade que o origina (história de usuário, em
 | **Característica:** | Eficiência de Desempenho — Comportamento Temporal (*Time Behaviour*). |
 | **Necessidade (história de usuário):** | HU28. |
 | **Relacionados:** | UC06, UC07; [RF03], [RF05], [RF07]. |
-| **Requisito:** | Quando o perfil completo (cadastro, evidências e índices por ODS) estiver em cache, o sistema deve responder em até 2 (dois) segundos. Sem cache completo, a espera conjunta por cadastro, coleta e recálculo deve obedecer ao orçamento configurado em `COMPANY_PROFILE_REQUEST_TIMEOUT_MS` (padrão 15 segundos), devolvendo o retrato persistido com indicação de pendência quando houver cadastro local, ou indisponibilidade temporária quando o cadastro não puder ser obtido. |
-| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o perfil completo estiver em cache, ou quando depender de atualização · **Sujeito:** o sistema · **Ação:** deve responder · **Restrição:** em até 2 segundos no cache; sem cache, com espera conjunta limitada por `COMPANY_PROFILE_REQUEST_TIMEOUT_MS`, padrão 15 segundos, e resposta parcial ou indisponibilidade temporária ao esgotar o prazo |
+| **Requisito:** | Quando o perfil completo (cadastro, evidências e índices por ODS) estiver em cache, o sistema deve responder em até 2 (dois) segundos. Sem cache completo, a espera conjunta por cadastro, coleta e recálculo deve obedecer ao orçamento configurado em `COMPANY_PROFILE_REQUEST_TIMEOUT_MS` (padrão 15 segundos), devolvendo o retrato persistido com indicação de pendência quando houver cadastro local, ou indisponibilidade temporária quando o cadastro não puder ser obtido. Cada espera por um job da fila fica limitada por `QUEUE_WAIT_TIMEOUT_MS` (padrão 10 segundos), sempre dentro desse orçamento. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o perfil completo estiver em cache, ou quando depender de atualização · **Sujeito:** o sistema · **Ação:** deve responder · **Restrição:** em até 2 segundos no cache; sem cache, com espera conjunta limitada por `COMPANY_PROFILE_REQUEST_TIMEOUT_MS`, padrão 15 segundos, e resposta parcial ou indisponibilidade temporária ao esgotar o prazo; cada espera por job limitada por `QUEUE_WAIT_TIMEOUT_MS`, padrão 10 segundos |
 | **Verificação:** | Teste (medição do tempo de resposta). |
 
 
@@ -135,8 +135,8 @@ camada de front-end for detalhada.
 | **Característica:** | Segurança — Confidencialidade (*Confidentiality*). Formalmente uma exigência regulatória, sem sub-característica dedicada na norma — enquadrada aqui por ser o item mais próximo do modelo. |
 | **Necessidade (história de usuário):** | HU08, HU29. |
 | **Relacionados:** | UC05, UC06, UC14; [RF27]; [INL02]. |
-| **Requisito:** | Quando o sistema coletar, armazenar ou exibir dados de uma empresa, ele deve limitá-los a dados públicos da pessoa jurídica, sem dado pessoal de indivíduo. |
-| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o sistema coletar, armazenar ou exibir dados de uma empresa · **Sujeito:** ele [o sistema] · **Ação:** deve limitá-los · **Objeto:** a dados públicos da pessoa jurídica · **Restrição:** sem dado pessoal de indivíduo |
+| **Requisito:** | (a) Quando o sistema coletar, armazenar ou exibir dados de uma empresa, ele deve limitá-los a dados públicos da pessoa jurídica, sem dado pessoal de indivíduo.<br>(b) Quando o sistema guardar registros operacionais (tokens de e-mail, sessões, bloqueios de acesso, tentativas de login, acessos ao honeypot, envios de e-mail e requisições às fontes), ele deve eliminá-los ao fim do prazo de retenção de cada tipo, configurável por `DATA_RETENTION_*` (padrões de 7 a 180 dias). |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o sistema coletar, armazenar ou exibir dados de uma empresa · **Sujeito:** ele [o sistema] · **Ação:** deve limitá-los · **Objeto:** a dados públicos da pessoa jurídica · **Restrição:** sem dado pessoal de indivíduo<br>(b) **Condição:** Quando o sistema guardar registros operacionais · **Sujeito:** ele [o sistema] · **Ação:** deve eliminá-los · **Objeto:** os tokens de e-mail, as sessões, os bloqueios, as tentativas de login, os acessos ao honeypot, os envios de e-mail e as requisições às fontes · **Restrição:** ao fim do prazo de retenção de cada tipo, configurável por `DATA_RETENTION_*` |
 | **Verificação:** | Inspeção (modelo de dados e respostas da API) e teste. |
 
 

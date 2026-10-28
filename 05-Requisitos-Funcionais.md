@@ -195,8 +195,8 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC08. |
 | **Necessidade (história de usuário):** | HU23, HU24. |
 | **Requisitos associados:** | [RF10]. |
-| **Requisito:** | Quando o usuário informar critérios de pesquisa, o sistema deve listar, de forma paginada, as empresas da base local que atendam aos filtros de CNAE, UF e município e, para um único ODS selecionado, ao índice mínimo e à confiança mínima informados. |
-| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o usuário informar critérios de pesquisa · **Sujeito:** o sistema · **Ação:** deve listar · **Objeto:** as empresas da base local que atendam aos filtros de CNAE, UF e município e, para um único ODS selecionado, ao índice mínimo e à confiança mínima informados · **Restrição:** de forma paginada |
+| **Requisito:** | Quando o usuário informar critérios de pesquisa, o sistema deve listar, de forma paginada, as empresas da base local que atendam aos filtros de CNAE, UF e município e, para um único ODS selecionado, ao índice mínimo e à confiança mínima informados, em páginas de 20 itens por padrão e de até 100 itens por página. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o usuário informar critérios de pesquisa · **Sujeito:** o sistema · **Ação:** deve listar · **Objeto:** as empresas da base local que atendam aos filtros de CNAE, UF e município e, para um único ODS selecionado, ao índice mínimo e à confiança mínima informados · **Restrição:** de forma paginada, em páginas de 20 itens por padrão e de até 100 itens por página |
 
 
 <p align="center"><b>[RF14] Ordenar resultados por score</b></p>
