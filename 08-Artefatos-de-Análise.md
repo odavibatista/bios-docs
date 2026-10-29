@@ -465,7 +465,8 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>2 - O setor é a divisão (2 primeiros dígitos) do CNAE principal; o usuário pode informar a divisão, o grupo, a classe ou a subclasse.</br>
 		<br>3 - A janela de tempo é o mês. Cada janela traz o índice médio das empresas do setor com índice, a confiança média de todas e quantas empresas foram consideradas.</br>
 		<br>4 - Setor com menos empresas que o mínimo configurado (padrão: 5) tem as médias omitidas, para que nenhuma média revele o índice de uma empresa; as contagens continuam visíveis.</br>
-		<br>5 - Há evolução a mostrar a partir de duas janelas; com menos, vale o fluxo alternativo 2.1.</br></td></tr>
+		<br>5 - Há evolução a mostrar a partir de duas janelas; com menos, vale o fluxo alternativo 2.1.</br>
+		<br>6 - Para a seleção do passo 1, o sistema lista os setores com ao menos uma janela registrada, cada um com a descrição oficial da divisão na CNAE 2.3 (IBGE, [RF06]); a divisão informada precisa existir na CNAE 2.3.</br></td></tr>
 </table>
 
 <br></br>
