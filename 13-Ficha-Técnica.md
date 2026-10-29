@@ -30,6 +30,14 @@
   MongoDB. **Decisão explícita:** o BIOS permanece nesta versão mesmo com a existência da
   Prisma ORM v7, porque a v7 **ainda não suporta MongoDB** (limitação declarada pela própria
   Prisma, decorrente de uma reescrita da camada de query engine que priorizou bancos SQL).
+  **Risco aceito ([NFSE08]) para manter a v6:** o `npm audit` aponta a `deepmerge-ts` 7, que a v6
+  traz pelo `@prisma/config` (estouro de pilha ao mesclar objetos recursivos), e a correção que ele
+  sugere é migrar para a v7, justamente a série sem MongoDB. O BIOS **não aplica essa correção** e
+  continua na v6.19, pela decisão acima. O pacote vulnerável não é carregado pela API em execução:
+  só a CLI do Prisma (`db:push`, `generate`) o usa, para mesclar a configuração lida do
+  `prisma.config.ts` do repositório, e ele nunca recebe dado de requisição. O risco fica registrado
+  e é revisto quando o Prisma suportar MongoDB numa série corrigida. As demais vulnerabilidades da
+  auditoria de 28/10/2026 foram corrigidas sem trocar de major (#392).
 - **MongoDB 8** como banco de dados principal, executado como **replica set** (exigência do
   Prisma para transações e ações referenciais emuladas). As camadas de dados seguem o padrão
   Bronze/Silver/Gold em três coleções lógicas (`evidence_raw`, `evidence_normalized`,
