@@ -21,7 +21,7 @@
 | Camada | Framework | Observação |
 |---|---|---|
 | Back-end | NestJS (v12.x) | Versão major atual; exige Node.js ≥ 22.22.3. Adotada pelo suporte nativo a Standard Schema (validação e serialização com Zod sem biblioteca intermediária) |
-| Front-end | Angular (versão moderna, standalone components) | Decisão travada nesta ficha |
+| Front-end | Angular (v22.x, standalone components, zoneless, signals) | Exige Node.js ≥ 22.22.3; o `bios-webapp` fixa Node 22.23.4 e npm 11 pelo Volta (campo `volta` do `package.json`), sem depender do Node instalado na máquina. Versão de apresentação 100% mockada: lê respostas reais da API capturadas em JSON, atrás de um serviço com a interface da API |
 | Ingestão de fontes externas | Módulos do próprio `bios-core-api` (um por fonte), com consumidores de fila | Sem serviço à parte: quem pede e quem atende o job conversam só via fila (BullMQ), então um consumidor pode ser movido para um processo próprio sem mudar o contrato |
 
 ## 3. ORM e Persistência
@@ -69,6 +69,16 @@
 | HTTP client | `fetch` nativo do Node | Consumo das APIs externas (Seção 6), com tempo máximo da chamada inteira, sem redirecionamentos e com corpo limitado; os dumps em lote são baixados em fluxo para o disco, com limite de tamanho. O `axios`, previsto inicialmente, não foi adotado: o `fetch` cobre a necessidade sem dependência extra |
 | Leitura dos dumps do IBAMA | `csv-parse`, `yauzl` | UC14 — leitura em fluxo do CSV (separador `;`, texto com quebras de linha, BOM) e do `.zip` de CSVs, sem extrair para o disco nem carregar o arquivo na memória (o auto de infração passa de 700 MB descompactado). Bibliotecas de uso consolidado, sem dependências relevantes, em vez de um *parser* próprio de CSV e de `.zip` |
 
+**Front-end (`bios-webapp`).**
+
+| Categoria | Biblioteca | Função no BIOS |
+|---|---|---|
+| Componentes | `@angular/material`, `@angular/cdk` (Material 3) | Componentes acessíveis, com versão casada à do Angular. O tema é gerado das cores da apresentação do projeto (`assets/BIOS - PPTX.pptx`): primária `#2C5F2D`, terciária `#97BC62`, neutra `#5B6B5B` |
+| Gráficos | `echarts`, `ngx-echarts` | Índice por ODS, contribuição das evidências e evolução setorial (UC10) |
+| Fontes e ícones | `@fontsource-variable/inter`, `material-symbols` | Servidos pelo próprio app, sem CDN: a apresentação funciona sem internet |
+| Tipos da API | `@hey-api/openapi-ts` | Gera os tipos dos modelos a partir do documento OpenAPI do `bios-core-api` (RF17), para os dados mockados terem exatamente o formato da API. O `openapi-typescript`, usado para conferir que o contrato gera cliente, ainda não aceita o TypeScript 6 |
+| Localização | `@angular/common` (locale `pt-BR`) | Datas, números e moeda no formato brasileiro |
+
 ## 5. Bibliotecas de Teste
 
 ### 5.1 Back-end
@@ -97,11 +107,14 @@
   dados.
 
 ### 5.2 Front-end (Angular)
-- **Jasmine + Karma** — testes unitários, padrão do Angular CLI;
+- **Vitest** — testes unitários, pelo builder de testes do Angular CLI (padrão desde o Angular 21,
+  no lugar de Jasmine + Karma, cujo runner foi descontinuado). É o mesmo runner do back-end, com
+  cobertura via `@vitest/coverage-v8` e o mesmo limite mínimo de 75% ([NFPD03]);
 - **@testing-library/angular** — testes de componente, com foco em comportamento observável
-  pelo usuário em vez de detalhe de implementação interna;
-- **Playwright** ou **Cypress** — testes e2e de fluxo completo (a decidir entre os dois na
-  Etapa 6, sem impacto na Etapa 5).
+  pelo usuário (papéis, rótulos e textos acessíveis) em vez de detalhe de implementação interna;
+- **Playwright** — testes e2e de fluxo completo, com o app real no navegador (Chromium no CI).
+  Escolhido no lugar do Cypress por rodar os testes em paralelo sem serviço pago e por cobrir
+  Chromium, Firefox e WebKit com a mesma API.
 
 ### 5.3 Adapters de fontes externas e consumidores de fila
 - **Vitest** — o mesmo test runner do back-end, pois os adapters e os consumidores são módulos
