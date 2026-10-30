@@ -282,12 +282,13 @@ formalizados e reclassificados em `06-Requisitos-Nao-Funcionais.md`.
 | Adequação Funcional | Modelo evidência-primeiro (dado → evidência → regra → indicador → score) com estado explícito por evidência (RF08) garante que cada fonte contribua de forma isolada e auditável para o score, sem sobreposição de responsabilidade entre adapters | RF07, RF08, RF10; NFCO02 |
 | Eficiência de Desempenho | Cache de consulta evita nova chamada síncrona à fonte externa dentro da janela de validade; ingestão pesada do IBAMA roda como job assíncrono em lote (BullMQ), fora do caminho crítico da consulta em tempo real | NFDE01, NFDE02 |
 | Compatibilidade | Cada fonte isolada atrás de `DataSourceInterface`; a cadeia de fallback do cadastro (BrasilAPI → OpenCNPJ → Minha Receita) troca de provedor sem alterar contrato interno; rate limit de cada fonte externa respeitado | NFPD01; seção 1 |
-| Capacidade de Interação | Não endereçada nesta camada de arquitetura (back-end/dados) — depende de decisões de front-end ainda não formalizadas | — (ver `06-Requisitos-Nao-Funcionais.md`, seção 6.4) |
+| Capacidade de Interação | Tratada no front-end (`bios-webapp`): telas acessíveis (WCAG 2.2, nível AA) e responsivas, retorno de carregamento e de erro com a mensagem da API, que já responde em português, e textos e formatos brasileiros; cada meta tem verificação automática nos testes de componente e e2e | NFIN01–NFIN04 |
 | Confiabilidade | Degradação graciosa por fonte — indisponibilidade de uma fonte (ex.: GHG Protocol) não bloqueia a consulta inteira; job de ingestão com retry/backoff nativo do BullMQ | NFCO01 |
 | Segurança | Criptografia AES-256, hash de chave de API, sessão JWT revogável, rate limiting, bloqueio de login, honeypot, monitoramento de dependências | NFSE01–NFSE08 |
 | Manutenibilidade | Isolamento por adapter (um módulo por fonte), camadas lógicas `evidence_raw` → `evidence_normalized` → `company_profile`, cobertura mínima de teste, barreira pré-commit e análise estática | NFPD02, NFPD03, NFSE09–NFSE11; seção 3 |
 | Flexibilidade | Mesmo isolamento por adapter também sustenta adição de novas fontes sem alterar o núcleo, ainda que formalizado sob Manutenibilidade | NFPD02 (referência cruzada) |
 | Segurança Operacional (Safety) | Não aplicável — o BIOS não atua sobre processo físico ou operacional de terceiros | — |
 
-Capacidade de Interação depende de decisões de front-end ainda não formalizadas; a tabela
-cobre apenas a parcela resolvida pela arquitetura de back-end/dados deste documento.
+A Capacidade de Interação não depende da arquitetura de back-end e dados deste documento: as
+metas valem para as telas do front-end e estão formalizadas em `06-Requisitos-Nao-Funcionais.md`,
+seção 6.4.

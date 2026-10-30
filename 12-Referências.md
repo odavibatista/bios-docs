@@ -3,6 +3,10 @@
 BRASIL. Ministério da Gestão e da Inovação em Serviços Públicos. **Dados Abertos do CNPJ**.
 Disponível em: https://dados.gov.br. Acesso em: 2026.
 
+BRASIL. **Lei nº 13.146, de 6 de julho de 2015** — Lei Brasileira de Inclusão da Pessoa com
+Deficiência (Estatuto da Pessoa com Deficiência). Disponível em:
+https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm. Acesso em: 2026.
+
 BRASILAPI. **BrasilAPI — Documentação**. Disponível em: https://brasilapi.com.br. Acesso em:
 2026.
 
@@ -37,6 +41,9 @@ Acesso em: 2026. (Edição de 2011, vigente na ementa da disciplina; substituíd
 INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. **ISO/IEC 25010:2023** — Systems and
 software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE) —
 Product quality model. Disponível em: https://iso.org/standard/78176.html. Acesso em: 2026.
+
+W3C. **Web Content Accessibility Guidelines (WCAG) 2.2**. W3C Recommendation, 2023.
+Disponível em: https://www.w3.org/TR/WCAG22/. Acesso em: 2026.
 
 UNITED NATIONS. **Transforming our world: the 2030 Agenda for Sustainable Development**.
 2015.
