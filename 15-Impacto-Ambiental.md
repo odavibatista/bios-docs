@@ -53,3 +53,16 @@ Não bloqueia o MVP (RF10/RF11 não exigem histórico; [RF30], que expõe [IA05]
   empresa individual, o que a nota do [IA05] proíbe.
 - **Consulta:** a evolução de um ODS num setor lista as janelas da mais antiga à mais recente; com menos de
   duas janelas, informa que ainda não há histórico suficiente.
+
+**Série da versão de apresentação.** A versão publicada do front-end não tem a API em execução, e o job acima
+só registra o mês em que roda. Para mostrar o [IA05] nessa versão, os 23 meses anteriores ao mês registrado são
+reconstruídos fora da API: as regras de pontuação do próprio código são reaplicadas às evidências atuais de cada
+empresa, considerando só o que existia no fim de cada mês (data de publicação, início da sanção ou fim do ano do
+inventário) e a situação da época (sanção vigente, embargo não baixado). A amostra mínima também vale aqui.
+
+A reconstrução foi validada reproduzindo os 220.744 índices atuais das 110.372 empresas da base, sem nenhuma
+diferença. Ela tem um limite assumido: registros que a fonte já retirou não entram, então a série mostra o passado
+visto pelas evidências de hoje, e não o que teria sido medido na época. Por isso, a tela avisa que os meses
+anteriores são reconstruídos, e a ressalva do viés de instrumentação (seção 15.3) vale com mais força para eles.
+O ODS 13 fica estável por construção: cada inventário soma o mesmo peso, e o índice médio das empresas com
+inventário não muda.
