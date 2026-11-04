@@ -27,6 +27,7 @@ permissões nas quais ela está incluída.
 | `[P11]` Integrar com CRM (bônus) | `[P10]` | | | | ✅ |
 | `[P12]` Manter Blacklist de Domínios | | | | ✅ | |
 | `[P13]` Renovar Sessão | | | ✅ | ✅ | |
+| `[P14]` Acompanhar Movimentações | | | ✅ | ✅ | |
 
 ## 11.2 Correspondência com Casos de Uso
 
@@ -45,6 +46,7 @@ permissões nas quais ela está incluída.
 | `[P11]` | UC16 | [RF31] |
 | `[P12]` | UC13 | [RF29] |
 | `[P13]` | UC17 | [RF32] |
+| `[P14]` | UC18 | [RF34] |
 
 ## 11.3 Regras Complementares
 

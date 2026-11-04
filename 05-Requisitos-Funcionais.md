@@ -61,7 +61,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Ator(es):** | Usuário. |
 | **Casos de uso:** | UC02. |
 | **Necessidade (história de usuário):** | HU03. |
-| **Requisitos associados:** | [RF01], [RF19], [RF20], [RF32]. |
+| **Requisitos associados:** | [RF01], [RF19], [RF20], [RF32], [RF34]. |
 | **Requisito:** | (a) Quando um usuário com conta ativa informar e-mail e senha válidos, o sistema deve autenticá-lo e abrir uma sessão própria do dispositivo.<br>(b) Quando o e-mail ou a senha informados forem inválidos, o sistema deve exibir uma mensagem de credenciais inválidas que não distingue e-mail inexistente de senha incorreta.<br>(c) Quando uma requisição não trouxer sessão válida, o sistema deve recusá-la, exceto nas rotas de acesso anônimo (cadastro, confirmação de e-mail, login, renovação de sessão, recuperação de senha e health check). |
 | **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando um usuário com conta ativa informar e-mail e senha válidos · **Sujeito:** o sistema · **Ação:** deve autenticá-lo e abrir · **Objeto:** uma sessão própria do dispositivo<br>(b) **Condição:** Quando o e-mail ou a senha informados forem inválidos · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** uma mensagem de credenciais inválidas · **Restrição:** que não distingue e-mail inexistente de senha incorreta<br>(c) **Condição:** Quando uma requisição não trouxer sessão válida · **Sujeito:** o sistema · **Ação:** deve recusá-la · **Objeto:** [a requisição] · **Restrição:** exceto nas rotas de acesso anônimo (cadastro, confirmação de e-mail, login, renovação de sessão, recuperação de senha e health check) |
 
@@ -157,7 +157,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Ator(es):** | Sistema (processo automático). |
 | **Casos de uso:** | UC07, UC15. |
 | **Necessidade (história de usuário):** | HU19. |
-| **Requisitos associados:** | [RF07], [RF11]. |
+| **Requisitos associados:** | [RF07], [RF11], [RF33]. |
 | **Requisito:** | Quando as evidências normalizadas de uma empresa forem criadas ou atualizadas, o sistema deve calcular, por empresa, um índice de aderência ambiental para cada ODS de referência do MVP — ODS 13 (Ação Contra a Mudança Global do Clima) e ODS 15 (Vida Terrestre) —, a partir das evidências vinculadas a cada ODS, sem combiná-los em índice geral. |
 | **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando as evidências normalizadas de uma empresa forem criadas ou atualizadas · **Sujeito:** o sistema · **Ação:** deve calcular · **Objeto:** um índice de aderência ambiental para cada ODS de referência do MVP — ODS 13 (Ação Contra a Mudança Global do Clima) e ODS 15 (Vida Terrestre) · **Restrição:** por empresa; a partir das evidências vinculadas a cada ODS; sem combiná-los em índice geral |
 | **Observações:** | Os ODS de referência são entidades próprias do banco de dados, populadas via seed (ver `14-Projeto-e-Arquitetura.md`, seção 3.1). |
@@ -182,7 +182,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Ator(es):** | Usuário. |
 | **Casos de uso:** | UC07, UC15. |
 | **Necessidade (história de usuário):** | HU21. |
-| **Requisitos associados:** | [RF10]. |
+| **Requisitos associados:** | [RF10], [RF33], [RF34]. |
 | **Requisito:** | Quando o usuário selecionar a explicação do score de um ODS, o sistema deve listar, separadamente para esse ODS, as evidências que contribuíram para o índice, com o peso e o sinal (positivo ou negativo) de cada uma. |
 | **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o usuário selecionar a explicação do score de um ODS · **Sujeito:** o sistema · **Ação:** deve listar · **Objeto:** as evidências que contribuíram para o índice · **Restrição:** separadamente para esse ODS; com o peso e o sinal (positivo ou negativo) de cada uma |
 
@@ -427,3 +427,29 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Requisitos associados:** | [RF02], [RF18], [RF23]. |
 | **Requisito:** | (a) Quando o usuário apresentar um refresh token válido, o sistema deve trocá-lo por um novo par de access token e refresh token, invalidando o refresh token apresentado (uso único, com rotação).<br>(b) Quando for apresentado um refresh token já rotacionado, o sistema deve revogar todas as sessões do usuário.<br>(c) Quando for apresentado um refresh token já rotacionado, o sistema deve disparar o alerta de login suspeito por e-mail ([RF18]). |
 | **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário apresentar um refresh token válido · **Sujeito:** o sistema · **Ação:** deve trocá-lo · **Objeto:** por um novo par de access token e refresh token · **Restrição:** invalidando o refresh token apresentado (uso único, com rotação)<br>(b) **Condição:** Quando for apresentado um refresh token já rotacionado · **Sujeito:** o sistema · **Ação:** deve revogar · **Objeto:** todas as sessões do usuário<br>(c) **Condição:** Quando for apresentado um refresh token já rotacionado · **Sujeito:** o sistema · **Ação:** deve disparar · **Objeto:** o alerta de login suspeito · **Restrição:** por e-mail ([RF18]) |
+
+
+<p align="center"><b>[RF33] Registrar movimentação do índice</b></p>
+
+| Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Sistema. |
+| **Casos de uso:** | UC15. |
+| **Necessidade (história de usuário):** | HU36. |
+| **Requisitos associados:** | [RF10], [RF12], [RF34]. |
+| **Requisito:** | (a) Quando o recálculo alterar o índice de um ODS de uma empresa com perfil cadastral, o sistema deve registrar o sentido da mudança, a causa e a data, substituindo o registro anterior da mesma empresa e ODS.<br>(b) Quando o recálculo mantiver o índice de um ODS, ou quando a versão das regras de pontuação tiver mudado, o sistema não deve registrar movimentação nesse ODS.<br>(c) Quando uma empresa com perfil cadastral e índice calculado não tiver movimentação registrada, o sistema deve reconstruí-la a partir da evidência mais recente que compõe o índice, em varredura diária. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o recálculo alterar o índice de um ODS de uma empresa com perfil cadastral · **Sujeito:** o sistema · **Ação:** deve registrar · **Objeto:** o sentido da mudança, a causa e a data · **Restrição:** substituindo o registro anterior da mesma empresa e ODS<br>(b) **Condição:** Quando o recálculo mantiver o índice de um ODS, ou quando a versão das regras de pontuação tiver mudado · **Sujeito:** o sistema · **Ação:** não deve registrar · **Objeto:** movimentação · **Restrição:** nesse ODS<br>(c) **Condição:** Quando uma empresa com perfil cadastral e índice calculado não tiver movimentação registrada · **Sujeito:** o sistema · **Ação:** deve reconstruí-la · **Objeto:** [a movimentação] · **Restrição:** a partir da evidência mais recente que compõe o índice, em varredura diária |
+| **Observações:** | O sentido é um dos quatro valores da seção 4.4 de `14-Projeto-e-Arquitetura.md`, e a causa vem da comparação entre as contribuições anterior e nova. O registro não guarda o índice anterior nem forma série por empresa ([IA05], [IND03]). Mudança de regras não é movimentação porque não diz respeito à empresa. |
+
+
+<p align="center"><b>[RF34] Exibir empresas com movimentação recente</b></p>
+
+| Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário. |
+| **Casos de uso:** | UC18, UC02, UC07. |
+| **Necessidade (história de usuário):** | HU36. |
+| **Requisitos associados:** | [RF02], [RF10], [RF11], [RF12], [RF33]. |
+| **Requisito:** | (a) Quando o usuário concluir o login sem destino guardado, o sistema deve exibir a tela principal.<br>(b) Quando o usuário com sessão ativa abrir a tela principal, o sistema deve exibir a lista paginada das empresas com movimentação registrada, da mais recente para a mais antiga, com até 100 itens por página.<br>(c) Para cada empresa da lista, o sistema deve exibir razão social, nome fantasia, município, UF e, por ODS, o sentido, a causa e a data da última movimentação, com o índice e a confiança atuais em campos separados.<br>(d) Quando o usuário selecionar uma empresa da lista, o sistema deve exibir o perfil ambiental dela. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário concluir o login sem destino guardado · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** a tela principal<br>(b) **Condição:** Quando o usuário com sessão ativa abrir a tela principal · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** a lista paginada das empresas com movimentação registrada · **Restrição:** da mais recente para a mais antiga, com até 100 itens por página<br>(c) **Condição:** Para cada empresa da lista · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** razão social, nome fantasia, município, UF e, por ODS, o sentido, a causa e a data da última movimentação, com o índice e a confiança atuais · **Restrição:** em campos separados<br>(d) **Condição:** Quando o usuário selecionar uma empresa da lista · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** o perfil ambiental dela |
+| **Observações:** | A forma de exibir a movimentação é limitada por [IND01], [IND02] e [IND03]. Filtros por ODS, UF e setor ficam como evolução; o modelo de dados os comporta sem migração (`14-Projeto-e-Arquitetura.md`, seção 4.4). |

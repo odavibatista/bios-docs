@@ -8,8 +8,8 @@ sanções administrativas do CEIS/CNEP — Portal da Transparência; inventário
 GHG Protocol), gerando, para o ODS 13 (Ação Climática) e o ODS 15 (Vida Terrestre), um índice
 de aderência ambiental explicável e um nível de confiança associado. O sistema permitirá busca
 por CNPJ ou razão social, filtragem por CNAE/UF/município/índice/confiança, ranqueamento de resultados e
-exportação de listas em XLSX, além de um painel de conta com geração de chaves de API para
-consumo externo dos dados. Ficam fora do escopo do MVP, por decisão deliberada: identificação
+exportação de listas em XLSX, tela principal com as empresas de movimentação mais recente, além
+de um painel de conta com geração de chaves de API para consumo externo dos dados. Ficam fora do escopo do MVP, por decisão deliberada: identificação
 de tomadores de decisão, coleta de contatos pessoais (e-mail, telefone, WhatsApp, LinkedIn) e
 qualquer funcionalidade de geração de leads comerciais — o sistema trabalha exclusivamente com
 dados públicos de pessoa jurídica de natureza ambiental/regulatória. Também ficam fora do MVP,
@@ -85,8 +85,8 @@ de teste no quadro de gerenciamento do projeto do [GitHub Projects](https://gith
   ambiental por ODS (13 e 15) com nível de confiança explicável, autenticação de usuário. A
   ingestão do GHG Protocol é Essencial por ser a única fonte do índice do ODS 13; em tempo de
   execução, continua isolada e não bloqueante (ver `14-Projeto-e-Arquitetura.md`);
-- Importante: filtros de busca, ranqueamento, exportação em XLSX, painel de conta e API
-  pública documentada;
+- Importante: filtros de busca, ranqueamento, exportação em XLSX, painel de conta, tela principal
+  com as movimentações recentes (RF33, RF34) e API pública documentada;
 - Desejável: mecanismos adicionais de segurança de borda (ex.: honeypot), evolução do índice
   médio por setor (RF30) e integração com CRMs (RF31 — bônus, fora do MVP caso não haja folga
   no cronograma).

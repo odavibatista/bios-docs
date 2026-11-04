@@ -11,7 +11,7 @@ nos cinco elementos, como nos requisitos funcionais.
 
 <p align="center"><b>[IND01] Não afirmar veredito absoluto de sustentabilidade</b></p>
 
-| Relacionados: | UC07; [RF10], [RF12]. |
+| Relacionados: | UC07, UC18; [RF10], [RF12], [RF34]. |
 | :----------- | :----------- |
 | **Necessidade (história de usuário):** | HU18, HU22. |
 | **Requisito:** | Quando o sistema exibir o resultado da avaliação de uma empresa, ele não deve afirmar que a empresa "é" ou "não é" sustentável, limitando-se a reportar as evidências e os índices derivados delas. |
@@ -20,11 +20,20 @@ nos cinco elementos, como nos requisitos funcionais.
 
 <p align="center"><b>[IND02] Não converter ausência de dado em evidência negativa</b></p>
 
-| Relacionados: | UC07, UC15; [RF08], [RF11]. |
+| Relacionados: | UC07, UC15, UC18; [RF08], [RF11], [RF33], [RF34]. |
 | :----------- | :----------- |
 | **Necessidade (história de usuário):** | HU16, HU20. |
 | **Requisito:** | (a) Quando uma fonte não retornar informação sobre uma empresa (`UNKNOWN`), o sistema não deve tratar essa ausência como equivalente a "a empresa não pratica" (`NOT_FOUND` confirmado).<br>(b) Quando uma fonte não retornar informação sobre uma empresa (`UNKNOWN`), o sistema não deve pontuar essa ausência como evidência negativa, reduzindo apenas o nível de confiança. |
 | **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando uma fonte não retornar informação sobre uma empresa (`UNKNOWN`) · **Sujeito:** o sistema · **Ação:** não deve tratar · **Objeto:** essa ausência como equivalente a "a empresa não pratica" (`NOT_FOUND` confirmado)<br>(b) **Condição:** Quando uma fonte não retornar informação sobre uma empresa (`UNKNOWN`) · **Sujeito:** o sistema · **Ação:** não deve pontuar · **Objeto:** essa ausência como evidência negativa · **Restrição:** reduzindo apenas o nível de confiança |
+
+
+<p align="center"><b>[IND03] Não apresentar movimentação como ranking nem como mudança de conduta</b></p>
+
+| Relacionados: | UC15, UC18; [RF33], [RF34]; [IA05]. |
+| :----------- | :----------- |
+| **Necessidade (história de usuário):** | HU22, HU36. |
+| **Requisito:** | (a) Quando o sistema exibir a movimentação do índice de uma empresa, ele não deve exibir o valor anterior, o tamanho da variação nem a série de índices da empresa, limitando-se ao sentido, à causa e à data.<br>(b) Quando o sistema listar empresas com movimentação, ele não deve ordená-las pelo sentido nem pelo tamanho da mudança, limitando-se à ordem cronológica.<br>(c) Quando o sistema exibir a movimentação do índice de uma empresa, ele não deve apresentá-la como melhora ou piora da conduta ambiental da empresa, limitando-se a informar a evidência que mudou o índice. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o sistema exibir a movimentação do índice de uma empresa · **Sujeito:** ele [o sistema] · **Ação:** não deve exibir · **Objeto:** o valor anterior, o tamanho da variação nem a série de índices da empresa · **Restrição:** limitando-se ao sentido, à causa e à data<br>(b) **Condição:** Quando o sistema listar empresas com movimentação · **Sujeito:** ele [o sistema] · **Ação:** não deve ordená-las · **Objeto:** pelo sentido nem pelo tamanho da mudança · **Restrição:** limitando-se à ordem cronológica<br>(c) **Condição:** Quando o sistema exibir a movimentação do índice de uma empresa · **Sujeito:** ele [o sistema] · **Ação:** não deve apresentá-la · **Objeto:** como melhora ou piora da conduta ambiental da empresa · **Restrição:** limitando-se a informar a evidência que mudou o índice |
 
 
 ## 7.2 Privacidade e Legal
@@ -40,7 +49,7 @@ nos cinco elementos, como nos requisitos funcionais.
 
 <p align="center"><b>[INL02] Não coletar dado pessoal de indivíduo vinculado à empresa</b></p>
 
-| Relacionados: | UC06, UC07, UC09, UC14, UC16; [RF05], [RF15], [RF31]; [NFSE02]. |
+| Relacionados: | UC06, UC07, UC09, UC14, UC16, UC18; [RF05], [RF15], [RF31], [RF34]; [NFSE02]. |
 | :----------- | :----------- |
 | **Necessidade (história de usuário):** | HU29, HU32. |
 | **Requisito:** | O sistema não deve buscar, armazenar nem exibir contato, perfil de rede social ou qualquer dado pessoal de sócio, administrador ou colaborador da empresa consultada, restringindo-se aos dados públicos da pessoa jurídica. |
