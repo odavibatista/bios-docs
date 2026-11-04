@@ -17,12 +17,15 @@ O BIOS não atua diretamente sobre o comportamento ambiental das empresas consul
 **Nota sobre [IA05]:** reportado **por setor (CNAE)**, nunca por empresa individual isolada — inclusive na
 exposição ao usuário, formalizada como [RF30] (Desejável). Reportar evolução de score por empresa única, sem controle de causalidade sobre por que o score mudou (nova evidência ingerida vs. mudança real de conduta), geraria um ranking punitivo não sustentado por evidência suficiente — o mesmo risco que a separação score/confiança (RF11) já existe para mitigar.
 
+**Exceção delimitada à nota ([RF33], [RF34], [IND03]):** a tela principal mostra, por empresa, a **última** mudança do índice de cada ODS. Isso não reporta evolução, porque o risco acima vem de dois pontos que a tela trata: (a) a falta de controle sobre a causa, já que cada mudança aparece com a evidência que a provocou, e uma mudança nas regras de pontuação nem é registrada; (b) o ranking, já que a lista é só cronológica. O sistema não guarda nem exibe o índice anterior, o tamanho da variação ou uma série por empresa, e não apresenta a mudança como melhora ou piora de conduta. O [IA05] continua sendo reportado apenas por setor.
+
 ## 15.3 O que o BIOS não mede
 
 Por honestidade epistemológica (mesmo princípio das RIN, `07-Requisitos-Inversos.md`), ficam explicitamente fora do escopo de avaliação de impacto:
 
 - Redução real de dano ambiental causada pelas empresas monitoradas — o sistema não tem visibilidade sobre causalidade entre consulta/exposição e mudança de comportamento;
 - Qualquer alegação de que aumento do índice médio de um setor significa melhoria ambiental real, quando pode refletir apenas melhoria na cobertura/qualidade da coleta de evidências (viés de instrumentação);
+- Qualquer alegação de que uma movimentação do índice de uma empresa ([RF33]) significa mudança real de conduta, quando ela reflete apenas a chegada, a saída ou a alteração de uma evidência pública;
 - Impacto fora da plataforma (ex.: decisões de compra ou parceria efetivamente tomadas com base no BIOS) — fora do alcance de instrumentação do sistema em sua v1.
 
 ## 15.4 Dependência de arquitetura
@@ -32,6 +35,8 @@ O indicador [IA05] exige manter série histórica de scores, não apenas o valor
 1. Adicionar uma coleção de snapshot histórico (`company_profile_history`), populada a cada recálculo de score;
 2. Aceitar uma série truncada (apenas snapshot anterior + atual), suficiente para "score subiu/desceu" mas não para gráfico de série temporal completo;
 3. **(adotada no modelo de dados)** Persistir apenas os agregados setoriais por janela de tempo na coleção `sector_score_snapshots` (média do índice e da confiança por ODS e divisão CNAE), calculados por job periódico a partir de `company_ods_scores`. Atende o [IA05] sem guardar série histórica por empresa individual — coerente com a restrição da nota do [IA05] — e com custo de armazenamento independente do número de empresas.
+
+A mesma restrição vale para a coleção `company_movements` ([RF33]): ela guarda só a última movimentação de cada ODS por empresa, sem índice anterior, e não forma série histórica.
 
 Não bloqueia o MVP (RF10/RF11 não exigem histórico; [RF30], que expõe [IA05] ao usuário, é Desejável), mas precisa ser decidido antes de implementar [IA05] em nível de código.
 

@@ -263,6 +263,59 @@ que foi removida, mudou de categoria/sinal ou perdeu a proveniência, responde
 409 em vez de omitir a linha; o recálculo é tarefa da etapa UC15/#80.
 Nenhum desses números constitui veredito de sustentabilidade (IND01).
 
+### 4.4 Movimentação do índice (RF33, RF34)
+
+Movimentação é a mudança do índice de um ODS de uma empresa, detectada no recálculo. A tela principal
+lista as empresas pela movimentação mais recente, para o usuário acompanhar o que está mudando sem
+montar uma pesquisa.
+
+| Sentido | Quando |
+| --- | --- |
+| `INCREASED` | O índice existia e subiu. |
+| `DECREASED` | O índice existia e desceu. |
+| `AVAILABLE` | O ODS não tinha índice e passou a ter. |
+| `UNAVAILABLE` | O ODS tinha índice e deixou de ter. |
+
+| Causa | Quando |
+| --- | --- |
+| `EVIDENCE_ADDED` | Entrou ao menos uma evidência na lista de contribuições. |
+| `EVIDENCE_REMOVED` | Saiu ao menos uma evidência, e nenhuma entrou. |
+| `WEIGHT_CHANGED` | As evidências são as mesmas, e o peso efetivo de alguma mudou (por exemplo, embargo desembargado). |
+
+A causa e a categoria saem da comparação entre as contribuições anteriores e as novas, que já existem
+para a explicação do índice (seção 4.3). Assim, a detecção fica em um único ponto, o recálculo, e vale
+para qualquer origem de evidência: nenhuma fonte precisa avisar que algo mudou.
+
+Decisões de projeto:
+
+- **Mesma transação do recálculo.** A movimentação é gravada na transação que substitui os índices. Fora
+  dela, uma queda entre as duas escritas perderia a movimentação para sempre, porque o índice anterior
+  já teria sido sobrescrito. O recálculo mais antigo que perde a corrida para um mais novo não grava
+  índice nem movimentação (regra de não regressão, UC15).
+- **Projeção por empresa, e não log de eventos.** `company_movements` tem um documento por empresa, com a
+  última movimentação de cada ODS embutida. Um log guardaria uma linha por mudança e exigiria agrupar por
+  empresa a cada leitura, além de formar a série por empresa que a nota do [IA05] e o [IND03] vedam. Campos
+  em `company_ods_scores` também exigiriam agrupar, com até um documento por ODS ativo em cada empresa.
+- **Sem índice anterior.** O sentido basta para a tela. Guardar o valor anterior abriria caminho para
+  exibir a variação, e a variação ordenada é o ranking punitivo que a nota do [IA05] descreve.
+- **Identificação lida do perfil.** A movimentação não copia razão social nem município: a página lê
+  `company_profile` e `company_ods_scores` pelos CNPJs da página, e um dado cadastral novo nunca fica
+  defasado na lista.
+- **Mudança de regras não conta.** Quando `rules_version` muda, o recálculo em massa alteraria o índice de
+  muitas empresas sem que nada tivesse acontecido com elas. A comparação ignora esse ODS, e a versão nova
+  vira a referência das próximas comparações. Evidência nova que chegue exatamente nesse recálculo não
+  gera movimentação; o índice exibido continua correto.
+- **Varredura de reconstrução.** Sem ela, a tela nasceria vazia em bases já calculadas e não veria
+  empresas que ganharam perfil depois do cálculo. O job diário `reconcile-company-movements`, na fila
+  `ods-scoring`, percorre as empresas por cursor de CNPJ e cria a movimentação que falta, a partir da
+  evidência mais recente que pontua (UC15, regra 8). Ele é idempotente e nunca altera movimentação já
+  registrada.
+
+Evolução prevista, sem migração de dados: filtros por ODS, UF e setor (índice composto em
+`ods_movements.ods_number` e campos de localização desnormalizados, como em `company_ods_scores`) e aviso
+ao usuário sobre empresas acompanhadas, lendo a mesma coleção. Um histórico por empresa não é evolução
+prevista: exigiria rever o [IND03] e a nota do [IA05].
+
 ## 5. Estados de evidência — decisão
 
 O README (seção 4) e o RF08 formal (`05-Requisitos-Funcionais.md`) chegaram a listar números diferentes de estados (seis vs. quatro). Decisão: os quatro estados do RF08 (`CONFIRMED`, `NOT_FOUND`, `UNKNOWN`, `OUTDATED`) são o modelo definitivo do MVP. `NOT_APPLICABLE` e `CONFLICTING` ficam descartados do escopo atual e registrados aqui como trabalho futuro, não perdidos. O README foi atualizado (seção 4) para refletir essa decisão.

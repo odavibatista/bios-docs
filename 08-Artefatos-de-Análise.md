@@ -2,9 +2,9 @@
 
 Esta seção apresenta os artefatos gerados pela Análise: casos de uso (diagrama e descrição),
 diagrama de classes de domínio, diagramas de sequência dos fluxos principais, modelo de dados
-e diagramas de arquitetura no modelo C4. Os diagramas 1 a 6 estão escritos em Mermaid,
+e diagramas de arquitetura no modelo C4. Os diagramas 1 a 7 estão escritos em Mermaid,
 renderizado nativamente pelo GitHub e versionado como texto junto à documentação; o modelo de
-dados (diagrama 7) é gerado a partir da fonte DBML em `assets/database/bios-database.dbml.txt`;
+dados (diagrama 8) é gerado a partir da fonte DBML em `assets/database/bios-database.dbml.txt`;
 os diagramas C4 (8 e 9) têm sua fonte editável em `assets/diagrams/bios-c4-architecture.drawio`.
 
 Os atores referenciados são os definidos no Quadro 2 (`04-Atores-e-Histórias-dos-Usuários.md`).
@@ -46,10 +46,11 @@ flowchart LR
         UC15([UC15 Calcular Índice e Confiança])
         UC16([UC16 Integrar com CRM — bônus])
         UC17([UC17 Renovar Sessão])
+        UC18([UC18 Acompanhar Movimentações])
     end
 
     U --- UC01 & UC02 & UC03 & UC04 & UC05 & UC17
-    U --- UC06 & UC07 & UC08 & UC09 & UC10 & UC11
+    U --- UC06 & UC07 & UC08 & UC09 & UC10 & UC11 & UC18
     D --- UC12 & UC16
     A --- UC13
     S --- UC14
@@ -59,6 +60,8 @@ flowchart LR
     UC06 -.->|include| UC07
     UC14 -.->|include| UC15
     UC08 -.->|extend| UC09
+    UC18 -.->|extend| UC07
+    UC02 -.->|extend| UC18
 ```
 
 O honeypot ([RF21]) e o bloqueio de IP não aparecem como casos de uso porque não atendem a
@@ -135,7 +138,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>2 - O sistema verifica se o IP e o usuário não estão bloqueados.</br>
 		<br>3 - O sistema valida as credenciais e registra a tentativa (IP, data/hora, resultado).</br>
 		<br>4 - O sistema abre uma nova família de sessão e emite um access token JWT de vida curta (com o <code>sid</code> da sessão) e um refresh token opaco de uso único, persistindo apenas o hash do refresh token.</br>
-		<br>5 - Exibe a tela principal do sistema de acordo com o papel.</br>
+		<br>5 - Exibe a tela principal do sistema de acordo com o papel, que estende para UC18; havendo destino guardado (a rota que o usuário tentou abrir sem sessão), exibe esse destino.</br>
 		<br>6 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Fluxos Alternativos:</b>
@@ -652,10 +655,12 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>3 - Aplica a cada evidência o peso e o sinal definidos para sua categoria e estado.</br>
 		<br>4 - Calcula o índice e, separadamente, o nível de confiança pela quantidade e qualidade das evidências.</br>
 		<br>5 - Grava em <code>company_ods_scores</code> um documento por empresa e ODS, com a lista de contribuições usada na explicação do score.</br>
-		<br>6 - Este caso de uso finaliza aqui.</br></td></tr>
+		<br>6 - Na mesma transação, compara o índice e as contribuições gravados antes com os novos e registra em <code>company_movements</code> a movimentação de cada ODS cujo índice mudou ([RF33]).</br>
+		<br>7 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Fluxos Alternativos:</b>
-		<br>2.1 - Nenhuma evidência conclusiva para o ODS: o índice é registrado como indisponível, com confiança mínima.</br></td></tr>
+		<br>2.1 - Nenhuma evidência conclusiva para o ODS: o índice é registrado como indisponível, com confiança mínima.</br>
+		<br>6.1 - O índice do ODS não mudou, a versão das regras mudou ou a empresa não tem perfil cadastral: nenhuma movimentação é registrada nesse ODS.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Pós-condições:</b> Índices e níveis de confiança por ODS atualizados e explicáveis evidência a evidência.</td></tr>
 	<tr>
@@ -663,7 +668,11 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>1 - Pesos fixos no código na v1 (motor de regras configurável fora do MVP).</br>
 		<br>2 - Evidências <code>UNKNOWN</code> não pontuam; reduzem apenas a confiança ([IND02]).</br>
 		<br>3 - <code>CONDUTA_ADMINISTRATIVA</code> pontua no ODS 15 com peso inferior ao de <code>INFRACAO_AMBIENTAL</code> e apenas quando <code>CONFIRMED</code>.</br>
-		<br>4 - Nenhum score existe sem evidência rastreável ([NFCO02]).</br></td></tr>
+		<br>4 - Nenhum score existe sem evidência rastreável ([NFCO02]).</br>
+		<br>5 - A movimentação tem um sentido: <code>INCREASED</code> (o índice subiu), <code>DECREASED</code> (desceu), <code>AVAILABLE</code> (passou a existir) ou <code>UNAVAILABLE</code> (deixou de existir). Mudança só na confiança não é movimentação.</br>
+		<br>6 - A causa vem da comparação das contribuições: <code>EVIDENCE_ADDED</code> (entrou evidência), <code>EVIDENCE_REMOVED</code> (saiu evidência) ou <code>WEIGHT_CHANGED</code> (as mesmas evidências, com peso efetivo diferente). A categoria registrada é a da contribuição de maior efeito no índice; no empate, a da evidência de menor identificador.</br>
+		<br>7 - Cada empresa guarda só a última movimentação de cada ODS, sem o índice anterior ([IND03]).</br>
+		<br>8 - Uma varredura diária reconstrói a movimentação das empresas com perfil e índice que ainda não a têm, inclusive as que ganharam perfil depois do cálculo: a data é a de publicação da evidência mais recente que pontua (ou a de coleta, se a fonte não informar), a categoria é a dela, a causa é <code>EVIDENCE_ADDED</code> e o sentido vem do sinal dos pontos dela, ou é <code>AVAILABLE</code> quando ela é a única que pontua. A varredura é idempotente e não altera movimentação já registrada.</br></td></tr>
 </table>
 
 <br></br>
@@ -736,6 +745,47 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 			<br>6 - O reuso de um refresh token revoga as sessões de todos os dispositivos do usuário, e não apenas a família do token reutilizado, pois não há como saber qual cópia do token está com o legítimo titular.</br>
 			<br>7 - A renovação só é concedida a contas ativas; a conta não confirmada recebe a mesma resposta genérica das demais recusas.</br></td></tr>
 </table>
+
+<table>
+    <tr>
+        <td><b>Nome:</b> UC18 — Acompanhar Movimentações.</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Exibir, na tela principal, as empresas cujo índice mudou mais recentemente, com o sentido e a causa de cada mudança. ([RF34], [RF33])</td>
+    </tr>
+    <tr>
+        <td><b>Ator(es):</b> Usuário.</td>
+        <td><b>Ator(es) Secundário(s):</b> Não há.</td>
+    </tr>
+    <tr>
+        <td colspan="2"><b>Pré-condições:</b> O usuário deve estar com sessão ativa.</td>
+    </tr>
+	<tr>
+        <td colspan="2"><b>Fluxo Normal:</b>
+		<br>1 - O usuário conclui o login (UC02) ou abre a tela principal.</br>
+		<br>2 - O sistema lê a página de movimentações, da mais recente para a mais antiga.</br>
+		<br>3 - O sistema exibe, para cada empresa, a identificação, a última movimentação de cada ODS e o índice e a confiança atuais.</br>
+		<br>4 - O usuário navega pelas páginas ou seleciona uma empresa.</br>
+		<br>5 - O sistema exibe o perfil ambiental da empresa selecionada (UC07).</br>
+		<br>6 - Este caso de uso finaliza aqui.</br></td></tr>
+	<tr>
+        <td colspan="2"><b>Fluxos Alternativos:</b>
+		<br>2.1 - Nenhuma movimentação registrada: o sistema informa que ainda não há movimentações e oferece a consulta e a pesquisa de empresas (UC06, UC08).</br>
+		<br>2.2 - Falha ao ler as movimentações: o sistema informa a falha e oferece nova tentativa, sem bloquear a consulta e a pesquisa de empresas.</br></td></tr>
+	<tr>
+        <td colspan="2"><b>Pós-condições:</b> Lista de movimentações exibida.</td></tr>
+	<tr>
+        <td colspan="2"><b>Regras de Negócio:</b>
+		<br>1 - A lista opera apenas sobre empresas presentes em <code>company_profile</code>, uma vez cada uma, mesmo com movimentação em mais de um ODS.</br>
+		<br>2 - A ordem é a data da movimentação mais recente da empresa, da mais nova para a mais antiga, com o CNPJ como desempate. Não há ordenação pelo sentido nem pelo tamanho da mudança ([IND03]).</br>
+		<br>3 - A página tem 20 itens por padrão e 100 no máximo, no formato de paginação das demais listas.</br>
+		<br>4 - O item traz o sentido, a causa, a categoria da evidência e a data, nunca o índice anterior, a variação ou uma série ([IND03]). O índice e a confiança exibidos são os atuais, em campos separados ([RF11]); ODS sem índice aparece como sem índice, e nunca como zero ([IND02]).</br>
+		<br>5 - O texto é neutro: informa que o índice subiu ou desceu por causa de uma evidência, sem falar em melhora, piora ou sustentabilidade ([IND01], [IND03]).</br>
+		<br>6 - <code>CONDUTA_ADMINISTRATIVA</code> não é rotulada como infração ambiental: a sanção do CEIS/CNEP aparece como sanção administrativa (HU18).</br>
+		<br>7 - A lista não consulta fontes externas nem dispara recálculo: lê só o que já foi gravado ([NFDE03]).</br>
+		<br>8 - A explicação da mudança fica no perfil da empresa (UC07, [RF12]); selecionar a empresa leva ao perfil, sem painel sobreposto.</br>
+		<br>9 - A lista não traz dado pessoal de indivíduo ([INL02]) e não é exposta por chave de API.</br></td></tr>
+</table>
+
+<br></br>
 
 ## 8.3 Diagrama de Classes
 
@@ -878,6 +928,18 @@ classDiagram
         +Float peso
         +Int sinal
     }
+    class CompanyMovement {
+        +String cnpj
+        +DateTime movedAt
+        +OdsMovement[] odsMovements
+    }
+    class OdsMovement {
+        +Int odsNumber
+        +ScoreMovementDirection direction
+        +ScoreMovementCause cause
+        +EvidenceCategory evidenceCategory
+        +DateTime movedAt
+    }
     class EvidenceRaw {
         +String id
         +EvidenceSource source
@@ -918,6 +980,9 @@ classDiagram
     OdsScore "1" *-- "*" ScoreContribution
     OdsScore "*" --> "1" Ods
     ScoreContribution "*" --> "1" EvidenceNormalized
+    CompanyProfile "1" --> "0..1" CompanyMovement : cnpj
+    CompanyMovement "1" *-- "1..*" OdsMovement
+    OdsMovement "*" --> "1" Ods
     EvidenceNormalized "*" --> "1" CompanyProfile : cnpj
     EvidenceNormalized "*" --> "1" Ods
     EvidenceNormalized "*" --> "1" EvidenceRaw : origem
@@ -942,6 +1007,10 @@ Observações de modelagem:
   empresa e ODS, para que filtro e ordenação por índice ([RF13], [RF14]) usem um único índice
   composto; **`ScoreContribution`** é embutido em `OdsScore`, e a lista de contribuições é a
   própria explicação do score ([RF12]). Detalhes na seção 8.5.
+- **`CompanyMovement`** é uma projeção de leitura: um documento por empresa, com a última
+  movimentação de cada ODS embutida em **`OdsMovement`**, sem índice anterior. Serve à lista da
+  tela principal ([RF34]) sem varrer nem agrupar `company_ods_scores`. Detalhes em
+  `14-Projeto-e-Arquitetura.md`, seção 4.4.
 - **`ReceitaDataSource`** alimenta os dados cadastrais de `CompanyProfile`, não evidências;
   implementa a mesma interface por uniformidade de isolamento ([NFPD02]).
 
@@ -1125,11 +1194,43 @@ sequenceDiagram
     end
 ```
 
+### 8.4.5 Registrar e acompanhar movimentações (UC15 + UC18)
+
+<p align="center"><b>Diagrama 7 - Sequência: Registrar e acompanhar movimentações</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário (front-end)
+    participant API as bios-core-api
+    participant Q as Fila ods-scoring
+    participant DB as MongoDB
+
+    Q->>API: Recalcular índices do CNPJ
+    API->>DB: Lê evidências e perfil cadastral
+    API->>API: Calcula índice, confiança e contribuições
+    rect rgb(240, 245, 240)
+        Note over API,DB: Transação
+        API->>DB: Lê os índices gravados
+        API->>DB: Substitui os índices da empresa
+        opt Índice mudou, mesma versão de regras, empresa com perfil
+            API->>DB: Grava a movimentação do ODS (sentido, causa, categoria, data)
+        end
+    end
+    U->>API: GET /companies/movements?page=1
+    API->>DB: Lê a página por data, pelo índice de company_movements
+    API->>DB: Lê identificação e índices atuais das empresas da página
+    API-->>U: 200 — empresas, movimentação por ODS e paginação
+```
+
+> A lista lê duas vezes, sempre limitada ao tamanho da página. As empresas com perfil e índice que
+> ainda não têm movimentação recebem uma reconstruída pela varredura diária (UC15, regra 8).
+
 ## 8.5 Modelo de Dados
 
 O modelo de dados do BIOS está definido em DBML, cuja fonte textual é
 `assets/database/bios-database.dbml.txt` — referência única para coleções, campos, enumerações,
-índices e relações, a ser convertida no schema Prisma na etapa de implementação. O diagrama 7
+índices e relações, a ser convertida no schema Prisma na etapa de implementação. O diagrama 8
 é a imagem gerada a partir dessa fonte.
 
 Por se tratar de banco orientado a documentos, as relações são referências lógicas por
@@ -1143,7 +1244,7 @@ em seis grupos:
 | Catálogos | `ods`, `data_sources` | ODS de referência e fontes externas, ambos populados via seed. |
 | Ingestão | `ingestion_runs`, `data_source_request_logs` | Execuções de jobs e log de cada chamada às fontes externas. |
 | Evidências e perfis | `evidence_raw`, `evidence_normalized`, `company_profile` | As três camadas de dados (bruto → normalizado → agregado). |
-| Índices | `company_ods_scores`, `sector_score_snapshots` | Índice e confiança por empresa e ODS; agregados setoriais para a evolução por setor. |
+| Índices | `company_ods_scores`, `company_movements`, `sector_score_snapshots` | Índice e confiança por empresa e ODS; última movimentação por empresa; agregados setoriais para a evolução por setor. |
 
 Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura.md`):
 
@@ -1151,6 +1252,10 @@ Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura
   e ODS, com a lista de contribuições embutida e campos desnormalizados de localização e
   CNAE. Assim, filtro e ordenação pelo índice de um ODS selecionado ([RF13], [RF14]) são
   atendidos por um único índice composto, sem varrer arrays embutidos em `company_profile`.
+- **Última movimentação em coleção própria.** `company_movements` guarda um documento por
+  empresa, ordenado por um único índice (`moved_at`, `cnpj`). A lista da tela principal ([RF34])
+  custa o tamanho da página, e não o da base, e a coleção cresce com o número de empresas, e não
+  com o tempo, porque não há histórico ([IND03]).
 - **Fontes externas como entidade.** `data_sources` guarda prioridade na cadeia de fallback,
   rate limit, janela de cache e timeout de cada fonte, permitindo reordenar ou desabilitar uma
   fonte sem novo deploy.
@@ -1165,7 +1270,7 @@ Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura
   `<fonte>:<cnpj>#NOT_FOUND` ou `#UNKNOWN` para o resultado da consulta), permitindo reprocessar
   um dump sem duplicar evidências e sem que a mesma referência em duas empresas se sobrescreva.
 
-<p align="center"><b>Diagrama 7 - Modelo de Dados</b></p>
+<p align="center"><b>Diagrama 8 - Modelo de Dados</b></p>
 
 <div align="center">
 
@@ -1175,18 +1280,18 @@ Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura
 
 ## 8.6 Diagramas de Arquitetura (C4)
 
-Os diagramas 8 e 9 representam a arquitetura do BIOS nos dois primeiros níveis do modelo C4.
+Os diagramas 9 e 10 representam a arquitetura do BIOS nos dois primeiros níveis do modelo C4.
 A justificativa das decisões arquiteturais segundo a ISO/IEC 25010:2023 está em
 `14-Projeto-e-Arquitetura.md`, seção 6.
 
 ### 8.6.1 Nível 1 — Contexto
 
-O diagrama 8 situa o BIOS entre seus usuários e os sistemas externos com os quais se integra:
+O diagrama 9 situa o BIOS entre seus usuários e os sistemas externos com os quais se integra:
 o usuário consulta, filtra e exporta empresas via HTTPS; sistemas de terceiros consomem a API
 pública com chave de API; o BIOS consome BrasilAPI/OpenCNPJ/Minha Receita, IBGE, IBAMA (lote diário),
 CGU (CEIS/CNEP) e GHG Protocol (best-effort), e envia e-mails por servidor SMTP.
 
-<p align="center"><b>Diagrama 8 - C4 Nível 1: Contexto</b></p>
+<p align="center"><b>Diagrama 9 - C4 Nível 1: Contexto</b></p>
 
 <div align="center">
 
@@ -1196,7 +1301,7 @@ CGU (CEIS/CNEP) e GHG Protocol (best-effort), e envia e-mails por servidor SMTP.
 
 ### 8.6.2 Nível 2 — Contêineres
 
-O diagrama 9 detalha os contêineres do BIOS:
+O diagrama 10 detalha os contêineres do BIOS:
 
 | Contêiner | Tecnologia | Responsabilidade |
 | --- | --- | --- |
@@ -1213,7 +1318,7 @@ publica o job e quem o atende conversam exclusivamente via filas BullMQ sobre o 
 chamada direta entre si; por isso um consumidor pode ser movido para um processo próprio sem
 alterar o contrato do job (ver `14-Projeto-e-Arquitetura.md`, seção 2).
 
-<p align="center"><b>Diagrama 9 - C4 Nível 2: Contêineres</b></p>
+<p align="center"><b>Diagrama 10 - C4 Nível 2: Contêineres</b></p>
 
 <div align="center">
 

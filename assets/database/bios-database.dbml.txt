@@ -47,6 +47,19 @@ Project bios {
 // Enumerações
 // -----------------------------------------------------------------------------
 
+Enum score_movement_direction {
+  INCREASED [note: 'O índice existia e subiu']
+  DECREASED [note: 'O índice existia e desceu']
+  AVAILABLE [note: 'O ODS não tinha índice e passou a ter']
+  UNAVAILABLE [note: 'O ODS tinha índice e deixou de ter']
+}
+
+Enum score_movement_cause {
+  EVIDENCE_ADDED [note: 'Entrou evidência nas contribuições']
+  EVIDENCE_REMOVED [note: 'Saiu evidência das contribuições, e nenhuma entrou']
+  WEIGHT_CHANGED [note: 'Mesmas evidências, com peso efetivo diferente']
+}
+
 Enum user_role {
   USER [note: 'Usuário comum (padrão)']
   ADMIN [note: 'Usuário com acesso à gestão da blacklist de domínios']
@@ -594,6 +607,33 @@ Table company_ods_scores {
   }
 }
 
+Table ods_movement {
+  ods_id objectid [ref: > ods.id_ods]
+  ods_number int [note: 'Desnormalizado de ods para a lista']
+  direction score_movement_direction
+  cause score_movement_cause
+  evidence_category evidence_category [note: 'Categoria da contribuição de maior efeito na mudança']
+  moved_at timestamp [note: 'Data do recálculo que detectou a mudança; na reconstrução, a da evidência']
+
+  Note: 'Subdocumento embutido de company_movements: a última movimentação de um ODS (RF33). Não guarda índice anterior nem variação (IND03).'
+}
+
+Table company_movements {
+  id_company_movement objectid [primary key]
+  cnpj varchar [unique, ref: - company_profile.cnpj]
+  moved_at timestamp [note: 'Movimentação mais recente entre os ODS: é a ordem da lista (RF34)']
+  ods_movements ods_movement[] [note: 'Última movimentação de cada ODS, no máximo uma por ODS']
+  created_at timestamp
+  updated_at timestamp
+
+  Note: 'Projeção de leitura da tela principal (RF34): um documento por empresa com perfil cadastral, gravado na mesma transação do recálculo (RF33). Não é log: não forma série histórica por empresa (IA05, IND03). Identificação e índices atuais são lidos de company_profile e company_ods_scores.'
+
+  Indexes {
+    cnpj [unique, name: 'idx_company_movements_cnpj']
+    (moved_at, cnpj) [name: 'idx_company_movements_moved_at_cnpj']
+  }
+}
+
 Table sector_score_snapshots {
   id_sector_score_snapshot objectid [primary key]
   ods_id objectid [ref: > ods.id_ods]
@@ -654,5 +694,7 @@ TableGroup evidencias_e_perfis {
 TableGroup indices {
   company_ods_scores
   score_contribution
+  company_movements
+  ods_movement
   sector_score_snapshots
 }
