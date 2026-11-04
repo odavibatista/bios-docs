@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Se usar este trabalho, cite-o como indicado abaixo."
+type: software
+title: "BIOS: Business Intelligence on Sustainability"
+abstract: >-
+  Plataforma que usa o CNPJ como eixo para consolidar evidências ambientais públicas de empresas
+  brasileiras e calcular, para os ODS 13 e 15, um índice de aderência explicável com nível de confiança.
+authors:
+  - family-names: Miranda
+    given-names: Davi Deosmar Batista Oliveira
+repository-code: "https://github.com/odavibatista/bios-docs"
+date-released: 2026-11-03
+keywords:
+  - dados abertos
+  - sustentabilidade corporativa
+  - Objetivos de Desenvolvimento Sustentável
+  - explicabilidade
+  - engenharia de requisitos

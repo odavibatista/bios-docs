@@ -1,172 +1,205 @@
-# BIOS  - Business Intelligence on Sustainability — Briefing de Sessão e Contexto de Projeto
+<p align="center">
+  <img src="assets/readme/banner-docs.pt.png" width="100%" alt="BIOS, bios-docs: da necessidade ao requisito verificável. 34 requisitos funcionais, 23 não funcionais, 5 inversos, 18 casos de uso, 36 histórias de usuário e 14 capítulos">
+</p>
 
-## 1. Visão Geral do Projeto
+<p align="center">
+  🇧🇷 <strong>Português</strong> · 🇺🇸 <a href="README.en.md">English</a>
+</p>
 
-**Nome:** BIOS - Business Intelligence on Sustainability (e, também 'vida', em grego).
-**Tema oficial (A3):** Inteligência Comercial de Agenda Verde: Prospecção Ativa e B2B Ambiental.
-**Contexto acadêmico:** Avaliação 3 das disciplinas de Engenharia de Software e Gestão e
-Qualidade de Software, curso de graduação em Ciência da Computação. Desenvolvimento
-individual. Cronograma até novembro de 2026, com potencial de virar artigo acadêmico
-(indicação do professor da disciplina).
+<p align="center">
+  <a href="#resumo">Resumo</a> ·
+  <a href="#princípio-central-evidence-first">Evidence First</a> ·
+  <a href="#requisitos-inversos">Requisitos inversos</a> ·
+  <a href="#método">Método</a> ·
+  <a href="#mapa-da-documentação">Documentação</a> ·
+  <a href="#modelagem">Modelagem</a> ·
+  <a href="#como-citar">Como citar</a>
+</p>
 
-**Definição resumida:** BIOS é uma plataforma que usa o CNPJ como eixo de integração de
-dados públicos, consolida evidências ambientais de uma empresa a partir de múltiplas fontes
-oficiais, relaciona essas evidências a dois ODS — ODS 13 (Ação Climática) e ODS 15 (Vida Terrestre),
-foco do MVP; os demais ODS ficam fora do escopo —, e gera, para cada um deles, um índice de
-aderência ambiental explicável, acompanhado de um nível de confiança — permitindo busca, filtragem e
-exportação de empresas segundo critérios socioambientais.
+# BIOS — Business Intelligence on Sustainability
 
-## 2. Escopo Confirmado
+Documentação técnica e acadêmica do BIOS, uma plataforma que usa o CNPJ como eixo para consolidar
+evidências ambientais públicas de empresas brasileiras e explicar, evidência por evidência, a aderência
+de cada uma aos Objetivos de Desenvolvimento Sustentável. O nome também significa "vida", em grego.
 
-### O que o BIOS faz
-- Consulta de empresa por CNPJ ou razão social.
-- Exibição de dados cadastrais públicos e descrição de CNAE.
-- Consolidação de evidências ambientais públicas por CNPJ (positivas e negativas).
-- Cálculo de um índice de aderência ambiental por ODS (ODS 13 e ODS 15), cada um com nível de
-  confiança separado. Os ODS são seedados no banco como entidade própria, não fixados em código.
-- Explicabilidade do score (quais evidências, que peso, positivo/negativo).
-- Filtros de busca (CNAE, UF, município, score mínimo, confiança mínima) e ranking.
-- Exportação de listas filtradas em XLSX.
-- Painel de conta com geração de chaves de API para consumo programático.
+<table>
+  <tr>
+    <th align="left">Tema</th>
+    <td>Inteligência Comercial de Agenda Verde: Prospecção Ativa e B2B Ambiental</td>
+  </tr>
+  <tr>
+    <th align="left">Autor</th>
+    <td>Davi Deosmar Batista Oliveira Miranda · <a href="https://github.com/odavibatista">GitHub</a> · <a href="https://www.linkedin.com/in/odavibatista/">LinkedIn</a></td>
+  </tr>
+  <tr>
+    <th align="left">Curso</th>
+    <td>Ciência da Computação, Universidade São Judas Tadeu (USJT)</td>
+  </tr>
+  <tr>
+    <th align="left">Disciplinas</th>
+    <td>Engenharia de Software · Gestão e Qualidade de Software (Avaliação 3)</td>
+  </tr>
+  <tr>
+    <th align="left">Período</th>
+    <td>Segundo semestre de 2026</td>
+  </tr>
+  <tr>
+    <th align="left">Natureza</th>
+    <td>Projeto individual</td>
+  </tr>
+  <tr>
+    <th align="left">Implementação</th>
+    <td><a href="https://github.com/odavibatista/bios-core-api">bios-core-api</a> · <a href="https://github.com/odavibatista/bios-webapp">bios-webapp</a></td>
+  </tr>
+</table>
 
-### O que o BIOS explicitamente NÃO faz (decisão de escopo, não limitação técnica)
-- Não identifica, busca ou qualifica tomadores de decisão (pessoas físicas) nas empresas.
-- Não coleta e-mail, telefone, WhatsApp ou perfil de LinkedIn de indivíduos.
-- Não gera leads comerciais nem serve fluxos de outbound/pré-vendas/vendas.
-- Não integra com CRMs para exportação de contatos.
+## Resumo
 
-Essa exclusão foi decidida cedo no projeto e é o principal ponto de diferenciação frente a
-ferramentas de prospecção B2B genéricas — documentado à parte em "BIOS — Proposta e Nicho".
+Informações sobre o comprometimento ambiental de empresas brasileiras são públicas, mas estão dispersas
+entre órgãos e portais sem chave comum de consulta, o que torna a avaliação de uma empresa lenta, pouco
+acessível e sujeita a interpretações inconsistentes. Este trabalho apresenta o BIOS, plataforma que
+integra dados cadastrais e evidências do IBAMA, da CGU e do GHG Protocol por CNPJ e calcula, para os
+ODS 13 e 15, um índice de aderência acompanhado de nível de confiança. O projeto adota o princípio
+*Evidence First*: nenhum índice existe sem evidência rastreável, e a ausência de dado não é tratada como
+evidência negativa. Os requisitos seguem a ISO/IEC/IEEE 29148 e os atributos de qualidade, a ISO/IEC
+25010, incluindo requisitos inversos que proíbem vereditos e a coleta de dados pessoais. A solução foi
+implementada e verificada com testes automatizados, e sua avaliação de impacto se limita ao que o
+sistema consegue comprovar.
 
-## 3. Fontes de Dados Validadas
+**Palavras-chave:** dados abertos; sustentabilidade corporativa; Objetivos de Desenvolvimento
+Sustentável; explicabilidade; engenharia de requisitos.
 
-| Fonte | Dado fornecido | Tipo de acesso | Observação |
-|---|---|---|---|
-| Receita Federal (via BrasilAPI, fallback OpenCNPJ e, por último, Minha Receita) | Cadastro de pessoa jurídica | API pública, sem chave | Camada de identidade, não gera evidência ambiental por si só; nenhum dos três provedores é institucional, cadeia de fallback é obrigatória |
-| IBGE | Descrição de CNAE | API pública, sem chave (`servicodados.ibge.gov.br`) | Fonte de apoio para taxonomia do CNAE; BrasilAPI já retorna descrição do CNAE principal e secundários numa única chamada |
-| IBAMA — Dados Abertos | Autuações e embargos ambientais | Dados abertos (CKAN) — **sem consulta por CNPJ ao vivo**, apenas dumps em lote | Ingestão batch assíncrona (job diário via BullMQ); MVP restrito aos dois recursos principais (auto de infração + embargo) — ver `Projeto-e-Arquitetura.md` |
-| CGU — Portal da Transparência (CEIS/CNEP) | Sanções administrativas | API pública, chave via cadastro simples | Aceito como sinal amplo de conduta administrativa, sem filtrar por órgão sancionador — categorizado à parte de evidência ambiental (RF08) |
-| GHG Protocol Brasil — Registro Público de Emissões | Inventários de emissões | Portal web, sem API REST documentada | Evidência positiva; fallback best-effort isolado e não bloqueante — cobertura estruturalmente baixa, `UNKNOWN` é o resultado esperado na maioria das consultas |
+## Problema e objetivo
 
-**Descartadas do MVP (documentado, não esquecido):** DataJud/CNJ (processos judiciais),
-SICAR/CAR (dados geoespaciais rurais), LinkedIn e qualquer fonte de dado de contato pessoal.
+Quem precisa avaliar o perfil socioambiental de uma empresa consulta cada fonte manualmente e cruza os
+resultados por conta própria. As ferramentas de inteligência comercial, por sua vez, resolvem a dispersão
+coletando dados de pessoas, um caminho com riscos éticos e de privacidade.
 
-## 4. Modelo Conceitual / Arquitetura de Dados
+O BIOS busca a mesma centralização por outro caminho: **só dado público de pessoa jurídica**,
+transformado em indicadores explicáveis, para apoiar profissionais de compras, de sustentabilidade,
+pesquisadores, imprensa e órgãos públicos.
 
-Princípio central do projeto: **"Evidence First"** — nenhum score existe sem evidência
-rastreável.
+## Escopo
 
-DADO → EVIDÊNCIA → REGRA → INDICADOR → SCORE
+| O BIOS faz | O BIOS não faz, por decisão de projeto |
+| --- | --- |
+| Consulta de empresa por CNPJ ou nome, com dados cadastrais e CNAE | Identificar ou qualificar tomadores de decisão nas empresas |
+| Consolidação de evidências públicas positivas e negativas | Coletar e-mail, telefone ou perfil profissional de indivíduos |
+| Índice e confiança separados, por ODS, com explicação de cada ponto | Gerar leads ou alimentar fluxos de pré-vendas e vendas |
+| Pesquisa, ranking e exportação em XLSX | Integrar com CRMs para exportar contatos |
+| Evolução agregada por setor e API pública por chave | Afirmar que uma empresa "é" ou "não é" sustentável |
 
+Os ODS 13 (Ação Contra a Mudança Global do Clima) e 15 (Vida Terrestre) são o recorte do MVP. Os ODS
+ficam no banco como entidade própria, não fixados em código.
 
-- **Estados de evidência:** `CONFIRMED`, `NOT_FOUND`, `UNKNOWN`, `OUTDATED` — nunca booleano
-  simples. Ausência de dado ≠ evidência negativa. (`NOT_APPLICABLE` e `CONFLICTING`, citados
-  em versões anteriores deste briefing, foram descartados do MVP por decisão de escopo — RF08
-  é a fonte de verdade formal; retomáveis como trabalho futuro.)
-- **Score ≠ Confiança:** dois números separados. Score alto com confiança baixa significa
-  poucas evidências disponíveis, não ausência de prática.
-- **Score explicável:** toda pontuação deve ser derivável e exibível evidência por evidência
-  (peso, sinal, fonte).
-- **Camadas lógicas (Bronze/Silver/Gold), implementadas como coleções, não como
-  infraestrutura separada:** `evidence_raw` (bruto por fonte) → `evidence_normalized`
-  (normalizado) → `company_profile` (agregado, pronto para busca/score/exportação). Decisão
-  tomada para conter o escopo de infraestrutura de um projeto solo.
-- **Adapters por fonte:** cada fonte externa isolada atrás de uma interface
-  (`DataSourceInterface` → `ReceitaDataSource`, `IbamaDataSource`, etc.), permitindo adicionar
-  fontes sem alterar a lógica de negócio central.
-- **Cache + snapshot leve:** evitar nova consulta à fonte externa dentro de uma janela de
-  validade; versionamento simples via `updatedAt` + hash anterior, sem motor de diff dedicado.
-- **Cortado do MVP por decisão de escopo:** Opportunity Score (separado do Environmental
-  Score), motor de regras configurável (pesos hardcoded na v1), exportação em PDF (XLSX
-  primeiro).
+## Princípio central: Evidence First
 
-## 5. Stack Técnica
+<p align="center">
+  <img src="assets/readme/evidence-first.pt.png" width="100%" alt="Fluxo dado, evidência, regra, indicador e score, com os quatro estados de evidência: CONFIRMED, NOT_FOUND, UNKNOWN e OUTDATED">
+</p>
 
-- **Back-end:** NestJS + Prisma + **MongoDB** (dado não estruturado, disperso, sem grandes
-  relações — decisão tomada e mantida.
-- **Front-end:** Angular moderno como primeira escolha, aberto a Next.js/React+TanStack Query
-  por velocidade de entrega solo.
-- **Módulos por fonte, no `bios-core-api`:** orquestração, API pública e contas/chaves no
-  core, mais módulos de ingestão do CNPJ e ambiental (score) e um módulo isolado de fallback
-  para o GHG Protocol, cada um com adapter, limite e prazo próprios para que a falha de uma
-  fonte não derrube a API principal (SICAR já descartado do MVP — ver seção 2). Pedido e
-  atendimento dos jobs ocorrem só via filas, o que permite mover um consumidor para um
-  processo próprio sem mudar o contrato.
+Dois números separados sustentam a leitura do resultado. O **índice** diz o que as evidências indicam. A
+**confiança** diz quanto das fontes esperadas respondeu e com que qualidade. Índice alto com confiança baixa significa poucas
+evidências disponíveis, não ausência de prática.
 
-## 6. Padrão de Documentação Técnica Adotado
+## Requisitos inversos
 
-Referência principal: wiki de um projeto de referência usado como modelo (template rigoroso,
-com RF/RNF/RIN por ID, prioridade e ator). O projeto **Coyote** (ERP incompleto do próprio
-autor) foi analisado como contraexemplo — mesma base de template, mas que degenerou em
-especificação de tela em prosa livre a partir do `Home.md`; decisão explícita de **não
-repetir esse padrão** no BIOS.
+O projeto trata como requisito de primeira classe aquilo que o sistema **não deve** fazer:
 
-Os requisitos (documentos 05, 06 e 07) são redigidos na sintaxe da ISO/IEC/IEEE 29148:2011 —
-[Condição] [Sujeito] [Ação] [Objeto] [Restrição] —, com rastreabilidade para os casos de uso, e
-os RNF são classificados pelas características da ISO/IEC 25010:2023. As heurísticas de redação
-estão no início de `05-Requisitos-Funcionais.md`.
+| ID | Requisito | Efeito no sistema |
+| --- | --- | --- |
+| [IND01] | Não afirmar veredito absoluto de sustentabilidade | Só evidências e índices derivados delas; nenhuma nota geral |
+| [IND02] | Não converter ausência de dado em evidência negativa | `UNKNOWN` reduz a confiança, nunca o índice |
+| [INL01] | Não inferir conteúdo de registro sigiloso | Registro sem teor público não é interpretado |
+| [INL02] | Não coletar dado pessoal de indivíduo vinculado à empresa | Pessoa física é descartada já na ingestão |
 
-Mapeamento da estrutura de documentação adotada → estrutura exigida pela A3 (item 8 da
-proposta da disciplina):
+## Método
 
-| Seção da documentação técnica | Seção A3 correspondente |
-|---|---|
-| 01 Introdução | Introdução |
-| 02 Visão Geral do Produto e Projeto | Problema, Contexto, Justificativa, Objetivos |
-| 03 Sistemas Relacionados | (sem equivalente direto — contexto de mercado) |
-| 04 Atores e Histórias dos Usuários | Stakeholders |
-| 05/06/07 RF/RNF/RIN | Engenharia de Requisitos |
-| 08 Artefatos de Análise | Modelagem — casos de uso, classes, sequência, modelo de dados, C4 |
-| 10 Gerenciamento do Projeto | Gerenciamento do Projeto |
-| 11 Permissões | (adaptado, simplificado) |
-| 12 Referências | Referências |
-| 13 Ficha Técnica | (sem equivalente direto — complementa Projeto e Arquitetura) |
-| 14 Projeto e Arquitetura | Projeto e Arquitetura |
-| 15 Impacto Ambiental | Impacto Ambiental |
+- **Requisitos:** redigidos na sintaxe da ISO/IEC/IEEE 29148:2011 ([Condição] [Sujeito] [Ação] [Objeto]
+  [Restrição]), com decomposição explícita e ligação com os casos de uso.
+- **Qualidade:** requisitos não funcionais classificados pelas características da ISO/IEC 25010:2023.
+- **Gestão:** modelo incremental, adequado a uma equipe de um integrante, com quadro Kanban no
+  [GitHub Projects](https://github.com/users/odavibatista/projects/15) e etiquetas por tipo de teste.
+- **Modelagem:** UML para casos de uso, classes e sequência, e modelo C4 para a arquitetura.
 
-## 7. Lições de Engenharia Aplicáveis ao BIOS
+<p align="center">
+  <img src="assets/readme/traceability.pt.png" width="100%" alt="Cadeia de rastreabilidade: história de usuário, caso de uso, requisito, issue e pull request, e teste, com o exemplo do requisito INL02">
+</p>
 
-Os seguintes pontos foram identificados como práticas a **adotar desde o início no BIOS**, para
-não repetir no BIOS problemas encontrados lá:
+## Mapa da documentação
 
-- Injetar o cliente Prisma via `PrismaService` do próprio Nest, nunca como singleton global
-  importado diretamente (`export const prisma = new PrismaClient()`), para preservar
-  testabilidade via `overrideProvider` em vez de `jest.mock` de módulo inteiro.
-- Tipar/injetar usecases contra a **interface** do repositório, nunca contra a classe
-  concreta — mesmo quando a interface já existe, é fácil injetar a implementação por engano
-  e anular o propósito da inversão de dependência.
-- Dar generics reais à interface base de usecase (`UseCaseInterface<TParams, TReturn>`),
-  nunca `(...params: any) => any`.
-- Não escrever teste de especificação para interfaces puras (não têm comportamento em
-  runtime); testar comportamento real (DTOs/schemas de validação, lógica de usecase).
-- Evitar `@Res()` do Express nos controllers do Nest — usar o retorno automático do
-  framework para manter interceptors, filtros de exceção e serialização padrão ativos.
-- Não deixar o módulo raiz (`AppModule`) crescer como lista plana de dezenas de módulos;
-  agrupar por domínio em módulos agregadores desde cedo.
-- Cuidado com nomes de módulo quase-idênticos e semanticamente ambíguos (ex.: módulos
-  chamados com as mesmas palavras em ordem invertida) — nomear pelo conceito de negócio, não
-  pela combinação de substantivos.
-- Manter o `README.md` raiz atualizado desde o início — não deixar o boilerplate padrão do
-  `nest new` em um projeto que crescerá em escopo.
+| Capítulo | Conteúdo | Seção da A3 |
+| --- | --- | --- |
+| [01. Introdução](01-Introdução.md) | Objetivo, convenções, termos e abreviações | Introdução |
+| [02. Visão geral do produto e projeto](02-Visão-Geral-do-Produto-e-Projeto.md) | Problema, contexto, justificativa e objetivos | Problema, Contexto, Justificativa, Objetivos |
+| [03. Sistemas relacionados](03-Sistemas-Relacionados.md) | Situação atual e soluções existentes | Contexto de mercado |
+| [04. Atores e histórias dos usuários](04-Atores-e-Histórias-dos-Usuários.md) | Atores, perfis e 36 histórias de usuário | Stakeholders |
+| [05. Requisitos funcionais](05-Requisitos-Funcionais.md) | 34 requisitos e heurísticas de redação | Engenharia de Requisitos |
+| [06. Requisitos não funcionais](06-Requisitos-Nao-Funcionais.md) | 23 requisitos por característica de qualidade | Engenharia de Requisitos |
+| [07. Requisitos inversos](07-Requisitos-Inversos.md) | 5 requisitos do que o sistema não deve fazer | Engenharia de Requisitos |
+| [08. Artefatos de análise](08-Artefatos-de-Análise.md) | 18 casos de uso, classes, sequência, dados e C4 | Modelagem |
+| [10. Gerenciamento do projeto](10-Gerenciamento-do-Projeto.md) | Modelo de processo, equipe, cronograma e riscos | Gerenciamento do Projeto |
+| [11. Permissões](11-Permissões.md) | Papéis e o que cada um pode fazer | Adaptado, simplificado |
+| [12. Referências](12-Referências.md) | Normas, fontes de dados e bibliografia | Referências |
+| [13. Ficha técnica](13-Ficha-Técnica.md) | Tecnologias, decisões e riscos aceitos | Complementa Projeto e Arquitetura |
+| [14. Projeto e arquitetura](14-Projeto-e-Arquitetura.md) | Fontes, filas, camadas de dados e categorização | Projeto e Arquitetura |
+| [15. Impacto ambiental](15-Impacto-Ambiental.md) | Indicadores e limites da avaliação | Impacto Ambiental |
 
-## 8. Requisitos de Segurança e Engenharia — Referência
+## Modelagem
 
-Lista completa de RF/RNF definidos, com status de formalização, está no documento separado
-`BIOS_Status_Requisitos.md`. Resumo dos temas cobertos: criptografia AES-256 de dados
-sensíveis, rate limiting (Throttler), honeypot de nível mediano (Faker.js + gerador de CNPJ,
-baixo volume, IP bloqueado via decorator), blacklist de domínios de e-mail (JSON seed +
-entidade em banco), tracking e bloqueio de tentativas de login (5 tentativas / 15 min),
-sessões JWT revogáveis, cobertura de teste ≥75% (unitário, integração, componente, e2e,
-funcional — front e back), Husky, Dependabot, ESLint, branches `main`/`pre-prod`/`develop`
-como convenção (sem hospedagem tríplice), pipelines YAML no CI apenas para lint+teste,
-templates de PR (.md) e Issue (.yaml), GitHub Projects em Kanban de fluxo com labels por tipo
-de teste, modelo de desenvolvimento incremental, e-mails via Handlebars+Nodemailer, Clean
-Architecture/SOLID/OO como princípio arquitetural.
+<p align="center">
+  <img src="assets/readme/ecosystem.pt.png" width="100%" alt="Fontes públicas alimentam o bios-core-api, que atende o bios-webapp e sistemas de terceiros; o bios-docs define os requisitos dos dois">
+</p>
 
-## 9. Pendências em Aberto
+| Artefato | Onde |
+| --- | --- |
+| Casos de uso, classes e sequência | [08. Artefatos de análise](08-Artefatos-de-Análise.md) |
+| C4, nível 1 (contexto) | [Diagrama](assets/diagrams/images/bios-context.svg) |
+| C4, nível 2 (contêineres) | [Diagrama](assets/diagrams/images/bios-architecture.svg) · [fonte editável](assets/diagrams/bios-c4-architecture.drawio) |
+| Modelo de dados | [Diagrama](assets/database/bios-database.svg) · [DBML](assets/database/bios-database.dbml.txt) |
 
-- **Documento técnico consolidado:** ainda não existe um único arquivo unindo todas as seções
-  na ordem exigida pelo item 8 da proposta da A3 (Introdução → Referências).
-- **Diagrama C4 nível 3 (componentes):** opcional; os níveis 1 (contexto) e 2 (contêineres)
-  estão em `08-Artefatos-de-Análise.md`, seção 8.6, com fonte em
-  `assets/diagrams/bios-c4-architecture.drawio`.
+## Avaliação de impacto
+
+O BIOS mede o alcance e a qualidade da transparência que gera, com cinco indicadores: empresas consultadas,
+volume de evidências, concentração geográfica, cobertura por fonte e evolução do índice médio **por
+setor**, nunca por empresa isolada.
+
+O trabalho é explícito sobre o que **não** mede: a redução real de dano ambiental, a melhoria de um setor
+quando ela pode refletir apenas melhor coleta (viés de instrumentação) e decisões tomadas fora da
+plataforma. O sistema não reivindica impacto que não consegue comprovar. Detalhes em
+[15. Impacto ambiental](15-Impacto-Ambiental.md).
+
+## Implementação
+
+| Repositório | Conteúdo | Verificação |
+| --- | --- | --- |
+| [bios-core-api](https://github.com/odavibatista/bios-core-api) | API em NestJS, MongoDB e BullMQ | 3.193 testes unitários, 1.022 e2e, 99,71% das linhas |
+| [bios-webapp](https://github.com/odavibatista/bios-webapp) ([demonstração](https://bios-webapp.vercel.app/)) | Interface em Angular | 741 testes unitários, 140 e2e, 98,43% das linhas |
+
+## Como citar
+
+**ABNT:**
+
+> MIRANDA, Davi Deosmar Batista Oliveira. **BIOS**: Business Intelligence on Sustainability. 2026.
+> Trabalho acadêmico (Graduação em Ciência da Computação) – Universidade São Judas Tadeu, São Paulo,
+> 2026. Disponível em: https://github.com/odavibatista/bios-docs.
+
+**BibTeX:**
+
+```bibtex
+@misc{miranda2026bios,
+  author       = {Miranda, Davi Deosmar Batista Oliveira},
+  title        = {{BIOS}: Business Intelligence on Sustainability},
+  year         = {2026},
+  howpublished = {Trabalho acadêmico, Universidade São Judas Tadeu},
+  url          = {https://github.com/odavibatista/bios-docs}
+}
+```
+
+O botão **Cite this repository**, no GitHub, usa o arquivo [`CITATION.cff`](CITATION.cff).
+
+## Licença
+
+© 2026 Davi Deosmar Batista Oliveira Miranda. Todos os direitos reservados. Este repositório é
+público para consulta e avaliação acadêmica; copiar, modificar, distribuir ou usar o material depende
+de autorização do autor. Veja [LICENSE](LICENSE).
