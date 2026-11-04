@@ -278,8 +278,8 @@ montar uma pesquisa.
 
 | Causa | Quando |
 | --- | --- |
-| `EVIDENCE_ADDED` | Entrou ao menos uma evidência na lista de contribuições. |
-| `EVIDENCE_REMOVED` | Saiu ao menos uma evidência, e nenhuma entrou. |
+| `EVIDENCE_ADDED` | Entrou ao menos uma evidência que pontua. |
+| `EVIDENCE_REMOVED` | Saiu ao menos uma evidência que pontuava, e nenhuma que pontua entrou. |
 | `WEIGHT_CHANGED` | As evidências são as mesmas, e o peso efetivo de alguma mudou (por exemplo, embargo desembargado). |
 
 A causa e a categoria saem da comparação entre as contribuições anteriores e as novas, que já existem
@@ -308,8 +308,9 @@ Decisões de projeto:
 - **Varredura de reconstrução.** Sem ela, a tela nasceria vazia em bases já calculadas e não veria
   empresas que ganharam perfil depois do cálculo. O job diário `reconcile-company-movements`, na fila
   `ods-scoring`, percorre as empresas por cursor de CNPJ e cria a movimentação que falta, a partir da
-  evidência mais recente que pontua (UC15, regra 8). Ele é idempotente e nunca altera movimentação já
-  registrada.
+  evidência mais recente que pontua (UC15, regra 8). A data é a do fato, nunca a da coleta: a coleta diz
+  quando o BIOS leu o dado, e todas as sanções antigas apareceriam como se fossem do dia da leitura. Ele é
+  idempotente e nunca altera movimentação já registrada.
 
 Evolução prevista, sem migração de dados: filtros por ODS, UF e setor (índice composto em
 `ods_movements.ods_number` e campos de localização desnormalizados, como em `company_ods_scores`) e aviso
