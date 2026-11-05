@@ -137,11 +137,11 @@ O projeto trata como requisito de primeira classe aquilo que o sistema **não de
 | [01. Introdução](01-Introdução.md) | Objetivo, convenções, termos e abreviações | Introdução |
 | [02. Visão geral do produto e projeto](02-Visão-Geral-do-Produto-e-Projeto.md) | Problema, contexto, justificativa e objetivos | Problema, Contexto, Justificativa, Objetivos |
 | [03. Sistemas relacionados](03-Sistemas-Relacionados.md) | Situação atual e soluções existentes | Contexto de mercado |
-| [04. Atores e histórias dos usuários](04-Atores-e-Histórias-dos-Usuários.md) | Atores, perfis e 36 histórias de usuário | Stakeholders |
-| [05. Requisitos funcionais](05-Requisitos-Funcionais.md) | 34 requisitos e heurísticas de redação | Engenharia de Requisitos |
+| [04. Atores e histórias dos usuários](04-Atores-e-Histórias-dos-Usuários.md) | Atores, perfis e 39 histórias de usuário | Stakeholders |
+| [05. Requisitos funcionais](05-Requisitos-Funcionais.md) | 37 requisitos e heurísticas de redação | Engenharia de Requisitos |
 | [06. Requisitos não funcionais](06-Requisitos-Nao-Funcionais.md) | 23 requisitos por característica de qualidade | Engenharia de Requisitos |
 | [07. Requisitos inversos](07-Requisitos-Inversos.md) | 5 requisitos do que o sistema não deve fazer | Engenharia de Requisitos |
-| [08. Artefatos de análise](08-Artefatos-de-Análise.md) | 18 casos de uso, classes, sequência, dados e C4 | Modelagem |
+| [08. Artefatos de análise](08-Artefatos-de-Análise.md) | 19 casos de uso, classes, sequência, dados e C4 | Modelagem |
 | [10. Gerenciamento do projeto](10-Gerenciamento-do-Projeto.md) | Modelo de processo, equipe, cronograma e riscos | Gerenciamento do Projeto |
 | [11. Permissões](11-Permissões.md) | Papéis e o que cada um pode fazer | Adaptado, simplificado |
 | [12. Referências](12-Referências.md) | Normas, fontes de dados e bibliografia | Referências |
