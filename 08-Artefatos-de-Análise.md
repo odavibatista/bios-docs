@@ -431,7 +431,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - O arquivo contém dados cadastrais da pessoa jurídica e, em colunas separadas por ODS, índice e nível de confiança.</br>
-		<br>2 - O arquivo não contém nenhum dado pessoal ou de contato de indivíduo ([INL02]).</br>
+		<br>2 - O arquivo não contém contato nem endereço de rua. A razão social de empresário individual pode conter o nome do titular, com o CPF mascarado ([INL02]).</br>
 			<br>3 - O arquivo traz uma linha por empresa, na ordem da pesquisa, com os dados cadastrais e, para cada ODS ativo, o índice e a confiança em colunas separadas, e não só para o ODS selecionado na pesquisa. O que não foi calculado fica em branco, e nunca é preenchido com zero.</br>
 			<br>4 - A exportação aplica os mesmos critérios e a mesma ordenação da pesquisa (UC08), sem paginação: o arquivo traz a lista inteira.</br>
 			<br>5 - Se nenhuma empresa atende aos critérios, o arquivo não é gerado e o sistema informa que não há lista para exportar. Se a lista passa do teto de empresas por arquivo (5000 por padrão, configurável), o arquivo não é gerado e o sistema pede que os critérios sejam refinados.</br>
@@ -680,7 +680,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 <table>
     <tr>
         <td><b>Nome:</b> UC16 — Integrar com CRM (bônus — fora do MVP).</td>
-        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir que CRMs de terceiros importem o perfil ambiental de pessoas jurídicas. ([RF31]; prioridade Desejável, entregue apenas se houver folga no cronograma)</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir que CRMs de terceiros importem o perfil ambiental dos cadastros com CNPJ das suas contas. ([RF31]; prioridade Desejável)</td>
     </tr>
     <tr>
         <td><b>Ator(es):</b> Desenvolvedor Externo.</td>
@@ -696,11 +696,11 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>3 - O sistema retorna os perfis em formato de importação de contas.</br>
 		<br>4 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
-        <td colspan="2"><b>Fluxos Alternativos:</b> Os mesmos de UC12.</td></tr>
+        <td colspan="2"><b>Fluxos Alternativos:</b> Os mesmos de UC12, que viram o estado de cada CNPJ, sem derrubar o lote.</td></tr>
 	<tr>
         <td colspan="2"><b>Pós-condições:</b> Contas corporativas do CRM enriquecidas com dados ambientais.</td></tr>
 	<tr>
-        <td colspan="2"><b>Regras de Negócio:</b> Apenas dados de pessoa jurídica; nenhum dado de contato ou dado pessoal de indivíduo ([INL02]).</td></tr>
+        <td colspan="2"><b>Regras de Negócio:</b> Cada lote aceita até 20 CNPJs e tem limite próprio de requisições. Nenhum contato nem endereço de rua; a razão social de empresário individual pode conter o nome do titular, com o CPF mascarado ([INL02]).</td></tr>
 </table>
 
 <br></br>
@@ -782,7 +782,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>6 - <code>CONDUTA_ADMINISTRATIVA</code> não é rotulada como infração ambiental: a sanção do CEIS/CNEP aparece como sanção administrativa (HU18).</br>
 		<br>7 - A lista não consulta fontes externas nem dispara recálculo: lê só o que já foi gravado ([NFDE03]).</br>
 		<br>8 - A explicação da mudança fica no perfil da empresa (UC07, [RF12]); selecionar a empresa leva ao perfil, sem painel sobreposto.</br>
-		<br>9 - A lista não traz dado pessoal de indivíduo ([INL02]) e não é exposta por chave de API.</br>
+		<br>9 - A lista não traz contato nem endereço de rua; a razão social de empresário individual pode conter o nome do titular, com o CPF mascarado ([INL02]). A lista não é exposta por chave de API.</br>
 		<br>10 - O usuário pode filtrar a lista pela categoria da evidência da movimentação (<code>INFRACAO_AMBIENTAL</code>, <code>CONDUTA_ADMINISTRATIVA</code> ou <code>EMISSAO_GEE</code>). Sem filtro, a lista permanece completa; com filtro, somente empresas com movimentação da categoria entram na lista e na contagem da paginação. A ordem continua pela data da movimentação mais recente da empresa e pelo CNPJ, sem filtro por sentido ([IND01], [IND03]).</br></td></tr>
 </table>
 
