@@ -27,11 +27,13 @@ O BIOS não coleta dado pessoal sensível (art. 5º, II).
 
 Em KYC e KYE, quem decide consultar é a organização usuária. Ela atua como controladora do próprio processo e precisa ter base legal, finalidade definida e transparência com a pessoa avaliada. O BIOS limita o que oferece a esse uso:
 
-1. **O objeto da consulta é o cadastro com CNPJ.** O KYE alcança empregado ou prestador somente quando ele tem cadastro próprio com CNPJ, como empresário individual. Não há busca por CPF nem dado de quem não tem CNPJ.
+1. **O objeto da consulta é o cadastro com CNPJ.** O KYE serve principalmente à contratação de prestadores PJ e alcança a pessoa somente quando ela tem cadastro próprio com CNPJ, como empresário individual. Não há busca por CPF nem dado de quem não tem CNPJ.
 2. **Ausência de cadastro não significa nada.** Não encontrar uma pessoa no BIOS não é evidência sobre ela ([IND02]).
 3. **O índice não decide sobre pessoas.** Índice e confiança apoiam a análise humana e nunca fundamentam decisão automática. O titular tem direito de pedir a revisão de decisão tomada unicamente por tratamento automatizado (art. 20).
 4. **A consulta deve ser proporcional ao cargo.** A Lei nº 9.029/1995 proíbe prática discriminatória e limitativa para acesso à relação de trabalho. Por cautela, o BIOS adota o critério da tese do TST no Tema 1 de recursos repetitivos (IRR-243000-58.2013.5.13.0023), que trata de certidão de antecedentes criminais: previsão legal, natureza do ofício ou grau especial de fidúcia. A tese não trata do BIOS, e aplicá-la aqui é uma analogia a confirmar na revisão jurídica.
 5. **Só o necessário sai do sistema.** Integrações e planilhas levam o mínimo para a finalidade (art. 6º, III), sem contato nem endereço de rua.
+
+Em licitações, terceirizações e privatizações, o órgão público é o controlador da própria consulta e segue as regras do tratamento pelo poder público (LGPD, arts. 23 e seguintes). Quando o participante é empresário individual, valem as mesmas regras acima.
 
 ## 16.4 Medidas já aplicadas
 

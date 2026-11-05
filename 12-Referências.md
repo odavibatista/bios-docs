@@ -3,6 +3,10 @@
 BRASIL. Ministério da Gestão e da Inovação em Serviços Públicos. **Dados Abertos do CNPJ**.
 Disponível em: https://dados.gov.br. Acesso em: 2026.
 
+BRASIL. **Lei nº 14.133, de 1º de abril de 2021** — Lei de Licitações e Contratos Administrativos.
+Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm. Acesso em:
+2026.
+
 BRASIL. **Lei nº 13.146, de 6 de julho de 2015** — Lei Brasileira de Inclusão da Pessoa com
 Deficiência (Estatuto da Pessoa com Deficiência). Disponível em:
 https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm. Acesso em: 2026.
