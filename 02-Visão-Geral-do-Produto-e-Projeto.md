@@ -9,8 +9,10 @@ aderência a dois Objetivos de Desenvolvimento Sustentável (ODS) de natureza am
 tomada de decisão de profissionais de negócios, de sustentabilidade, pesquisadores, imprensa e
 órgãos públicos.
 
-O uso também abrange verificações de cadastros com CNPJ em KYC e KYE. A consulta permanece
-centrada na empresa: o índice não é veredito nem decisão automática sobre uma pessoa ([IND01]).
+O uso também abrange KYC e KYE. No KYE, a consulta alcança empregado ou prestador somente quando
+ele tem cadastro próprio com CNPJ. O índice não é veredito nem decisão automática sobre uma pessoa
+([IND01]), e a organização que consulta responde pela base legal do próprio processo
+([Avaliação de LGPD](16-Avaliação-LGPD.md)).
 
 Os usuários terão acesso ao sistema para consultar empresas por CNPJ ou nome, visualizar
 evidências categorizadas por fonte e por estado de confirmação, e compreender a composição de

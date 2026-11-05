@@ -78,8 +78,8 @@ cross-references the results. Business intelligence tools, in turn, solve the fr
 data about people, a path that carries ethical and privacy risks.
 
 BIOS pursues the same centralization by another route: **public data linked to a CNPJ**, turned into
-explainable indicators, to support procurement, sustainability and company-registration review (KYC
-and KYE) professionals, researchers, the press and public agencies. A sole proprietor's public
+explainable indicators, to support procurement, sustainability and KYC and KYE review
+professionals, researchers, the press and public agencies. A sole proprietor's public
 registered name may contain the owner's name; CPF sequences are masked. The index is neither a
 verdict nor an automated decision about a person or company (IND01, INL02).
 
@@ -115,7 +115,7 @@ The project treats what the system **must not** do as a first-class requirement:
 | [IND01] | Do not state an absolute sustainability verdict | Only evidence and indexes derived from it; no overall grade |
 | [IND02] | Do not turn missing data into negative evidence | `UNKNOWN` lowers confidence, never the index |
 | [INL01] | Do not infer the content of a confidential record | A record with no public content is not interpreted |
-| [INL02] | Do not collect personal data of individuals linked to the company | Individuals are discarded at ingestion |
+| [INL02] | Do not collect personal data of individuals linked to the company | Individuals' contacts and profiles are discarded; a CPF in the registered name is masked |
 
 ## Method
 
@@ -148,6 +148,7 @@ The project treats what the system **must not** do as a first-class requirement:
 | [13. Tech sheet](13-Ficha-Técnica.md) | Technologies, decisions and accepted risks |
 | [14. Design and architecture](14-Projeto-e-Arquitetura.md) | Sources, queues, data layers and categorization |
 | [15. Environmental impact](15-Impacto-Ambiental.md) | Indicators and limits of the assessment |
+| [16. LGPD assessment](16-Avaliação-LGPD.md) | Personal data, KYC and KYE rules and open items |
 
 ## Modeling
 

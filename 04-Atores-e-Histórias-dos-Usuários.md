@@ -27,7 +27,7 @@ sistema. Para que as histórias reflitam necessidades concretas, a coluna "Eu co
 | Perfil | Necessidade principal |
 | ------------ | ------------ |
 | Analista de compras/suprimentos | Avaliar o comprometimento ambiental de fornecedores, prestadores de serviço e clientes antes de firmar relacionamento comercial. |
-| Profissional de verificação cadastral | Consultar evidências públicas de cadastros com CNPJ em processos de KYC e KYE, sem qualificar pessoas físicas nem usar o índice como decisão automática. |
+| Profissional de verificação cadastral | Consultar evidências públicas de cadastros com CNPJ em processos de KYC e KYE, inclusive de empregado ou prestador que tenha cadastro próprio, sem usar o índice como decisão automática. |
 | Profissional de sustentabilidade/ESG | Embasar avaliações socioambientais de parceiros com evidências rastreáveis e auditáveis. |
 | Agente de órgão governamental | Consultar, de forma centralizada, o histórico público de autuações e sanções de uma empresa. |
 | Jornalista | Apurar o histórico ambiental de uma empresa citada em uma matéria, com fontes verificáveis. |
