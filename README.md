@@ -77,7 +77,7 @@ coletando dados de pessoas, um caminho com riscos éticos e de privacidade.
 
 O BIOS busca a mesma centralização por outro caminho: **dados públicos vinculados ao CNPJ**,
 transformados em indicadores explicáveis, para apoiar profissionais de compras, de sustentabilidade,
-de verificação cadastral (KYC e KYE), pesquisadores, imprensa e órgãos públicos. A razão social
+de verificação em KYC e KYE, pesquisadores, imprensa e órgãos públicos. A razão social
 pública de empresário individual pode conter o nome do titular; sequências de CPF são mascaradas.
 O índice não é veredito nem decisão automática sobre uma pessoa ou empresa ([IND01], [INL02]).
 
@@ -146,6 +146,7 @@ O projeto trata como requisito de primeira classe aquilo que o sistema **não de
 | [13. Ficha técnica](13-Ficha-Técnica.md) | Tecnologias, decisões e riscos aceitos | Complementa Projeto e Arquitetura |
 | [14. Projeto e arquitetura](14-Projeto-e-Arquitetura.md) | Fontes, filas, camadas de dados e categorização | Projeto e Arquitetura |
 | [15. Impacto ambiental](15-Impacto-Ambiental.md) | Indicadores e limites da avaliação | Impacto Ambiental |
+| [16. Avaliação de LGPD](16-Avaliação-LGPD.md) | Dados pessoais, regras de KYC e KYE e pendências | Engenharia de Software |
 
 ## Modelagem
 

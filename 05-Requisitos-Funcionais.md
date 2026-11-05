@@ -412,9 +412,9 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC16. |
 | **Necessidade (história de usuário):** | HU32. |
 | **Requisitos associados:** | [RF16], [RF17]. |
-| **Requisito:** | Quando um CRM de terceiros enviar uma lista de CNPJs com chave de API ativa, o sistema deve retornar o perfil ambiental de cada pessoa jurídica (dados cadastrais, índice, confiança e evidências) em formato de importação de contas, sem exportar dado de contato nem dado pessoal de indivíduo ([INL02]). |
-| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando um CRM de terceiros enviar uma lista de CNPJs com chave de API ativa · **Sujeito:** o sistema · **Ação:** deve retornar · **Objeto:** o perfil ambiental de cada pessoa jurídica (dados cadastrais, índice, confiança e evidências) · **Restrição:** em formato de importação de contas; sem exportar dado de contato nem dado pessoal de indivíduo ([INL02]) |
-| **Observações:** | Requisito bônus: entra apenas se houver folga no cronograma após a entrega dos requisitos essenciais e importantes, e não compõe o escopo mínimo do MVP. |
+| **Requisito:** | Quando um CRM de terceiros enviar uma lista de CNPJs com chave de API ativa, o sistema deve retornar o perfil ambiental de cada cadastro (dados cadastrais, índice, confiança e evidências) em formato de importação de contas, sem exportar dado de contato nem endereço de rua ([INL02]). |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando um CRM de terceiros enviar uma lista de CNPJs com chave de API ativa · **Sujeito:** o sistema · **Ação:** deve retornar · **Objeto:** o perfil ambiental de cada cadastro (dados cadastrais, índice, confiança e evidências) · **Restrição:** em formato de importação de contas; sem exportar dado de contato nem endereço de rua ([INL02]) |
+| **Observações:** | Requisito bônus, fora do escopo mínimo do MVP. As evidências vão como contagem por categoria; o detalhe fica em [RF17]. Cada lote aceita até 20 CNPJs, e cada CNPJ tem estado próprio (UC16). |
 
 
 <p align="center"><b>[RF32] Renovar sessão</b></p>

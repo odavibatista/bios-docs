@@ -13,10 +13,12 @@ pretende-se apoiar a tomada de decisão de profissionais de negócios, de susten
 pesquisadores, imprensa e órgãos públicos, sem incorrer nos riscos éticos e de privacidade
 próprios de ferramentas de prospecção comercial tradicionais.
 
-Entre as finalidades previstas estão verificações de cadastro com CNPJ em processos de KYC
-(*Know Your Customer*) e KYE (*Know Your Employee*). O BIOS apresenta evidências da empresa,
-sem buscar ou qualificar pessoas físicas e sem transformar o índice em decisão automática ou
-veredito sobre uma pessoa ou empresa ([IND01], [INL02]).
+Entre as finalidades previstas estão verificações em processos de KYC (*Know Your Customer*) e
+KYE (*Know Your Employee*). No KYE, o BIOS alcança empregado ou prestador somente quando ele tem
+cadastro próprio com CNPJ, como empresário individual. O BIOS apresenta as evidências desse
+cadastro, sem busca por CPF e sem transformar o índice em decisão automática ou veredito sobre uma
+pessoa ou empresa ([IND01], [INL02]). A seção [Avaliação de LGPD](16-Avaliação-LGPD.md) traz as
+regras desse uso.
 
 O sistema possibilitará que qualquer usuário autenticado consulte uma empresa por CNPJ ou por
 nome, obtendo um perfil consolidado com evidências categorizadas por fonte, um índice de

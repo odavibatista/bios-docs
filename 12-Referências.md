@@ -7,6 +7,19 @@ BRASIL. **Lei nº 13.146, de 6 de julho de 2015** — Lei Brasileira de Inclusã
 Deficiência (Estatuto da Pessoa com Deficiência). Disponível em:
 https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm. Acesso em: 2026.
 
+BRASIL. **Lei nº 9.029, de 13 de abril de 1995** — Proíbe práticas discriminatórias para
+efeitos admissionais ou de permanência da relação de trabalho. Disponível em:
+https://www.planalto.gov.br/ccivil_03/leis/l9029.htm. Acesso em: 2026.
+
+BRASIL. **Lei nº 13.709, de 14 de agosto de 2018** — Lei Geral de Proteção de Dados Pessoais
+(LGPD). Disponível em:
+https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm. Acesso em: 2026.
+
+BRASIL. Tribunal Superior do Trabalho. **IRR-243000-58.2013.5.13.0023** — Tema 1 de recursos
+repetitivos: exigência de certidão de antecedentes criminais. Disponível em:
+https://www.tst.jus.br/documents/10157/24627054/Tema01.pdf/04a50887-88e5-a950-c717-63439a9f6d3c.
+Acesso em: 2026.
+
 BRASILAPI. **BrasilAPI — Documentação**. Disponível em: https://brasilapi.com.br. Acesso em:
 2026.
 
