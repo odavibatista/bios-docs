@@ -47,10 +47,11 @@ flowchart LR
         UC16([UC16 Integrar com CRM — bônus])
         UC17([UC17 Renovar Sessão])
         UC18([UC18 Acompanhar Movimentações])
+        UC19([UC19 Analisar Panorama de Dados])
     end
 
     U --- UC01 & UC02 & UC03 & UC04 & UC05 & UC17
-    U --- UC06 & UC07 & UC08 & UC09 & UC10 & UC11 & UC18
+    U --- UC06 & UC07 & UC08 & UC09 & UC10 & UC11 & UC18 & UC19
     D --- UC12 & UC16
     A --- UC13
     S --- UC14
@@ -328,7 +329,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 <table>
     <tr>
         <td><b>Nome:</b> UC07 — Visualizar Perfil Ambiental.</td>
-        <td colspan="2"><b>Objetivo/Descrição:</b> Exibir as evidências da empresa e, para cada ODS (13 e 15), o índice de aderência, o nível de confiança e a explicação do score. ([RF07], [RF08], [RF09], [RF10], [RF11], [RF12])</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Exibir as evidências da empresa, seus gráficos e, para cada ODS (13 e 15), o índice de aderência, o nível de confiança e a explicação do score. ([RF35], [RF36], [RF07], [RF08], [RF09], [RF10], [RF11], [RF12])</td>
     </tr>
     <tr>
         <td><b>Ator(es):</b> Usuário.</td>
@@ -360,7 +361,10 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <br>5 - O GHG é coletado somente pelo consumidor da fila própria <code>ghg-inventory</code>, com prazo do catálogo. O cadastro de organizações do portal é sincronizado uma vez por dia, em segundo plano, e a coleta de cada CNPJ o lê já sincronizado: não há chamada externa para localizar candidatos, e empresa sem organização no cadastro não faz nenhuma chamada. O nome cadastral localiza candidatos, mas apenas CNPJ exato e ano inventariado do relatório público confirmam a evidência positiva de publicação do inventário mais recente. Sem correspondência verificável, sem inventário ou em falha, o resultado é <code>UNKNOWN</code>, nunca <code>NOT_FOUND</code>; respostas anteriores são preservadas. Coleta válida é reutilizada sem renovar artificialmente suas datas. O ano do inventário não é data de publicação, que permanece nula quando ausente. Não são armazenados contatos nem texto integral do PDF ([INL02]).</br>
 			<br>6 - O índice de um ODS ainda não calculado, ou cujo retrato guardado deixou de ser auditável, aparece como pendente, sem nenhum número, e nunca como nota baixa ([IND02]); o recálculo (UC15) o repõe. As evidências e os índices lidos ficam em cache por cinco minutos, apagados quando o índice da empresa é recalculado, e só se guarda perfil com todos os índices calculados.</br>
 			<br>7 - A consulta do perfil completo, incluindo UC06, usa um orçamento único configurável (padrão 15 segundos). Ao esgotá-lo com cadastro disponível, responde com o retrato persistido e informa por fonte se houve coleta nesta consulta, se o dado veio da persistência, se a coleta está pendente ou se a fonte está indisponível; informa separadamente se o índice está pendente e sugere quando repetir. <code>NOT_FOUND</code> indica ausência confirmada pela fonte; <code>UNKNOWN</code> ou ausência de evidência não indicam isso. Jobs já publicados podem concluir depois da resposta. Sem cadastro obtido no prazo e sem cópia local, retorna indisponibilidade temporária.</br>
-			<br>8 -A consulta só das evidências (sem cadastro nem índices) mostra o mesmo retrato do perfil completo: as duas leem as mesmas evidências em cache e, enquanto elas estão lá, nenhuma coleta nem recálculo é feito. A consulta das evidências só guarda o retrato depois de o recálculo do índice terminar, para que o índice exibido no perfil corresponda às evidências guardadas; o recálculo seguinte apaga o retrato das duas.</br></td></tr>
+			<br>8 -A consulta só das evidências (sem cadastro nem índices) mostra o mesmo retrato do perfil completo: as duas leem as mesmas evidências em cache e, enquanto elas estão lá, nenhuma coleta nem recálculo é feito. A consulta das evidências só guarda o retrato depois de o recálculo do índice terminar, para que o índice exibido no perfil corresponda às evidências guardadas; o recálculo seguinte apaga o retrato das duas.</br>
+			<br>9 - A evolução do índice aparece em degraus, por ODS, para cadastros com evidências datadas em dois anos ou mais. Cada degrau mostra a data e a evidência que o causou, sem número de variação nem comparação com outras empresas, e a tela informa que a série é reconstruída ([RF36], [IND03]).</br>
+			<br>10 - Cadastro de empresário individual (natureza jurídica <code>2135</code>) não mostra a evolução, porque a curva ficaria ligada a uma pessoa. Cadastro com evidências em menos de dois anos também não. Nos dois casos, uma mensagem com ícone explica o motivo, e a linha do tempo de evidências continua disponível.</br>
+			<br>11 - Tipo de infração, bioma e gravidade viram gráfico com duas categorias ou mais; com uma, aparecem como texto ([RF35]).</br></td></tr>
 </table>
 
 <br></br>
@@ -784,6 +788,46 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>8 - A explicação da mudança fica no perfil da empresa (UC07, [RF12]); selecionar a empresa leva ao perfil, sem painel sobreposto.</br>
 		<br>9 - A lista não traz contato nem endereço de rua; a razão social de empresário individual pode conter o nome do titular, com o CPF mascarado ([INL02]). A lista não é exposta por chave de API.</br>
 		<br>10 - O usuário pode filtrar a lista pela categoria da evidência da movimentação (<code>INFRACAO_AMBIENTAL</code>, <code>CONDUTA_ADMINISTRATIVA</code> ou <code>EMISSAO_GEE</code>). Sem filtro, a lista permanece completa; com filtro, somente empresas com movimentação da categoria entram na lista e na contagem da paginação. A ordem continua pela data da movimentação mais recente da empresa e pelo CNPJ, sem filtro por sentido ([IND01], [IND03]).</br></td></tr>
+</table>
+
+
+<br></br>
+
+<table>
+    <tr>
+        <td><b>Nome:</b> UC19 — Analisar Panorama de Dados.</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Exibir totais e gráficos do conjunto de empresas selecionado, para que o usuário analise a agenda ambiental sem ler registro a registro. ([RF37])</td>
+    </tr>
+    <tr>
+        <td><b>Ator(es):</b> Usuário.</td>
+        <td><b>Ator(es) Secundário(s):</b> Não há.</td>
+    </tr>
+    <tr>
+        <td colspan="2"><b>Pré-condições:</b> O usuário deve estar com sessão ativa.</td>
+    </tr>
+	<tr>
+        <td colspan="2"><b>Fluxo Normal:</b>
+		<br>1 - O usuário aplica critérios na pesquisa (UC08).</br>
+		<br>2 - O sistema exibe os totais e os gráficos do conjunto filtrado.</br>
+		<br>3 - O usuário passa o ponteiro ou toca em um valor, e o sistema mostra a dica em frase.</br>
+		<br>4 - Este caso de uso finaliza aqui.</br></td></tr>
+	<tr>
+        <td colspan="2"><b>Fluxos Alternativos:</b>
+		<br>2.1 - Conjunto abaixo do mínimo: o sistema omite médias e faixas de índice e de confiança e mantém as contagens.</br>
+		<br>2.2 - Dimensão sem dados: o card explica a ausência, com ícone, sem gráfico vazio.</br>
+		<br>3.1 - Tabela: o usuário troca o gráfico pela tabela com os mesmos números.</br></td></tr>
+	<tr>
+        <td colspan="2"><b>Pós-condições:</b> Panorama exibido, sem alterar dados.</td></tr>
+	<tr>
+        <td colspan="2"><b>Regras de Negócio:</b>
+		<br>1 - O panorama usa os mesmos critérios da pesquisa, e a tela principal mostra um resumo dos totais da base.</br>
+		<br>2 - Nenhum gráfico lista ou ordena empresas por índice, multa ou número de evidências ([IND03]).</br>
+		<br>3 - O mínimo de empresas é o mesmo do UC10, regra 4, para nenhuma média revelar o índice de uma empresa.</br>
+		<br>4 - Índice e confiança ficam separados, e os ODS não se combinam (UC07, regra 4).</br>
+		<br>5 - <code>UNKNOWN</code> e "nada encontrado" nunca aparecem como nota negativa nem positiva ([IND02]).</br>
+		<br>6 - Cores não indicam bom ou ruim ([IND01]), e cada valor existe também em tabela ([NFIN01]).</br>
+		<br>7 - Categorias pequenas são agrupadas em "Outros", e período sem valor fica ausente, nunca como zero.</br>
+		<br>8 - A tela informa que os números se referem às empresas da base, que foi formada por empresas com registros.</br></td></tr>
 </table>
 
 <br></br>

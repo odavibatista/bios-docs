@@ -318,8 +318,21 @@ empresa e CNPJ. Não há filtro por sentido da mudança ([IND01], [IND03]).
 
 Evolução prevista, sem migração de dados: filtros por ODS, UF e setor (índice composto em
 `ods_movements.ods_number` e campos de localização desnormalizados, como em `company_ods_scores`) e aviso
-ao usuário sobre empresas acompanhadas, lendo a mesma coleção. Um histórico por empresa não é evolução
-prevista: exigiria rever o [IND03] e a nota do [IA05].
+ao usuário sobre empresas acompanhadas, lendo a mesma coleção.
+
+### 4.5 Evolução por empresa e panorama (RF35, RF36, RF37)
+
+- **Evolução sem histórico gravado.** A série do [RF36] é calculada na leitura: as regras vigentes do índice
+  são reaplicadas às evidências atuais em cada data de evidência. `company_movements` e
+  `company_ods_scores` não mudam. Registros que a fonte retirou não entram, por isso a tela informa que a
+  série é reconstruída.
+- **Fora da evolução:** cadastros com natureza jurídica `2135` e cadastros com evidências datadas em menos
+  de dois anos. A resposta informa o motivo, e a tela o explica com ícone.
+- **Gráficos do perfil.** Linha do tempo, resultado por fonte e distribuições saem das evidências do perfil
+  completo, e a composição sai da explicação do índice ([RF12]).
+- **Panorama.** Usa os critérios da pesquisa e agrega cadastros, evidências e índices. Médias e faixas
+  seguem o mínimo de empresas do UC10, regra 4. A versão de apresentação calcula os mesmos agregados sobre a
+  base estática.
 
 ## 5. Estados de evidência — decisão
 

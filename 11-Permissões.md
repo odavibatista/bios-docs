@@ -29,6 +29,7 @@ permissões nas quais ela está incluída.
 | `[P13]` Renovar Sessão | | | ✅ | ✅ | |
 | `[P14]` Acompanhar Movimentações | | | ✅ | ✅ | |
 | `[P15]` Retirar Cadastro a Pedido do Titular | | | | ✅ | |
+| `[P16]` Analisar Panorama de Dados | `[P06]` | | ✅ | ✅ | |
 
 ## 11.2 Correspondência com Casos de Uso
 
@@ -49,6 +50,7 @@ permissões nas quais ela está incluída.
 | `[P13]` | UC17 | [RF32] |
 | `[P14]` | UC18 | [RF34] |
 | `[P15]` | Seção 16.5 da Avaliação de LGPD | [NFSE02] |
+| `[P16]` | UC19 | [RF37] |
 
 ## 11.3 Regras Complementares
 

@@ -32,6 +32,7 @@ Em KYC e KYE, quem decide consultar é a organização usuária. Ela atua como c
 3. **O índice não decide sobre pessoas.** Índice e confiança apoiam a análise humana e nunca fundamentam decisão automática. O titular tem direito de pedir a revisão de decisão tomada unicamente por tratamento automatizado (art. 20).
 4. **A consulta deve ser proporcional ao cargo.** A Lei nº 9.029/1995 proíbe prática discriminatória e limitativa para acesso à relação de trabalho. Por cautela, o BIOS adota o critério da tese do TST no Tema 1 de recursos repetitivos (IRR-243000-58.2013.5.13.0023), que trata de certidão de antecedentes criminais: previsão legal, natureza do ofício ou grau especial de fidúcia. A tese não trata do BIOS, e aplicá-la aqui é uma analogia a confirmar na revisão jurídica.
 5. **Só o necessário sai do sistema.** Integrações e planilhas levam o mínimo para a finalidade (art. 6º, III), sem contato nem endereço de rua.
+6. **Sem curva do índice ligada a uma pessoa.** O perfil de empresário individual não mostra a evolução do índice ([RF36]). A linha do tempo mostra as mesmas evidências, sem transformá-las em uma nota ao longo do tempo. O art. 20 alcança decisões que definem o perfil pessoal ou profissional do titular, e uma curva por pessoa aproximaria o BIOS desse uso.
 
 Em licitações, terceirizações e privatizações, o órgão público é o controlador da própria consulta e segue as regras do tratamento pelo poder público (LGPD, arts. 23 e seguintes). Quando o participante é empresário individual, valem as mesmas regras acima.
 
