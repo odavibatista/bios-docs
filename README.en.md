@@ -181,6 +181,17 @@ platform. The system does not claim an impact it cannot prove. Details in
 | [bios-core-api](https://github.com/odavibatista/bios-core-api) | API in NestJS, MongoDB and BullMQ | 3,193 unit tests, 1,022 e2e, 99.71% of lines |
 | [bios-webapp](https://github.com/odavibatista/bios-webapp) ([demo](https://bios-webapp.vercel.app/)) | Angular interface | 741 unit tests, 140 e2e, 98.43% of lines |
 
+## Privacy and data removal
+
+BIOS works with public data linked to the CNPJ. A sole proprietor's registered name and address may
+contain the owner's personal data, even though they are public at the Federal Revenue Service. A CPF
+in the registered name is masked, and partners and contacts are not collected.
+
+To request the removal of a record, write to **odavibatista@hotmail.com** with the CNPJ and proof that
+you are the owner. The details are on the
+[privacy page](https://bios-webapp.vercel.app/privacidade) and in the
+[LGPD assessment](16-Avaliação-LGPD.md).
+
 ## How to cite
 
 **ABNT:**
