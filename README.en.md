@@ -77,9 +77,11 @@ Anyone who needs to assess a company's socio-environmental profile checks each s
 cross-references the results. Business intelligence tools, in turn, solve the fragmentation by collecting
 data about people, a path that carries ethical and privacy risks.
 
-BIOS pursues the same centralization by another route: **public company data only**, turned into
-explainable indicators, to support procurement and sustainability professionals, researchers, the press
-and public agencies.
+BIOS pursues the same centralization by another route: **public data linked to a CNPJ**, turned into
+explainable indicators, to support procurement, sustainability and company-registration review (KYC
+and KYE) professionals, researchers, the press and public agencies. A sole proprietor's public
+registered name may contain the owner's name; CPF sequences are masked. The index is neither a
+verdict nor an automated decision about a person or company (IND01, INL02).
 
 ## Scope
 

@@ -13,6 +13,11 @@ pretende-se apoiar a tomada de decisão de profissionais de negócios, de susten
 pesquisadores, imprensa e órgãos públicos, sem incorrer nos riscos éticos e de privacidade
 próprios de ferramentas de prospecção comercial tradicionais.
 
+Entre as finalidades previstas estão verificações de cadastro com CNPJ em processos de KYC
+(*Know Your Customer*) e KYE (*Know Your Employee*). O BIOS apresenta evidências da empresa,
+sem buscar ou qualificar pessoas físicas e sem transformar o índice em decisão automática ou
+veredito sobre uma pessoa ou empresa ([IND01], [INL02]).
+
 O sistema possibilitará que qualquer usuário autenticado consulte uma empresa por CNPJ ou por
 nome, obtendo um perfil consolidado com evidências categorizadas por fonte, um índice de
 aderência ambiental e um nível de confiança associado, sempre rastreável até sua origem.

@@ -9,6 +9,9 @@ aderência a dois Objetivos de Desenvolvimento Sustentável (ODS) de natureza am
 tomada de decisão de profissionais de negócios, de sustentabilidade, pesquisadores, imprensa e
 órgãos públicos.
 
+O uso também abrange verificações de cadastros com CNPJ em KYC e KYE. A consulta permanece
+centrada na empresa: o índice não é veredito nem decisão automática sobre uma pessoa ([IND01]).
+
 Os usuários terão acesso ao sistema para consultar empresas por CNPJ ou nome, visualizar
 evidências categorizadas por fonte e por estado de confirmação, e compreender a composição de
 um índice de aderência ambiental por meio de sua explicação evidência a evidência. Essa
@@ -18,8 +21,11 @@ socioambiental consultado, evitando vereditos absolutos não sustentados por evi
 As metas do projeto incluem o desenvolvimento de uma interface simples e direta, que permita a
 qualquer usuário consultar uma empresa sem precisar compreender a estrutura das bases
 governamentais subjacentes. Além disso, o sistema deverá garantir a privacidade dos dados de
-seus próprios usuários e tratar exclusivamente dados públicos de pessoa jurídica, sem qualquer
-coleta de dado pessoal de indivíduo vinculado à empresa consultada.
+seus próprios usuários e limitar a consulta aos dados públicos do cadastro com CNPJ e às evidências
+da empresa. A razão social de empresário individual pode conter o nome do titular; sequências de
+CPF são mascaradas, e contatos e perfis de indivíduos não são buscados ([INL02], [NFSE02]).
+A base publicada não distingue a natureza jurídica dos cadastros com CNPJ; manter os de
+empresários individuais na consulta e na pesquisa é uma decisão de produto (UC06, regra 11).
 
 ## 2.1 Problema
 
@@ -61,7 +67,7 @@ projeto/software.
 |---|---|---|
 | Responsável pelo Projeto | Supervisionar o desenvolvimento do projeto, garantir o cumprimento de prazos e requisitos, tomar decisões de escopo e arquitetura. | Davi Deosmar Batista Oliveira Miranda. |
 | Desenvolvedor | Implementar as funcionalidades do sistema (back-end, front-end, integrações e testes). | Davi Deosmar Batista Oliveira Miranda. |
-| Usuários | Consultar empresas por CNPJ ou nome, interpretar evidências e índices de aderência ambiental, filtrar e exportar listas de empresas. | Profissionais de negócios e de sustentabilidade/ESG; órgãos e agentes governamentais; imprensa; pesquisadores e estudantes; empresas interessadas em adequação às pautas ambientais. |
+| Usuários | Consultar empresas por CNPJ ou nome, interpretar evidências e índices de aderência ambiental, filtrar e exportar listas de empresas, inclusive para apoiar verificações de cadastro com CNPJ em KYC e KYE. | Profissionais de negócios e de sustentabilidade/ESG; equipes que verificam cadastros com CNPJ; órgãos e agentes governamentais; imprensa; pesquisadores e estudantes; empresas interessadas em adequação às pautas ambientais. |
 | Desenvolvedores Externos | Consumir a API pública do sistema para integração com sistemas próprios, mediante chave de API. | Desenvolvedores e sistemas de terceiros. |
 
 ## 2.3 Documento de Visão
