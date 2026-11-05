@@ -631,6 +631,7 @@ Table company_movements {
   Indexes {
     cnpj [unique, name: 'idx_company_movements_cnpj']
     (moved_at, cnpj) [name: 'idx_company_movements_moved_at_cnpj']
+    (`ods_movements.evidence_category`, moved_at, cnpj) [name: 'idx_company_movements_category_moved_at_cnpj']
   }
 }
 
