@@ -312,6 +312,10 @@ Decisões de projeto:
   quando o BIOS leu o dado, e todas as sanções antigas apareceriam como se fossem do dia da leitura. Ele é
   idempotente e nunca altera movimentação já registrada.
 
+O filtro opcional por categoria da evidência lê `ods_movements.evidence_category` na projeção
+existente e aplica a mesma condição à lista e à contagem; a ordenação permanece por `moved_at` da
+empresa e CNPJ. Não há filtro por sentido da mudança ([IND01], [IND03]).
+
 Evolução prevista, sem migração de dados: filtros por ODS, UF e setor (índice composto em
 `ods_movements.ods_number` e campos de localização desnormalizados, como em `company_ods_scores`) e aviso
 ao usuário sobre empresas acompanhadas, lendo a mesma coleção. Um histórico por empresa não é evolução

@@ -782,7 +782,8 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>6 - <code>CONDUTA_ADMINISTRATIVA</code> não é rotulada como infração ambiental: a sanção do CEIS/CNEP aparece como sanção administrativa (HU18).</br>
 		<br>7 - A lista não consulta fontes externas nem dispara recálculo: lê só o que já foi gravado ([NFDE03]).</br>
 		<br>8 - A explicação da mudança fica no perfil da empresa (UC07, [RF12]); selecionar a empresa leva ao perfil, sem painel sobreposto.</br>
-		<br>9 - A lista não traz dado pessoal de indivíduo ([INL02]) e não é exposta por chave de API.</br></td></tr>
+		<br>9 - A lista não traz dado pessoal de indivíduo ([INL02]) e não é exposta por chave de API.</br>
+		<br>10 - O usuário pode filtrar a lista pela categoria da evidência da movimentação (<code>INFRACAO_AMBIENTAL</code>, <code>CONDUTA_ADMINISTRATIVA</code> ou <code>EMISSAO_GEE</code>). Sem filtro, a lista permanece completa; com filtro, somente empresas com movimentação da categoria entram na lista e na contagem da paginação. A ordem continua pela data da movimentação mais recente da empresa e pelo CNPJ, sem filtro por sentido ([IND01], [IND03]).</br></td></tr>
 </table>
 
 <br></br>
