@@ -179,6 +179,17 @@ plataforma. O sistema não reivindica impacto que não consegue comprovar. Detal
 | [bios-core-api](https://github.com/odavibatista/bios-core-api) | API em NestJS, MongoDB e BullMQ | 3.193 testes unitários, 1.022 e2e, 99,71% das linhas |
 | [bios-webapp](https://github.com/odavibatista/bios-webapp) ([demonstração](https://bios-webapp.vercel.app/)) | Interface em Angular | 741 testes unitários, 140 e2e, 98,43% das linhas |
 
+## Privacidade e remoção de dados
+
+O BIOS trabalha com dados públicos ligados ao CNPJ. A razão social e o endereço de um empresário
+individual podem conter dados pessoais do titular, mesmo sendo públicos na Receita Federal. O CPF na
+razão social é mascarado, e sócios e contatos não são coletados.
+
+Para pedir a remoção de um cadastro, escreva para **odavibatista@hotmail.com** com o CNPJ e uma
+comprovação de que você é o titular. Os detalhes estão na
+[página de privacidade](https://bios-webapp.vercel.app/privacidade) e na
+[avaliação de LGPD](16-Avaliação-LGPD.md).
+
 ## Como citar
 
 **ABNT:**
