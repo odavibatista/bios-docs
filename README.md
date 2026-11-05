@@ -77,7 +77,9 @@ coletando dados de pessoas, um caminho com riscos éticos e de privacidade.
 
 O BIOS busca a mesma centralização por outro caminho: **dados públicos vinculados ao CNPJ**,
 transformados em indicadores explicáveis, para apoiar profissionais de compras, de sustentabilidade,
-de verificação em KYC e KYE, pesquisadores, imprensa e órgãos públicos. A razão social
+de verificação em KYC e KYE, pesquisadores, imprensa e órgãos públicos. Os usos incluem contratar
+prestadores PJ, apoiar licitações, terceirizações e privatizações e escolher parceiros alinhados à
+cultura ambiental de uma empresa, sempre como apoio à análise humana. A razão social
 pública de empresário individual pode conter o nome do titular; sequências de CPF são mascaradas.
 O índice não é veredito nem decisão automática sobre uma pessoa ou empresa ([IND01], [INL02]).
 

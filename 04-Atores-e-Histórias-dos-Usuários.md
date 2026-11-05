@@ -29,7 +29,9 @@ sistema. Para que as histórias reflitam necessidades concretas, a coluna "Eu co
 | Analista de compras/suprimentos | Avaliar o comprometimento ambiental de fornecedores, prestadores de serviço e clientes antes de firmar relacionamento comercial. |
 | Profissional de verificação cadastral | Consultar evidências públicas de cadastros com CNPJ em processos de KYC e KYE, inclusive de empregado ou prestador que tenha cadastro próprio, sem usar o índice como decisão automática. |
 | Profissional de sustentabilidade/ESG | Embasar avaliações socioambientais de parceiros com evidências rastreáveis e auditáveis. |
-| Agente de órgão governamental | Consultar, de forma centralizada, o histórico público de autuações e sanções de uma empresa. |
+| Agente de órgão governamental | Consultar, de forma centralizada, o histórico público de autuações e sanções de uma empresa, inclusive como apoio a licitações, terceirizações e privatizações. |
+| Contratante de prestadores PJ | Conferir o histórico ambiental público do CNPJ de quem vai contratar, sem usar o índice como decisão automática. |
+| Empresa com agenda ambiental própria | Escolher fornecedores e prestadores alinhados à sua cultura verde, com base em evidências verificáveis. |
 | Jornalista | Apurar o histórico ambiental de uma empresa citada em uma matéria, com fontes verificáveis. |
 | Pesquisador ou estudante | Estudar o comportamento ambiental de empresas e setores com base em dados reproduzíveis. |
 | Representante de empresa em adequação | Encontrar empresas do próprio setor com bom histórico, para referência e parceria. |

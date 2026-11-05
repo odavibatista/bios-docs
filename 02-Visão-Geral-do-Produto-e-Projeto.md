@@ -9,8 +9,9 @@ aderência a dois Objetivos de Desenvolvimento Sustentável (ODS) de natureza am
 tomada de decisão de profissionais de negócios, de sustentabilidade, pesquisadores, imprensa e
 órgãos públicos.
 
-O uso também abrange KYC e KYE. No KYE, a consulta alcança empregado ou prestador somente quando
-ele tem cadastro próprio com CNPJ. O índice não é veredito nem decisão automática sobre uma pessoa
+O uso também abrange KYC e KYE, além de licitações, terceirizações e privatizações. No KYE, voltado
+principalmente à contratação de prestadores PJ, a consulta alcança a pessoa somente quando ela tem
+cadastro próprio com CNPJ. O índice não é veredito nem decisão automática sobre uma pessoa
 ([IND01]), e a organização que consulta responde pela base legal do próprio processo
 ([Avaliação de LGPD](16-Avaliação-LGPD.md)).
 
@@ -71,6 +72,26 @@ projeto/software.
 | Desenvolvedor | Implementar as funcionalidades do sistema (back-end, front-end, integrações e testes). | Davi Deosmar Batista Oliveira Miranda. |
 | Usuários | Consultar empresas por CNPJ ou nome, interpretar evidências e índices de aderência ambiental, filtrar e exportar listas de empresas, inclusive para apoiar verificações de cadastro com CNPJ em KYC e KYE. | Profissionais de negócios e de sustentabilidade/ESG; equipes que verificam cadastros com CNPJ; órgãos e agentes governamentais; imprensa; pesquisadores e estudantes; empresas interessadas em adequação às pautas ambientais. |
 | Desenvolvedores Externos | Consumir a API pública do sistema para integração com sistemas próprios, mediante chave de API. | Desenvolvedores e sistemas de terceiros. |
+
+### Usos em decisões de contratação
+
+Em todos os casos abaixo, o BIOS reúne evidências públicas para a análise humana. Ele não substitui as
+consultas oficiais, não emite certidão e não decide quem contratar ([IND01]).
+
+| Uso | Quem usa | Como o BIOS ajuda |
+| --- | --- | --- |
+| Contratação de prestadores PJ (KYE) | Empresas que contratam pessoas com CNPJ próprio | Mostra autuações, sanções e situação cadastral do CNPJ do prestador |
+| Licitações e contratos públicos | Órgãos e entidades públicas, na habilitação e antes de contratar | Reúne CEIS, CNEP e autuações do IBAMA em uma consulta por CNPJ, como apoio à verificação nas fontes oficiais |
+| Terceirizações | Órgãos públicos e empresas | Avalia a empresa que assumirá um serviço, no início do contrato e nas prorrogações |
+| Privatizações, concessões e parcerias | Órgãos públicos, na diligência sobre participantes | Levanta o histórico ambiental público de quem disputa o ativo ou o serviço |
+| Alinhamento à cultura ambiental | Empresas que querem parceiros compatíveis com sua agenda verde | Permite comparar fornecedores e prestadores por índice e confiança, com a evidência de cada resultado |
+
+A Lei nº 14.133/2021 tem o desenvolvimento nacional sustentável entre seus princípios (art. 5º) e entre
+os objetivos da licitação (art. 11, IV), e o estudo técnico preliminar descreve os possíveis impactos
+ambientais da contratação (art. 18, § 1º, XII). A consulta ao CEIS e ao CNEP no momento de contratar
+continua sendo feita nas fontes oficiais (art. 91, § 4º): o BIOS mostra a última coleta, com a data, e
+não exclui ninguém de um certame. O índice não é critério de habilitação nem de julgamento: esses
+critérios vêm da lei e do edital.
 
 ## 2.3 Documento de Visão
 
