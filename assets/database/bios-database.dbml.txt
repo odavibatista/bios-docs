@@ -543,6 +543,8 @@ Table company_profile {
   registration_status varchar [note: 'Situação cadastral na Receita Federal, em conjunto fechado: ATIVA, SUSPENSA, INAPTA, BAIXADA, NULA ou NAO_RECONHECIDA']
   registration_status_unrecognized varchar [null, note: 'Situação informada pelo provedor, como veio, quando não está no conjunto (NAO_RECONHECIDA)']
   company_size varchar [null, note: 'Porte']
+  legal_nature_code varchar [null, note: 'Código da natureza jurídica na Receita; 2135 é empresário individual']
+  legal_nature varchar [null, note: 'Descrição da natureza jurídica']
   address company_address
   main_cnae company_cnae
   secondary_cnaes company_cnae[] [null]
@@ -565,6 +567,16 @@ Table company_profile {
 // -----------------------------------------------------------------------------
 // Índices de aderência
 // -----------------------------------------------------------------------------
+
+Table company_removals {
+  id_company_removal objectid [primary key]
+  cnpj varchar [note: 'CNPJ retirado a pedido do titular; só o suficiente para não coletar de novo']
+  removed_at timestamp
+
+  Indexes {
+    cnpj [unique, name: 'idx_company_removals_cnpj']
+  }
+}
 
 Table score_contribution {
   evidence_id objectid [ref: > evidence_normalized.id_evidence]
