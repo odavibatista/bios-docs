@@ -79,7 +79,9 @@ data about people, a path that carries ethical and privacy risks.
 
 BIOS pursues the same centralization by another route: **public data linked to a CNPJ**, turned into
 explainable indicators, to support procurement, sustainability and KYC and KYE review
-professionals, researchers, the press and public agencies. A sole proprietor's public
+professionals, researchers, the press and public agencies. Uses include hiring contractors with
+their own CNPJ, supporting public procurement, outsourcing and privatization, and choosing partners
+that fit a company's environmental culture, always as support for human review. A sole proprietor's public
 registered name may contain the owner's name; CPF sequences are masked. The index is neither a
 verdict nor an automated decision about a person or company (IND01, INL02).
 
