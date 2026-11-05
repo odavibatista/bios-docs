@@ -86,7 +86,8 @@ de teste no quadro de gerenciamento do projeto do [GitHub Projects](https://gith
   ingestão do GHG Protocol é Essencial por ser a única fonte do índice do ODS 13; em tempo de
   execução, continua isolada e não bloqueante (ver `14-Projeto-e-Arquitetura.md`);
 - Importante: filtros de busca, ranqueamento, exportação em XLSX, painel de conta, tela principal
-  com as movimentações recentes (RF33, RF34) e API pública documentada;
+  com as movimentações recentes (RF33, RF34), API pública documentada e gráficos do perfil e do
+  panorama (RF35, RF36, RF37);
 - Desejável: mecanismos adicionais de segurança de borda (ex.: honeypot), evolução do índice
   médio por setor (RF30) e integração com CRMs (RF31 — bônus, fora do MVP caso não haja folga
   no cronograma).

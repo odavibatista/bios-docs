@@ -118,7 +118,7 @@ como ela é usada.
 | :----------- | :----------- |
 | **Característica:** | Capacidade de Interação — Assistência ao Usuário (*User Assistance*). |
 | **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto, alinhada ao art. 63 da Lei Brasileira de Inclusão, Lei nº 13.146/2015, que exige sites acessíveis conforme as diretrizes internacionais). |
-| **Relacionados:** | UC01 a UC11, UC13 e UC18 (casos de uso com tela). |
+| **Relacionados:** | UC01 a UC11, UC13, UC18 e UC19 (casos de uso com tela). |
 | **Requisito:** | Quando o sistema exibir uma tela, ele deve atender aos critérios de sucesso de nível AA das WCAG 2.2, com contraste mínimo de 4,5:1 no texto comum e de 3:1 no texto grande e nos componentes de interface, operação completa pelo teclado, foco visível e rótulo e papel acessíveis em todo controle. |
 | **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando o sistema exibir uma tela · **Sujeito:** ele [o sistema] · **Ação:** deve atender · **Objeto:** aos critérios de sucesso de nível AA das WCAG 2.2 · **Restrição:** contraste mínimo de 4,5:1 no texto comum e de 3:1 no texto grande e nos componentes de interface; operação completa pelo teclado; foco visível; rótulo e papel acessíveis em todo controle |
 | **Verificação:** | Teste (análise automática de acessibilidade em todo teste e2e, sem nenhuma violação de nível A ou AA) e inspeção (percurso de cada tela só pelo teclado). |
@@ -130,7 +130,7 @@ como ela é usada.
 | :----------- | :----------- |
 | **Característica:** | Capacidade de Interação — Operabilidade (*Operability*). |
 | **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto: consulta também a partir do celular). |
-| **Relacionados:** | UC01 a UC11, UC13 e UC18 (casos de uso com tela); [NFIN01]. |
+| **Relacionados:** | UC01 a UC11, UC13, UC18 e UC19 (casos de uso com tela); [NFIN01]. |
 | **Requisito:** | Quando uma tela for exibida com largura de 360 a 1920 pixels CSS, o sistema deve manter todo o conteúdo e todas as funções acessíveis, sem rolagem horizontal da página, com as tabelas largas rolando dentro do próprio contêiner. |
 | **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando uma tela for exibida com largura de 360 a 1920 pixels CSS · **Sujeito:** o sistema · **Ação:** deve manter · **Objeto:** todo o conteúdo e todas as funções acessíveis · **Restrição:** sem rolagem horizontal da página; tabelas largas rolando dentro do próprio contêiner |
 | **Verificação:** | Teste (e2e nas larguras de 390 e de 1280 pixels CSS, conferindo a ausência de rolagem horizontal). |
@@ -142,7 +142,7 @@ como ela é usada.
 | :----------- | :----------- |
 | **Característica:** | Capacidade de Interação — Autodescrição (*Self-descriptiveness*). |
 | **Necessidade (história de usuário):** | HU27, HU28. |
-| **Relacionados:** | UC01 a UC11, UC13 e UC18 (casos de uso com tela); [NFCO01], [NFDE02], [NFSE04]; [RF20]. |
+| **Relacionados:** | UC01 a UC11, UC13, UC18 e UC19 (casos de uso com tela); [NFCO01], [NFDE02], [NFSE04]; [RF20]. |
 | **Requisito:** | (a) Quando uma ação do usuário depender de resposta da API, o sistema deve exibir um indicador de carregamento até a resposta, anunciado às tecnologias assistivas.<br>(b) Quando uma ação falhar, o sistema deve exibir a mensagem devolvida pela API e a ação possível (repetir, refinar os critérios ou aguardar o tempo informado pela API), sem deixar a tela em branco. |
 | **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando uma ação do usuário depender de resposta da API · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** um indicador de carregamento · **Restrição:** até a resposta; anunciado às tecnologias assistivas<br>(b) **Condição:** Quando uma ação falhar · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** a mensagem devolvida pela API e a ação possível · **Restrição:** repetir, refinar os critérios ou aguardar o tempo informado pela API; sem deixar a tela em branco |
 | **Verificação:** | Teste (de componente, para os estados de carregamento, vazio e erro). |
@@ -154,7 +154,7 @@ como ela é usada.
 | :----------- | :----------- |
 | **Característica:** | Capacidade de Interação — Inclusividade (*Inclusivity*). |
 | **Necessidade (história de usuário):** | Não há (requisito derivado de decisão de projeto: o público do BIOS é brasileiro, e a API já responde em português). |
-| **Relacionados:** | UC01 a UC11, UC13 e UC18 (casos de uso com tela); [NFIN03]. |
+| **Relacionados:** | UC01 a UC11, UC13, UC18 e UC19 (casos de uso com tela); [NFIN03]. |
 | **Requisito:** | (a) Quando o sistema exibir um texto, ele deve exibi-lo em português do Brasil, com a acentuação da norma culta.<br>(b) Quando o sistema exibir uma data, um número ou uma porcentagem, ele deve formatá-los no padrão brasileiro (dia/mês/ano, vírgula decimal e ponto de milhar). |
 | **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o sistema exibir um texto · **Sujeito:** ele [o sistema] · **Ação:** deve exibi-lo · **Objeto:** [o texto] em português do Brasil · **Restrição:** com a acentuação da norma culta<br>(b) **Condição:** Quando o sistema exibir uma data, um número ou uma porcentagem · **Sujeito:** ele [o sistema] · **Ação:** deve formatá-los · **Objeto:** [a data, o número ou a porcentagem] · **Restrição:** no padrão brasileiro (dia/mês/ano, vírgula decimal e ponto de milhar) |
 | **Verificação:** | Teste (trava automática de acentuação nos textos do front-end; formatação conferida nos testes de componente) e inspeção. |
