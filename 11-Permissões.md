@@ -28,6 +28,7 @@ permissões nas quais ela está incluída.
 | `[P12]` Manter Blacklist de Domínios | | | | ✅ | |
 | `[P13]` Renovar Sessão | | | ✅ | ✅ | |
 | `[P14]` Acompanhar Movimentações | | | ✅ | ✅ | |
+| `[P15]` Retirar Cadastro a Pedido do Titular | | | | ✅ | |
 
 ## 11.2 Correspondência com Casos de Uso
 
@@ -47,6 +48,7 @@ permissões nas quais ela está incluída.
 | `[P12]` | UC13 | [RF29] |
 | `[P13]` | UC17 | [RF32] |
 | `[P14]` | UC18 | [RF34] |
+| `[P15]` | Seção 16.5 da Avaliação de LGPD | [NFSE02] |
 
 ## 11.3 Regras Complementares
 

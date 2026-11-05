@@ -26,8 +26,8 @@ governamentais subjacentes. Além disso, o sistema deverá garantir a privacidad
 seus próprios usuários e limitar a consulta aos dados públicos do cadastro com CNPJ e às evidências
 da empresa. A razão social de empresário individual pode conter o nome do titular; sequências de
 CPF são mascaradas, e contatos e perfis de indivíduos não são buscados ([INL02], [NFSE02]).
-A base publicada não distingue a natureza jurídica dos cadastros com CNPJ; manter os de
-empresários individuais na consulta e na pesquisa é uma decisão de produto (UC06, regra 11).
+Manter os cadastros de empresários individuais na consulta e na pesquisa é uma decisão de produto
+(UC06, regra 11), e o titular pode pedir a remoção ([Avaliação de LGPD](16-Avaliação-LGPD.md)).
 
 ## 2.1 Problema
 
