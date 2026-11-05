@@ -75,9 +75,11 @@ Quem precisa avaliar o perfil socioambiental de uma empresa consulta cada fonte 
 resultados por conta própria. As ferramentas de inteligência comercial, por sua vez, resolvem a dispersão
 coletando dados de pessoas, um caminho com riscos éticos e de privacidade.
 
-O BIOS busca a mesma centralização por outro caminho: **só dado público de pessoa jurídica**,
-transformado em indicadores explicáveis, para apoiar profissionais de compras, de sustentabilidade,
-pesquisadores, imprensa e órgãos públicos.
+O BIOS busca a mesma centralização por outro caminho: **dados públicos vinculados ao CNPJ**,
+transformados em indicadores explicáveis, para apoiar profissionais de compras, de sustentabilidade,
+de verificação cadastral (KYC e KYE), pesquisadores, imprensa e órgãos públicos. A razão social
+pública de empresário individual pode conter o nome do titular; sequências de CPF são mascaradas.
+O índice não é veredito nem decisão automática sobre uma pessoa ou empresa ([IND01], [INL02]).
 
 ## Escopo
 
@@ -111,7 +113,7 @@ O projeto trata como requisito de primeira classe aquilo que o sistema **não de
 | [IND01] | Não afirmar veredito absoluto de sustentabilidade | Só evidências e índices derivados delas; nenhuma nota geral |
 | [IND02] | Não converter ausência de dado em evidência negativa | `UNKNOWN` reduz a confiança, nunca o índice |
 | [INL01] | Não inferir conteúdo de registro sigiloso | Registro sem teor público não é interpretado |
-| [INL02] | Não coletar dado pessoal de indivíduo vinculado à empresa | Pessoa física é descartada já na ingestão |
+| [INL02] | Não coletar dado pessoal de indivíduo vinculado à empresa | Contatos e perfis de indivíduos são descartados; CPF na razão social é mascarado |
 
 ## Método
 
