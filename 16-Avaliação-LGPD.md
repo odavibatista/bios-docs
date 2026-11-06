@@ -102,3 +102,7 @@ Segue o modelo simplificado do Guia Orientativo da ANPD de fevereiro de 2024 (An
 | 2 | Relatório de impacto para KYE | Art. 38 | Não feito |
 | 3 | Prazo de exibição de evidências antigas e encerradas ligadas a empresário individual | Arts. 6º, III, e 15 | Em aberto. A base traz movimentações desde 2008 |
 | 4 | Indicação formal do encarregado | Art. 41 | O contato é o responsável pelo projeto. Definir antes do uso comercial |
+
+## Consulta de CEP
+
+O preenchimento do endereço pelo CEP ([RF39]) envia ao ViaCEP somente os 8 dígitos digitados, sem nome, e-mail ou identificador da conta. Na versão com API, a consulta sai do servidor do BIOS, então o serviço não recebe o IP do usuário. Na versão de apresentação, o navegador consulta o serviço diretamente, e o IP do visitante chega a ele; por isso o rodapé e a página de privacidade informam essa exceção. O endereço gravado continua cifrado ([NFSE03]).
