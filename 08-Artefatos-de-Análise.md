@@ -47,10 +47,11 @@ flowchart LR
         UC16([UC16 Integrar com CRM — bônus])
         UC17([UC17 Renovar Sessão])
         UC18([UC18 Acompanhar Movimentações])
+        UC19([UC19 Analisar Panorama de Dados])
     end
 
     U --- UC01 & UC02 & UC03 & UC04 & UC05 & UC17
-    U --- UC06 & UC07 & UC08 & UC09 & UC10 & UC11 & UC18
+    U --- UC06 & UC07 & UC08 & UC09 & UC10 & UC11 & UC18 & UC19
     D --- UC12 & UC16
     A --- UC13
     S --- UC14
@@ -241,11 +242,11 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 <table>
     <tr>
         <td><b>Nome:</b> UC05 — Manter Conta.</td>
-        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir que o usuário edite seus dados de conta ou exclua a própria conta. ([RF26], [RF27], [RF28])</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir que o usuário edite seus dados de conta ou exclua a própria conta. ([RF26], [RF27], [RF28], [RF38], [RF39])</td>
     </tr>
     <tr>
         <td><b>Ator(es):</b> Usuário.</td>
-        <td><b>Ator(es) Secundário(s):</b> Sistema.</td>
+        <td><b>Ator(es) Secundário(s):</b> Sistema, Fontes Externas (ViaCEP).</td>
     </tr>
     <tr>
         <td colspan="2"><b>Pré-condições:</b> O usuário deve estar com sessão ativa.</td>
@@ -260,14 +261,16 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Fluxos Alternativos:</b>
 		<br>1.1 - Alteração de e-mail: o sistema envia confirmação ao novo endereço e só efetiva a troca após a confirmação ([RF28]).</br>
 		<br>1.2 - Exclusão: o usuário seleciona excluir conta e confirma com a senha.</br>
-		<br>1.3 - O sistema remove os dados pessoais, revoga todas as chaves de API e encerra todas as sessões. Exibe a tela inicial e finaliza o caso de uso.</br></td></tr>
+		<br>1.3 - O sistema remove os dados pessoais, revoga todas as chaves de API e encerra todas as sessões. Exibe a tela inicial e finaliza o caso de uso.</br>
+		<br>1.4 - O usuário digita um CEP de 8 dígitos: o sistema preenche logradouro, bairro, UF e município, que continuam editáveis ([RF39]).</br>
+		<br>1.5 - CEP não encontrado ou consulta sem resposta em até 3 segundos: o sistema avisa e libera o preenchimento manual, sem impedir a gravação.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Pós-condições:</b> Dados atualizados; ou, na exclusão, nenhum dado pessoal do titular mantido e nenhuma credencial (sessão ou chave) válida.</td></tr>
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - A exclusão atende ao direito de eliminação do titular previsto na LGPD ([NFSE02]).</br>
 		<br>2 - Registros de tentativa de login associados à conta excluída mantêm apenas IP e data/hora, desvinculados do titular.</br>
-			<br>3 - O endereço é composto por CEP, logradouro, número, complemento (opcional), bairro, cidade e unidade da federação; é guardado serializado e cifrado com AES-256 ([NFSE03]), e pode ser removido da conta.</br>
+			<br>3 - O endereço é composto por CEP, logradouro, número, complemento (opcional), bairro, cidade e unidade da federação; é guardado serializado e cifrado com AES-256 ([NFSE03]), e pode ser removido da conta. O município é escolhido entre os da UF selecionada, que precisa vir antes ([RF38]).</br>
 			<br>4 - A alteração de e-mail exige a senha atual. O link de confirmação é enviado ao novo endereço, tem as mesmas regras do link de confirmação de cadastro (uso único, 24 horas por padrão) e o e-mail atual vale até que ele seja aberto; pedir outra troca invalida o link anterior.</br>
 			<br>5 - O novo e-mail é verificado contra a blacklist de domínios ([RF22]). Se ele já pertencer a outra conta, o pedido recebe a mesma resposta do sucesso e nada é enviado, para não revelar contas existentes; se passar a pertencer a outra conta antes da confirmação, a troca é recusada.</br>
 			<br>6 - A exclusão exige a senha e remove a conta, as sessões, os tokens, as chaves de API, os bloqueios e os registros de e-mails enviados ao titular; não há remoção lógica. A sessão usada no pedido deixa de valer imediatamente.</br>
@@ -328,7 +331,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 <table>
     <tr>
         <td><b>Nome:</b> UC07 — Visualizar Perfil Ambiental.</td>
-        <td colspan="2"><b>Objetivo/Descrição:</b> Exibir as evidências da empresa e, para cada ODS (13 e 15), o índice de aderência, o nível de confiança e a explicação do score. ([RF07], [RF08], [RF09], [RF10], [RF11], [RF12])</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Exibir as evidências da empresa, seus gráficos e, para cada ODS (13 e 15), o índice de aderência, o nível de confiança e a explicação do score. ([RF35], [RF36], [RF07], [RF08], [RF09], [RF10], [RF11], [RF12])</td>
     </tr>
     <tr>
         <td><b>Ator(es):</b> Usuário.</td>
@@ -360,7 +363,10 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <br>5 - O GHG é coletado somente pelo consumidor da fila própria <code>ghg-inventory</code>, com prazo do catálogo. O cadastro de organizações do portal é sincronizado uma vez por dia, em segundo plano, e a coleta de cada CNPJ o lê já sincronizado: não há chamada externa para localizar candidatos, e empresa sem organização no cadastro não faz nenhuma chamada. O nome cadastral localiza candidatos, mas apenas CNPJ exato e ano inventariado do relatório público confirmam a evidência positiva de publicação do inventário mais recente. Sem correspondência verificável, sem inventário ou em falha, o resultado é <code>UNKNOWN</code>, nunca <code>NOT_FOUND</code>; respostas anteriores são preservadas. Coleta válida é reutilizada sem renovar artificialmente suas datas. O ano do inventário não é data de publicação, que permanece nula quando ausente. Não são armazenados contatos nem texto integral do PDF ([INL02]).</br>
 			<br>6 - O índice de um ODS ainda não calculado, ou cujo retrato guardado deixou de ser auditável, aparece como pendente, sem nenhum número, e nunca como nota baixa ([IND02]); o recálculo (UC15) o repõe. As evidências e os índices lidos ficam em cache por cinco minutos, apagados quando o índice da empresa é recalculado, e só se guarda perfil com todos os índices calculados.</br>
 			<br>7 - A consulta do perfil completo, incluindo UC06, usa um orçamento único configurável (padrão 15 segundos). Ao esgotá-lo com cadastro disponível, responde com o retrato persistido e informa por fonte se houve coleta nesta consulta, se o dado veio da persistência, se a coleta está pendente ou se a fonte está indisponível; informa separadamente se o índice está pendente e sugere quando repetir. <code>NOT_FOUND</code> indica ausência confirmada pela fonte; <code>UNKNOWN</code> ou ausência de evidência não indicam isso. Jobs já publicados podem concluir depois da resposta. Sem cadastro obtido no prazo e sem cópia local, retorna indisponibilidade temporária.</br>
-			<br>8 -A consulta só das evidências (sem cadastro nem índices) mostra o mesmo retrato do perfil completo: as duas leem as mesmas evidências em cache e, enquanto elas estão lá, nenhuma coleta nem recálculo é feito. A consulta das evidências só guarda o retrato depois de o recálculo do índice terminar, para que o índice exibido no perfil corresponda às evidências guardadas; o recálculo seguinte apaga o retrato das duas.</br></td></tr>
+			<br>8 -A consulta só das evidências (sem cadastro nem índices) mostra o mesmo retrato do perfil completo: as duas leem as mesmas evidências em cache e, enquanto elas estão lá, nenhuma coleta nem recálculo é feito. A consulta das evidências só guarda o retrato depois de o recálculo do índice terminar, para que o índice exibido no perfil corresponda às evidências guardadas; o recálculo seguinte apaga o retrato das duas.</br>
+			<br>9 - A evolução do índice aparece em degraus, por ODS, para cadastros com evidências datadas em dois anos ou mais. Cada degrau mostra a data e a evidência que o causou, sem número de variação nem comparação com outras empresas, e a tela informa que a série é reconstruída ([RF36], [IND03]).</br>
+			<br>10 - Cadastro de empresário individual (natureza jurídica <code>2135</code>) não mostra a evolução, porque a curva ficaria ligada a uma pessoa. Cadastro com evidências em menos de dois anos também não. Nos dois casos, uma mensagem com ícone explica o motivo, e a linha do tempo de evidências continua disponível.</br>
+			<br>11 - Tipo de infração, bioma e gravidade viram gráfico com duas categorias ou mais; com uma, aparecem como texto ([RF35]).</br></td></tr>
 </table>
 
 <br></br>
@@ -368,7 +374,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 <table>
     <tr>
         <td><b>Nome:</b> UC08 — Pesquisar Empresas.</td>
-        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir filtrar e ordenar empresas da base por critérios cadastrais e socioambientais. ([RF13], [RF14])</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir filtrar e ordenar empresas da base por critérios cadastrais e socioambientais. ([RF13], [RF14], [RF38])</td>
     </tr>
     <tr>
         <td><b>Ator(es):</b> Usuário.</td>
@@ -397,7 +403,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>1 - A pesquisa opera apenas sobre empresas já presentes em <code>company_profile</code>.</br>
 		<br>2 - Filtros de índice, confiança e ordenação sempre se referem a um único ODS selecionado.</br>
 			<br>3 - Os critérios (nome, UF, município, CNAE e ODS) são opcionais, mas ao menos um é exigido; os informados se somam, e a empresa precisa atender a todos. Índice mínimo e confiança mínima só existem com o ODS selecionado.</br>
-			<br>4 - A UF é a sigla de uma das 27 unidades da federação. O município é o nome inteiro, sem distinguir acento, caixa ou pontuação. O CNAE é um código de 2 a 7 dígitos (divisão, grupo, classe ou subclasse), casado como prefixo do CNAE principal ou de algum secundário.</br>
+			<br>4 - A UF é a sigla de uma das 27 unidades da federação. O município só pode ser escolhido depois da UF, entre os municípios dela ([RF38]), e a busca dentro da lista não distingue acento, caixa ou pontuação. O CNAE é um código de 2 a 7 dígitos (divisão, grupo, classe ou subclasse), casado como prefixo do CNAE principal ou de algum secundário.</br>
 			<br>5 - Com um ODS selecionado, cada empresa da lista traz o índice e a confiança desse ODS, em campos separados e nulos quando o ODS ainda não foi calculado para ela. Empresa sem índice calculado no ODS não atende a índice mínimo, e sem confiança calculada não atende a confiança mínima.</br>
 			<br>6 - A lista traz o resumo da empresa e o índice e a confiança do ODS selecionado, sem as contribuições que os explicam, que pertencem ao perfil (UC07).</br>
 			<br>7 - A ordenação pelo índice do ODS selecionado pode ser ascendente ou descendente. Empresa sem índice calculado no ODS aparece sempre ao fim da lista, nos dois sentidos, porque ausência de índice não é o menor nem o maior índice ([IND02]). Entre índices iguais, vem primeiro a empresa de maior confiança, e o desempate final é o CNPJ. As empresas sem índice vêm depois de todas as que têm, em ordem de razão social e CNPJ. Sem ordenação escolhida, a lista segue a proximidade com o nome digitado e, depois, a razão social.</br>
@@ -431,7 +437,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - O arquivo contém dados cadastrais da pessoa jurídica e, em colunas separadas por ODS, índice e nível de confiança.</br>
-		<br>2 - O arquivo não contém nenhum dado pessoal ou de contato de indivíduo ([INL02]).</br>
+		<br>2 - O arquivo não contém contato nem endereço de rua. A razão social de empresário individual pode conter o nome do titular, com o CPF mascarado ([INL02]).</br>
 			<br>3 - O arquivo traz uma linha por empresa, na ordem da pesquisa, com os dados cadastrais e, para cada ODS ativo, o índice e a confiança em colunas separadas, e não só para o ODS selecionado na pesquisa. O que não foi calculado fica em branco, e nunca é preenchido com zero.</br>
 			<br>4 - A exportação aplica os mesmos critérios e a mesma ordenação da pesquisa (UC08), sem paginação: o arquivo traz a lista inteira.</br>
 			<br>5 - Se nenhuma empresa atende aos critérios, o arquivo não é gerado e o sistema informa que não há lista para exportar. Se a lista passa do teto de empresas por arquivo (5000 por padrão, configurável), o arquivo não é gerado e o sistema pede que os critérios sejam refinados.</br>
@@ -680,7 +686,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 <table>
     <tr>
         <td><b>Nome:</b> UC16 — Integrar com CRM (bônus — fora do MVP).</td>
-        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir que CRMs de terceiros importem o perfil ambiental de pessoas jurídicas. ([RF31]; prioridade Desejável, entregue apenas se houver folga no cronograma)</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir que CRMs de terceiros importem o perfil ambiental dos cadastros com CNPJ das suas contas. ([RF31]; prioridade Desejável)</td>
     </tr>
     <tr>
         <td><b>Ator(es):</b> Desenvolvedor Externo.</td>
@@ -696,11 +702,11 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>3 - O sistema retorna os perfis em formato de importação de contas.</br>
 		<br>4 - Este caso de uso finaliza aqui.</br></td></tr>
 	<tr>
-        <td colspan="2"><b>Fluxos Alternativos:</b> Os mesmos de UC12.</td></tr>
+        <td colspan="2"><b>Fluxos Alternativos:</b> Os mesmos de UC12, que viram o estado de cada CNPJ, sem derrubar o lote.</td></tr>
 	<tr>
         <td colspan="2"><b>Pós-condições:</b> Contas corporativas do CRM enriquecidas com dados ambientais.</td></tr>
 	<tr>
-        <td colspan="2"><b>Regras de Negócio:</b> Apenas dados de pessoa jurídica; nenhum dado de contato ou dado pessoal de indivíduo ([INL02]).</td></tr>
+        <td colspan="2"><b>Regras de Negócio:</b> Cada lote aceita até 20 CNPJs e tem limite próprio de requisições. Nenhum contato nem endereço de rua; a razão social de empresário individual pode conter o nome do titular, com o CPF mascarado ([INL02]).</td></tr>
 </table>
 
 <br></br>
@@ -782,7 +788,48 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>6 - <code>CONDUTA_ADMINISTRATIVA</code> não é rotulada como infração ambiental: a sanção do CEIS/CNEP aparece como sanção administrativa (HU18).</br>
 		<br>7 - A lista não consulta fontes externas nem dispara recálculo: lê só o que já foi gravado ([NFDE03]).</br>
 		<br>8 - A explicação da mudança fica no perfil da empresa (UC07, [RF12]); selecionar a empresa leva ao perfil, sem painel sobreposto.</br>
-		<br>9 - A lista não traz dado pessoal de indivíduo ([INL02]) e não é exposta por chave de API.</br></td></tr>
+		<br>9 - A lista não traz contato nem endereço de rua; a razão social de empresário individual pode conter o nome do titular, com o CPF mascarado ([INL02]). A lista não é exposta por chave de API.</br>
+		<br>10 - O usuário pode filtrar a lista pela categoria da evidência da movimentação (<code>INFRACAO_AMBIENTAL</code>, <code>CONDUTA_ADMINISTRATIVA</code> ou <code>EMISSAO_GEE</code>). Sem filtro, a lista permanece completa; com filtro, somente empresas com movimentação da categoria entram na lista e na contagem da paginação. A ordem continua pela data da movimentação mais recente da empresa e pelo CNPJ, sem filtro por sentido ([IND01], [IND03]).</br></td></tr>
+</table>
+
+
+<br></br>
+
+<table>
+    <tr>
+        <td><b>Nome:</b> UC19 — Analisar Panorama de Dados.</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Exibir totais e gráficos do conjunto de empresas selecionado, para que o usuário analise a agenda ambiental sem ler registro a registro. ([RF37])</td>
+    </tr>
+    <tr>
+        <td><b>Ator(es):</b> Usuário.</td>
+        <td><b>Ator(es) Secundário(s):</b> Não há.</td>
+    </tr>
+    <tr>
+        <td colspan="2"><b>Pré-condições:</b> O usuário deve estar com sessão ativa.</td>
+    </tr>
+	<tr>
+        <td colspan="2"><b>Fluxo Normal:</b>
+		<br>1 - O usuário aplica critérios na pesquisa (UC08).</br>
+		<br>2 - O sistema exibe os totais e os gráficos do conjunto filtrado.</br>
+		<br>3 - O usuário passa o ponteiro ou toca em um valor, e o sistema mostra a dica em frase.</br>
+		<br>4 - Este caso de uso finaliza aqui.</br></td></tr>
+	<tr>
+        <td colspan="2"><b>Fluxos Alternativos:</b>
+		<br>2.1 - Conjunto abaixo do mínimo: o sistema omite médias e faixas de índice e de confiança e mantém as contagens.</br>
+		<br>2.2 - Dimensão sem dados: o card explica a ausência, com ícone, sem gráfico vazio.</br>
+		<br>3.1 - Tabela: o usuário troca o gráfico pela tabela com os mesmos números.</br></td></tr>
+	<tr>
+        <td colspan="2"><b>Pós-condições:</b> Panorama exibido, sem alterar dados.</td></tr>
+	<tr>
+        <td colspan="2"><b>Regras de Negócio:</b>
+		<br>1 - O panorama usa os mesmos critérios da pesquisa, e a tela principal mostra um resumo dos totais da base.</br>
+		<br>2 - Nenhum gráfico lista ou ordena empresas por índice, multa ou número de evidências ([IND03]).</br>
+		<br>3 - O mínimo de empresas é o mesmo do UC10, regra 4, para nenhuma média revelar o índice de uma empresa.</br>
+		<br>4 - Índice e confiança ficam separados, e os ODS não se combinam (UC07, regra 4).</br>
+		<br>5 - <code>UNKNOWN</code> e "nada encontrado" nunca aparecem como nota negativa nem positiva ([IND02]).</br>
+		<br>6 - Cores não indicam bom ou ruim ([IND01]), e cada valor existe também em tabela ([NFIN01]).</br>
+		<br>7 - Categorias pequenas são agrupadas em "Outros", e período sem valor fica ausente, nunca como zero.</br>
+		<br>8 - A tela informa que os números se referem às empresas da base, que foi formada por empresas com registros.</br></td></tr>
 </table>
 
 <br></br>
@@ -1287,9 +1334,9 @@ A justificativa das decisões arquiteturais segundo a ISO/IEC 25010:2023 está e
 ### 8.6.1 Nível 1 — Contexto
 
 O diagrama 9 situa o BIOS entre seus usuários e os sistemas externos com os quais se integra:
-o usuário consulta, filtra e exporta empresas via HTTPS; sistemas de terceiros consomem a API
+o usuário consulta, filtra e exporta empresas via HTTPS; sistemas de terceiros e CRMs consomem a API
 pública com chave de API; o BIOS consome BrasilAPI/OpenCNPJ/Minha Receita, IBGE, IBAMA (lote diário),
-CGU (CEIS/CNEP) e GHG Protocol (best-effort), e envia e-mails por servidor SMTP.
+CGU (CEIS/CNEP), GHG Protocol (best-effort) e ViaCEP, e envia e-mails por servidor SMTP.
 
 <p align="center"><b>Diagrama 9 - C4 Nível 1: Contexto</b></p>
 
@@ -1305,7 +1352,8 @@ O diagrama 10 detalha os contêineres do BIOS:
 
 | Contêiner | Tecnologia | Responsabilidade |
 | --- | --- | --- |
-| Front-end BIOS | Angular | SPA de consulta, filtros, ranking, explicação do score, exportação e painel de conta. |
+| Front-end BIOS | Angular | SPA de consulta, filtros, panorama, gráficos, explicação do índice, exportação e painel de conta. |
+| Versão de apresentação | Angular + Vercel | Mesmo front-end, com a API simulada no navegador e base estática, sem servidor. Entrada direta em `/demonstracao`. |
 | `bios-core-api` | NestJS/TypeScript | Orquestração, API pública, contas e chaves de API, busca e filtros, explicabilidade e exportação XLSX. Hospeda também os módulos de ingestão e os consumidores de fila descritos abaixo. |
 | Ingestão cadastral (módulos do core) | NestJS/TypeScript + BullMQ | Adapter `ReceitaDataSource` com cadeia de fallback BrasilAPI → OpenCNPJ → Minha Receita; CNAE via IBGE. Consumidor da fila `company-profile`. |
 | Ingestão ambiental (módulos do core) | NestJS/TypeScript + BullMQ | Adapters `IbamaDataSource` e `CguDataSource`; normaliza evidências e calcula índice e confiança por ODS. |

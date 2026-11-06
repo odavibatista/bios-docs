@@ -350,7 +350,7 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Ator(es):** | Usuário. |
 | **Casos de uso:** | UC05. |
 | **Necessidade (história de usuário):** | HU07. |
-| **Requisitos associados:** | [RF02], [RF28]. |
+| **Requisitos associados:** | [RF02], [RF28], [RF38], [RF39]. |
 | **Requisito:** | (a) Quando o usuário autenticado alterar o nome ou o endereço, o sistema deve gravar os dados, com o endereço armazenado de forma cifrada.<br>(b) Quando o usuário autenticado alterar o e-mail informando a senha atual, o sistema deve enviar um link de confirmação ao novo endereço, efetivando a troca somente após a confirmação ([RF28]). |
 | **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário autenticado alterar o nome ou o endereço · **Sujeito:** o sistema · **Ação:** deve gravar · **Objeto:** os dados · **Restrição:** com o endereço armazenado de forma cifrada<br>(b) **Condição:** Quando o usuário autenticado alterar o e-mail informando a senha atual · **Sujeito:** o sistema · **Ação:** deve enviar · **Objeto:** um link de confirmação ao novo endereço · **Restrição:** efetivando a troca somente após a confirmação ([RF28]) |
 
@@ -412,9 +412,9 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Casos de uso:** | UC16. |
 | **Necessidade (história de usuário):** | HU32. |
 | **Requisitos associados:** | [RF16], [RF17]. |
-| **Requisito:** | Quando um CRM de terceiros enviar uma lista de CNPJs com chave de API ativa, o sistema deve retornar o perfil ambiental de cada pessoa jurídica (dados cadastrais, índice, confiança e evidências) em formato de importação de contas, sem exportar dado de contato nem dado pessoal de indivíduo ([INL02]). |
-| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando um CRM de terceiros enviar uma lista de CNPJs com chave de API ativa · **Sujeito:** o sistema · **Ação:** deve retornar · **Objeto:** o perfil ambiental de cada pessoa jurídica (dados cadastrais, índice, confiança e evidências) · **Restrição:** em formato de importação de contas; sem exportar dado de contato nem dado pessoal de indivíduo ([INL02]) |
-| **Observações:** | Requisito bônus: entra apenas se houver folga no cronograma após a entrega dos requisitos essenciais e importantes, e não compõe o escopo mínimo do MVP. |
+| **Requisito:** | Quando um CRM de terceiros enviar uma lista de CNPJs com chave de API ativa, o sistema deve retornar o perfil ambiental de cada cadastro (dados cadastrais, índice, confiança e evidências) em formato de importação de contas, sem exportar dado de contato nem endereço de rua ([INL02]). |
+| **Decomposição (ISO/IEC/IEEE 29148):** | **Condição:** Quando um CRM de terceiros enviar uma lista de CNPJs com chave de API ativa · **Sujeito:** o sistema · **Ação:** deve retornar · **Objeto:** o perfil ambiental de cada cadastro (dados cadastrais, índice, confiança e evidências) · **Restrição:** em formato de importação de contas; sem exportar dado de contato nem endereço de rua ([INL02]) |
+| **Observações:** | Requisito bônus, fora do escopo mínimo do MVP. As evidências vão como contagem por categoria; o detalhe fica em [RF17]. Cada lote aceita até 20 CNPJs, e cada CNPJ tem estado próprio (UC16). |
 
 
 <p align="center"><b>[RF32] Renovar sessão</b></p>
@@ -452,4 +452,68 @@ Heurísticas de redação aplicadas a todos os RF:
 | **Requisitos associados:** | [RF02], [RF10], [RF11], [RF12], [RF33]. |
 | **Requisito:** | (a) Quando o usuário concluir o login sem destino guardado, o sistema deve exibir a tela principal.<br>(b) Quando o usuário com sessão ativa abrir a tela principal, o sistema deve exibir a lista paginada das empresas com movimentação registrada, da mais recente para a mais antiga, com até 100 itens por página.<br>(c) Para cada empresa da lista, o sistema deve exibir razão social, nome fantasia, município, UF e, por ODS, o sentido, a causa e a data da última movimentação, com o índice e a confiança atuais em campos separados.<br>(d) Quando o usuário selecionar uma empresa da lista, o sistema deve exibir o perfil ambiental dela. |
 | **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário concluir o login sem destino guardado · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** a tela principal<br>(b) **Condição:** Quando o usuário com sessão ativa abrir a tela principal · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** a lista paginada das empresas com movimentação registrada · **Restrição:** da mais recente para a mais antiga, com até 100 itens por página<br>(c) **Condição:** Para cada empresa da lista · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** razão social, nome fantasia, município, UF e, por ODS, o sentido, a causa e a data da última movimentação, com o índice e a confiança atuais · **Restrição:** em campos separados<br>(d) **Condição:** Quando o usuário selecionar uma empresa da lista · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** o perfil ambiental dela |
-| **Observações:** | A forma de exibir a movimentação é limitada por [IND01], [IND02] e [IND03]. Filtros por ODS, UF e setor ficam como evolução; o modelo de dados os comporta sem migração (`14-Projeto-e-Arquitetura.md`, seção 4.4). |
+| **Observações:** | A forma de exibir a movimentação é limitada por [IND01], [IND02] e [IND03]. O filtro opcional por categoria da evidência seleciona empresas com movimentação dessa categoria e pagina somente o conjunto filtrado (UC18, regra 10). Filtros por ODS, UF e setor ficam como evolução; o modelo de dados os comporta sem migração (`14-Projeto-e-Arquitetura.md`, seção 4.4). |
+
+
+<p align="center"><b>[RF35] Exibir gráficos no perfil da empresa</b></p>
+
+| Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário. |
+| **Casos de uso:** | UC07. |
+| **Necessidade (história de usuário):** | HU37. |
+| **Requisitos associados:** | [RF07], [RF08], [RF10], [RF11], [RF12], [RF30]. |
+| **Requisito:** | (a) Quando o usuário abrir o perfil de uma empresa com evidência confirmada, o sistema deve exibir a linha do tempo das evidências, por ano e por tipo de evidência.<br>(b) Quando um índice tiver contribuições, o sistema deve exibir a composição desse índice, com os pontos de cada evidência.<br>(c) Quando o usuário abrir o perfil de uma empresa, o sistema deve exibir o resultado da consulta a cada fonte: encontrado, nada encontrado ou sem resposta.<br>(d) Quando tipo de infração, bioma ou gravidade tiverem duas categorias ou mais, o sistema deve exibir um gráfico de distribuição dessa dimensão.<br>(e) Quando o setor da empresa tiver média publicada, o sistema deve marcar essa média no medidor do índice, sem ordenar empresas. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário abrir o perfil de uma empresa com evidência confirmada · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** a linha do tempo das evidências · **Restrição:** por ano e por tipo de evidência<br>(b) **Condição:** Quando um índice tiver contribuições · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** a composição desse índice · **Restrição:** com os pontos de cada evidência<br>(c) **Condição:** Quando o usuário abrir o perfil de uma empresa · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** o resultado da consulta a cada fonte · **Restrição:** encontrado, nada encontrado ou sem resposta<br>(d) **Condição:** Quando tipo de infração, bioma ou gravidade tiverem duas categorias ou mais · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** um gráfico de distribuição dessa dimensão<br>(e) **Condição:** Quando o setor da empresa tiver média publicada · **Sujeito:** o sistema · **Ação:** deve marcar · **Objeto:** essa média no medidor do índice · **Restrição:** sem ordenar empresas |
+| **Observações:** | Limitado por [IND01] e [IND02]. "Nada encontrado" não é evidência positiva. Dimensão com uma só categoria aparece como texto, porque um gráfico de uma fatia não informa nada. Cores não indicam bom ou ruim. Gráfico de proporção mostra o percentual de cada parte sem depender de hover. |
+
+
+<p align="center"><b>[RF36] Exibir a evolução do índice da empresa</b></p>
+
+| Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário. |
+| **Casos de uso:** | UC07. |
+| **Necessidade (história de usuário):** | HU38. |
+| **Requisitos associados:** | [RF10], [RF12], [RF33], [RF35]. |
+| **Requisito:** | (a) Quando o usuário abrir o perfil de uma empresa com evidências datadas em dois anos ou mais, o sistema deve exibir, por ODS, um gráfico em degraus do índice, reconstruído com as regras vigentes a partir das evidências atuais.<br>(b) Quando o sistema exibir um degrau, ele deve informar a data e a evidência que o causou.<br>(c) Quando o sistema exibir a evolução, ele deve informar que a série é reconstruída.<br>(d) Quando o cadastro for de empresário individual, o sistema não deve exibir a evolução, e sim uma mensagem com ícone que explique o motivo.<br>(e) Quando as evidências datadas estiverem em menos de dois anos, o sistema deve exibir uma mensagem com ícone que explique o motivo. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário abrir o perfil de uma empresa com evidências datadas em dois anos ou mais · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** por ODS, um gráfico em degraus do índice · **Restrição:** reconstruído com as regras vigentes a partir das evidências atuais<br>(b) **Condição:** Quando o sistema exibir um degrau · **Sujeito:** ele [o sistema] · **Ação:** deve informar · **Objeto:** a data e a evidência que o causou<br>(c) **Condição:** Quando o sistema exibir a evolução · **Sujeito:** ele [o sistema] · **Ação:** deve informar · **Objeto:** que a série é reconstruída<br>(d) **Condição:** Quando o cadastro for de empresário individual · **Sujeito:** o sistema · **Ação:** não deve exibir · **Objeto:** a evolução · **Restrição:** exibindo uma mensagem com ícone que explique o motivo<br>(e) **Condição:** Quando as evidências datadas estiverem em menos de dois anos · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** uma mensagem com ícone · **Restrição:** que explique o motivo |
+| **Observações:** | Limitado por [IND03], item (d), e pela segunda exceção à nota do [IA05]. A série é calculada na leitura e não é gravada. O empresário individual é identificado pela natureza jurídica `2135`. Na base de novembro de 2026, 18.830 empresas têm a evolução, todas no ODS 15. Ainda no ODS 15, 20.991 são de empresário individual, 66.905 têm evidências em um só ano ou que não formam dois degraus, e 3.646 não têm evidência datada. No ODS 13, nenhuma empresa tem série: as evidências de cada uma não formam dois degraus. |
+
+
+<p align="center"><b>[RF37] Exibir panorama de dados</b></p>
+
+| Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário. |
+| **Casos de uso:** | UC19, UC08, UC18. |
+| **Necessidade (história de usuário):** | HU39. |
+| **Requisitos associados:** | [RF10], [RF11], [RF13], [RF30], [RF34]. |
+| **Requisito:** | (a) Quando o usuário aplicar critérios na pesquisa, o sistema deve exibir os totais e os gráficos do conjunto filtrado: cadastros por situação, porte, natureza jurídica, UF e setor; evidências por bioma, tipo de infração, sanção e ano; e faixas de índice e de confiança por ODS.<br>(b) Quando o usuário abrir a tela principal, o sistema deve exibir um resumo dos totais da base.<br>(c) Quando o sistema exibir um gráfico, ele deve oferecer a tabela com os mesmos números e uma dica em frase para cada valor.<br>(d) Quando o conjunto filtrado tiver menos empresas que o mínimo configurado (padrão: 5), o sistema deve omitir médias e faixas de índice e de confiança, mantendo as contagens.<br>(e) Quando o sistema exibir o panorama, ele deve informar que os números se referem às empresas da base. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário aplicar critérios na pesquisa · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** os totais e os gráficos do conjunto filtrado<br>(b) **Condição:** Quando o usuário abrir a tela principal · **Sujeito:** o sistema · **Ação:** deve exibir · **Objeto:** um resumo dos totais da base<br>(c) **Condição:** Quando o sistema exibir um gráfico · **Sujeito:** ele [o sistema] · **Ação:** deve oferecer · **Objeto:** a tabela com os mesmos números e uma dica em frase para cada valor<br>(d) **Condição:** Quando o conjunto filtrado tiver menos empresas que o mínimo configurado · **Sujeito:** o sistema · **Ação:** deve omitir · **Objeto:** médias e faixas de índice e de confiança · **Restrição:** mantendo as contagens<br>(e) **Condição:** Quando o sistema exibir o panorama · **Sujeito:** ele [o sistema] · **Ação:** deve informar · **Objeto:** que os números se referem às empresas da base |
+| **Observações:** | Limitado por [IND01], [IND02], [IND03] e [INL02]. O panorama não lista nem ordena empresas por índice, multa ou número de evidências. A base foi formada por empresas com registros, então os números não representam todas as empresas do Brasil. Multas aparecem como valor lançado, não como valor pago. Gráfico de proporção mostra o percentual de cada parte sem depender de hover. |
+
+<p align="center"><b>[RF38] Selecionar o município pela UF</b></p>
+
+| Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário. |
+| **Casos de uso:** | UC05, UC08. |
+| **Necessidade (história de usuário):** | HU40. |
+| **Requisitos associados:** | [RF13], [RF26], [RF39]. |
+| **Requisito:** | (a) Enquanto nenhuma UF estiver selecionada, o sistema deve manter o campo de município desabilitado, na pesquisa e no endereço da conta.<br>(b) Quando o usuário selecionar uma UF, o sistema deve habilitar o campo de município e oferecer somente os municípios dessa UF.<br>(c) Quando o usuário digitar no campo de município, o sistema deve filtrar as opções pelo trecho digitado, sem distinguir acento nem caixa.<br>(d) Quando o usuário trocar a UF, o sistema deve limpar o município selecionado. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Enquanto nenhuma UF estiver selecionada · **Sujeito:** o sistema · **Ação:** deve manter desabilitado · **Objeto:** o campo de município · **Restrição:** na pesquisa e no endereço da conta<br>(b) **Condição:** Quando o usuário selecionar uma UF · **Sujeito:** o sistema · **Ação:** deve habilitar e oferecer · **Objeto:** o campo de município · **Restrição:** somente os municípios dessa UF<br>(c) **Condição:** Quando o usuário digitar no campo de município · **Sujeito:** o sistema · **Ação:** deve filtrar · **Objeto:** as opções · **Restrição:** pelo trecho digitado, sem distinguir acento nem caixa<br>(d) **Condição:** Quando o usuário trocar a UF · **Sujeito:** o sistema · **Ação:** deve limpar · **Objeto:** o município selecionado |
+| **Observações:** | As 27 UFs e os 5.571 municípios vêm do IBGE e ficam em disco, em `ibge_states` e `ibge_cities`, e na base da versão de apresentação. Nenhuma consulta externa acontece a cada uso. Na base de novembro de 2026, 13 dos 4.941 locais registrados usam grafia diferente da do IBGE (230 empresas, como `PARATI` e `BRASOPOLIS`), e 11 empresas estão em `EXTERIOR`. A pesquisa casa pelo código IBGE, com uma tabela de sinônimos para essas grafias, para nenhuma empresa ficar inalcançável. |
+
+
+<p align="center"><b>[RF39] Completar o endereço pelo CEP</b></p>
+
+| Prioridade: | ☐ Essencial / ☑ Importante / ☐ Desejável |
+| :----------- | :----------- |
+| **Ator(es):** | Usuário, Fontes Externas. |
+| **Casos de uso:** | UC05. |
+| **Necessidade (história de usuário):** | HU41. |
+| **Requisitos associados:** | [RF26], [RF38]. |
+| **Requisito:** | (a) Quando o usuário informar um CEP de 8 dígitos no endereço da conta, o sistema deve preencher logradouro, bairro, UF e município com os dados desse CEP.<br>(b) Quando o CEP não for encontrado, o sistema deve informar o usuário e manter os campos para preenchimento manual.<br>(c) Quando a consulta não responder em até 3 (três) segundos, o sistema deve liberar o preenchimento manual, sem impedir a gravação.<br>(d) Quando o sistema preencher o endereço, ele deve manter todos os campos editáveis. |
+| **Decomposição (ISO/IEC/IEEE 29148):** | (a) **Condição:** Quando o usuário informar um CEP de 8 dígitos no endereço da conta · **Sujeito:** o sistema · **Ação:** deve preencher · **Objeto:** logradouro, bairro, UF e município · **Restrição:** com os dados desse CEP<br>(b) **Condição:** Quando o CEP não for encontrado · **Sujeito:** o sistema · **Ação:** deve informar e manter · **Objeto:** o usuário; os campos · **Restrição:** para preenchimento manual<br>(c) **Condição:** Quando a consulta não responder em até 3 (três) segundos · **Sujeito:** o sistema · **Ação:** deve liberar · **Objeto:** o preenchimento manual · **Restrição:** sem impedir a gravação<br>(d) **Condição:** Quando o sistema preencher o endereço · **Sujeito:** ele [o sistema] · **Ação:** deve manter · **Objeto:** todos os campos · **Restrição:** editáveis |
+| **Observações:** | A consulta usa o ViaCEP (`14-Projeto-e-Arquitetura.md`, seção 1) e envia somente o CEP, sem dado da conta. Número e complemento nunca são preenchidos. O município é vinculado pelo código IBGE que o ViaCEP devolve, conferido em `ibge_cities`. Na versão de apresentação, que não tem API, o navegador consulta o ViaCEP diretamente, e o rodapé informa essa exceção. |

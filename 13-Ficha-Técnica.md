@@ -138,7 +138,8 @@
 | Fonte | Protocolo/Formato | Observação |
 |---|---|---|
 | BrasilAPI / OpenCNPJ / Minha Receita | HTTPS + JSON | REST, sem autenticação; cadeia de fallback nessa ordem |
-| IBGE (`servicodados.ibge.gov.br`) | HTTPS + JSON | REST, sem autenticação |
+| IBGE (`servicodados.ibge.gov.br`) | HTTPS + JSON | REST, sem autenticação; UFs e municípios só na carga inicial, depois em disco |
+| ViaCEP (`viacep.com.br`) | HTTPS + JSON | REST, sem autenticação; só o CEP, com prazo de 3 segundos e preenchimento manual em caso de falha |
 | IBAMA — Dados Abertos | HTTPS + JSON | API CKAN (Action API), sem autenticação |
 | CGU — Portal da Transparência (CEIS/CNEP) | HTTPS + JSON | REST, autenticação por chave de API em header |
 | GHG Protocol — Registro Público de Emissões | HTTPS + JSON/PDF | **Exceção documentada** — catálogo público usado pelo portal (sem contrato REST oficial estável) e download do relatório PDF; o CNPJ e o ano do relatório confirmam a identidade |

@@ -6,11 +6,16 @@
 | --- | --- | --- | --- | --- |
 | Receita Federal (cadastro/CNAE) | Espelho comunitário dos dumps abertos da RFB, sem API institucional | `GET brasilapi.com.br/api/cnpj/v1/{cnpj}` (principal); `GET api.opencnpj.org/{cnpj}` (1º fallback); `GET minhareceita.org/{cnpj}` (fallback final) | Nenhuma | Síncrono sob demanda, com cache |
 | IBGE (CNAE — apoio) | API pública oficial | `GET servicodados.ibge.gov.br/api/v2/cnae/...` | Nenhuma | Síncrono sob demanda, com cache |
+| IBGE (UFs e municípios) | API pública oficial | `GET servicodados.ibge.gov.br/api/v1/localidades/...` | Nenhuma | Carga única em `ibge_states` e `ibge_cities`, sem consulta em tempo de execução |
+| ViaCEP (endereço do usuário) | API pública | `GET viacep.com.br/ws/{cep}/json/` | Nenhuma | Síncrono sob demanda, com prazo de 3 segundos e cache |
 | IBAMA (autuações e embargos) | Dados abertos (CKAN) | Dumps CSV/JSON/XML em URL fixa por recurso, hospedados no armazenamento do IBAMA (`.zip` de CSVs por ano para os autos; `.csv` para os embargos) — **sem endpoint de consulta por CNPJ** | Nenhuma | Batch assíncrono (job diário) |
 | CGU — Portal da Transparência (CEIS/CNEP) | API REST oficial (Swagger documentado) | `GET api.portaldatransparencia.gov.br/api-de-dados/ceis` e `/cnep`, paginado, filtro por CNPJ | Header `chave-api-dados`, token gratuito via conta gov.br | Sob demanda pela fila ambiental, com cache e espera limitada |
 | GHG Protocol — Registro Público de Emissões | Serviços públicos usados pelo portal, sem contrato REST oficial estável | Cadastro de organizações em `registropublicodeemissoesapi.fgv.br` (busca paginada por `POST`) e relatório PDF em `sistema-registropublicodeemissoesapi.fgv.br` | Nenhuma | Fallback best-effort na fila exclusiva `ghg-inventory`, com prazo próprio |
 
 Observações por fonte:
+
+- **IBGE, UFs e municípios**: a lista muda raramente e é consultada a cada digitação, então fica em disco. O código IBGE é a chave: o nome serve para exibir e buscar. Grafias diferentes da base (13 locais, 230 empresas, em novembro de 2026) ficam numa tabela de sinônimos, e `EXTERIOR` continua fora da lista de UFs.
+- **ViaCEP**: recebe somente o CEP, nunca dado da conta. A API do BIOS faz a consulta, e a versão de apresentação, que não tem API, chama o serviço direto do navegador. Serviço fora do ar nunca impede a gravação: o usuário preenche o endereço à mão ([RF39]).
 
 - **Receita Federal**: nenhum dos três provedores é institucional — todos são projetos comunitários que espelham o dump aberto da RFB. A cadeia de fallback (BrasilAPI → OpenCNPJ → Minha Receita) é obrigatória, não redundância opcional: a Minha Receita só é consultada quando nem a BrasilAPI nem o OpenCNPJ retornam dados. O retorno da BrasilAPI já cobre RF05 e RF06 numa única chamada (situação cadastral, porte, endereço, CNAE principal e secundários com descrição).
 - **IBAMA**: não existe consulta por CNPJ ao vivo nessa fonte. O MVP ingere apenas os dois recursos principais — auto de infração e termo de embargo —, cada um já carregando o documento (CPF/CNPJ) do autuado/interessado na própria linha. Os recursos auxiliares (enquadramento legal, coordenadas, bioma, espécime, anexos) ficam fora do MVP: uma auditoria de dados feita por contribuição da sociedade civil ao 5º Plano de Ação de Governo Aberto documentou ausência de chave primária confiável para cruzar esses recursos entre si (contagens de registro divergentes entre tabelas relacionadas extraídas na mesma data, formatos de número de processo inconsistentes). Tentar reconstruir o quadro completo joinando tudo é risco de estouro de prazo, não de dificuldade de código. Em outubro de 2026, o dump dos autos tem cerca de 712 mil linhas em 48 CSVs (720 MB descompactados) e o dos embargos, cerca de 117 mil (210 MB), em CSV com separador `;`, UTF-8 e campos de texto com quebras de linha. A maioria é de pessoa física (CPF): do total de linhas, só cerca de 31% dos autos e 15% dos embargos são de empresa. O rótulo de tipo de pessoa dos autos é inconsistente (há linhas `PJ` com CPF no documento) e os embargos não o trazem; por isso o descarte de pessoa física decide pelo documento (só CNPJ válido entra), e não pelo rótulo ([INL02]). O número público do documento (número e série) não é único no dump, e os documentos emitidos desde outubro de 2019 têm número alfanumérico e nenhuma série.
@@ -312,10 +317,27 @@ Decisões de projeto:
   quando o BIOS leu o dado, e todas as sanções antigas apareceriam como se fossem do dia da leitura. Ele é
   idempotente e nunca altera movimentação já registrada.
 
+O filtro opcional por categoria da evidência lê `ods_movements.evidence_category` na projeção
+existente e aplica a mesma condição à lista e à contagem; a ordenação permanece por `moved_at` da
+empresa e CNPJ. Não há filtro por sentido da mudança ([IND01], [IND03]).
+
 Evolução prevista, sem migração de dados: filtros por ODS, UF e setor (índice composto em
 `ods_movements.ods_number` e campos de localização desnormalizados, como em `company_ods_scores`) e aviso
-ao usuário sobre empresas acompanhadas, lendo a mesma coleção. Um histórico por empresa não é evolução
-prevista: exigiria rever o [IND03] e a nota do [IA05].
+ao usuário sobre empresas acompanhadas, lendo a mesma coleção.
+
+### 4.5 Evolução por empresa e panorama (RF35, RF36, RF37)
+
+- **Evolução sem histórico gravado.** A série do [RF36] é calculada na leitura: as regras vigentes do índice
+  são reaplicadas às evidências atuais em cada data de evidência. `company_movements` e
+  `company_ods_scores` não mudam. Registros que a fonte retirou não entram, por isso a tela informa que a
+  série é reconstruída.
+- **Fora da evolução:** cadastros com natureza jurídica `2135` e cadastros com evidências datadas em menos
+  de dois anos. A resposta informa o motivo, e a tela o explica com ícone.
+- **Gráficos do perfil.** Linha do tempo, resultado por fonte e distribuições saem das evidências do perfil
+  completo, e a composição sai da explicação do índice ([RF12]).
+- **Panorama.** Usa os critérios da pesquisa e agrega cadastros, evidências e índices. Médias e faixas
+  seguem o mínimo de empresas do UC10, regra 4. A versão de apresentação calcula os mesmos agregados sobre a
+  base estática.
 
 ## 5. Estados de evidência — decisão
 

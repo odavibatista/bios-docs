@@ -183,7 +183,7 @@ Table users {
   email_encrypted varchar [note: 'E-mail cifrado com AES-256']
   email_hash varchar [note: 'Índice cego: hash determinístico do e-mail normalizado, usado no login e na verificação de unicidade']
   password_encrypted varchar [note: 'Hash bcrypt da senha, cifrado com AES-256']
-  address_encrypted varchar [null, note: 'Endereço completo serializado e cifrado com AES-256']
+  address_encrypted varchar [null, note: 'Endereço completo serializado e cifrado com AES-256, com o código IBGE do município (RF38)']
   encryption_key_version int [default: 1, note: 'Versão da chave AES usada nos campos cifrados deste documento']
   role user_role [default: 'USER']
   is_active boolean [default: false, note: 'Falso até a confirmação do e-mail (RF28)']
@@ -376,6 +376,33 @@ Table ods {
   }
 }
 
+Table ibge_states {
+  id_ibge_state int [primary key, note: 'Código IBGE da UF']
+  acronym varchar [note: 'Sigla da UF (2 caracteres)']
+  name varchar
+
+  Note: 'Catálogo das 27 UFs, carregado uma vez a partir do IBGE (RF38).'
+
+  Indexes {
+    acronym [unique, name: 'idx_ibge_states_acronym']
+  }
+}
+
+Table ibge_cities {
+  id_ibge_city int [primary key, note: 'Código IBGE do município']
+  ibge_state_id int [ref: > ibge_states.id_ibge_state]
+  name varchar
+  search_name varchar [note: 'Nome sem acento e em maiúsculas, para a busca do seletor']
+  aliases varchar[] [note: 'Grafias alternativas encontradas nas fontes, como PARATI e BRASOPOLIS']
+
+  Note: 'Catálogo dos 5.571 municípios, carregado uma vez a partir do IBGE. Liga o endereço do usuário e o filtro da pesquisa à UF (RF38, RF39).'
+
+  Indexes {
+    (ibge_state_id, search_name) [name: 'idx_ibge_cities_state_search']
+    aliases [name: 'idx_ibge_cities_aliases']
+  }
+}
+
 Table data_sources {
   id_data_source objectid [primary key]
   slug varchar [note: 'Identificador estável usado pelos adapters (ex.: BRASIL_API, OPEN_CNPJ, MINHA_RECEITA, IBGE_CNAE, IBAMA, CGU_CEIS, CGU_CNEP, GHG_PROTOCOL)']
@@ -543,6 +570,8 @@ Table company_profile {
   registration_status varchar [note: 'Situação cadastral na Receita Federal, em conjunto fechado: ATIVA, SUSPENSA, INAPTA, BAIXADA, NULA ou NAO_RECONHECIDA']
   registration_status_unrecognized varchar [null, note: 'Situação informada pelo provedor, como veio, quando não está no conjunto (NAO_RECONHECIDA)']
   company_size varchar [null, note: 'Porte']
+  legal_nature_code varchar [null, note: 'Código da natureza jurídica na Receita; 2135 é empresário individual']
+  legal_nature varchar [null, note: 'Descrição da natureza jurídica']
   address company_address
   main_cnae company_cnae
   secondary_cnaes company_cnae[] [null]
@@ -565,6 +594,16 @@ Table company_profile {
 // -----------------------------------------------------------------------------
 // Índices de aderência
 // -----------------------------------------------------------------------------
+
+Table company_removals {
+  id_company_removal objectid [primary key]
+  cnpj varchar [note: 'CNPJ retirado a pedido do titular; só o suficiente para não coletar de novo']
+  removed_at timestamp
+
+  Indexes {
+    cnpj [unique, name: 'idx_company_removals_cnpj']
+  }
+}
 
 Table score_contribution {
   evidence_id objectid [ref: > evidence_normalized.id_evidence]
@@ -631,6 +670,7 @@ Table company_movements {
   Indexes {
     cnpj [unique, name: 'idx_company_movements_cnpj']
     (moved_at, cnpj) [name: 'idx_company_movements_moved_at_cnpj']
+    (`ods_movements.evidence_category`, moved_at, cnpj) [name: 'idx_company_movements_category_moved_at_cnpj']
   }
 }
 
@@ -676,6 +716,8 @@ TableGroup seguranca_e_auditoria {
 TableGroup catalogos {
   ods
   data_sources
+  ibge_states
+  ibge_cities
 }
 
 TableGroup ingestao {

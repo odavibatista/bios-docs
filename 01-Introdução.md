@@ -13,6 +13,18 @@ pretende-se apoiar a tomada de decisão de profissionais de negócios, de susten
 pesquisadores, imprensa e órgãos públicos, sem incorrer nos riscos éticos e de privacidade
 próprios de ferramentas de prospecção comercial tradicionais.
 
+Entre as finalidades previstas estão verificações em processos de KYC (*Know Your Customer*) e
+KYE (*Know Your Employee*). O KYE serve principalmente à contratação de prestadores PJ: o BIOS
+alcança o prestador somente quando ele tem cadastro próprio com CNPJ, como empresário individual.
+O BIOS apresenta as evidências desse cadastro, sem busca por CPF e sem transformar o índice em
+decisão automática ou veredito sobre uma pessoa ou empresa ([IND01], [INL02]). A seção
+[Avaliação de LGPD](16-Avaliação-LGPD.md) traz as regras desse uso.
+
+Os mesmos dados apoiam outras decisões de contratação, descritas na
+[seção 2.2](02-Visão-Geral-do-Produto-e-Projeto.md#22-principais-stakeholders-e-usuários): a
+diligência de órgãos públicos em licitações, terceirizações e privatizações e a escolha, por uma
+empresa, de parceiros alinhados à própria cultura ambiental.
+
 O sistema possibilitará que qualquer usuário autenticado consulte uma empresa por CNPJ ou por
 nome, obtendo um perfil consolidado com evidências categorizadas por fonte, um índice de
 aderência ambiental e um nível de confiança associado, sempre rastreável até sua origem.

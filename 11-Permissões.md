@@ -28,6 +28,8 @@ permissões nas quais ela está incluída.
 | `[P12]` Manter Blacklist de Domínios | | | | ✅ | |
 | `[P13]` Renovar Sessão | | | ✅ | ✅ | |
 | `[P14]` Acompanhar Movimentações | | | ✅ | ✅ | |
+| `[P15]` Retirar Cadastro a Pedido do Titular | | | | ✅ | |
+| `[P16]` Analisar Panorama de Dados | `[P06]` | | ✅ | ✅ | |
 
 ## 11.2 Correspondência com Casos de Uso
 
@@ -35,10 +37,10 @@ permissões nas quais ela está incluída.
 |---|---|---|
 | `[P01]` | UC01 | [RF01], [RF22], [RF28] |
 | `[P02]` | UC02, UC04 (recuperação) | [RF02], [RF19], [RF20], [RF25] |
-| `[P03]` | UC03, UC04 (alteração), UC05 | [RF23], [RF24], [RF26], [RF27] |
+| `[P03]` | UC03, UC04 (alteração), UC05 | [RF23], [RF24], [RF26], [RF27], [RF38], [RF39] |
 | `[P04]` | UC06 | [RF03], [RF04], [RF05], [RF06] |
 | `[P05]` | UC07 | [RF07]–[RF12] |
-| `[P06]` | UC08 | [RF13], [RF14] |
+| `[P06]` | UC08 | [RF13], [RF14], [RF38] |
 | `[P07]` | UC09 | [RF15] |
 | `[P08]` | UC10 | [RF30] |
 | `[P09]` | UC11 | [RF16] |
@@ -47,6 +49,8 @@ permissões nas quais ela está incluída.
 | `[P12]` | UC13 | [RF29] |
 | `[P13]` | UC17 | [RF32] |
 | `[P14]` | UC18 | [RF34] |
+| `[P15]` | Seção 16.5 da Avaliação de LGPD | [NFSE02] |
+| `[P16]` | UC19 | [RF37] |
 
 ## 11.3 Regras Complementares
 

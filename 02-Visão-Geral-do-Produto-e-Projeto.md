@@ -9,6 +9,12 @@ aderência a dois Objetivos de Desenvolvimento Sustentável (ODS) de natureza am
 tomada de decisão de profissionais de negócios, de sustentabilidade, pesquisadores, imprensa e
 órgãos públicos.
 
+O uso também abrange KYC e KYE, além de licitações, terceirizações e privatizações. No KYE, voltado
+principalmente à contratação de prestadores PJ, a consulta alcança a pessoa somente quando ela tem
+cadastro próprio com CNPJ. O índice não é veredito nem decisão automática sobre uma pessoa
+([IND01]), e a organização que consulta responde pela base legal do próprio processo
+([Avaliação de LGPD](16-Avaliação-LGPD.md)).
+
 Os usuários terão acesso ao sistema para consultar empresas por CNPJ ou nome, visualizar
 evidências categorizadas por fonte e por estado de confirmação, e compreender a composição de
 um índice de aderência ambiental por meio de sua explicação evidência a evidência. Essa
@@ -18,8 +24,11 @@ socioambiental consultado, evitando vereditos absolutos não sustentados por evi
 As metas do projeto incluem o desenvolvimento de uma interface simples e direta, que permita a
 qualquer usuário consultar uma empresa sem precisar compreender a estrutura das bases
 governamentais subjacentes. Além disso, o sistema deverá garantir a privacidade dos dados de
-seus próprios usuários e tratar exclusivamente dados públicos de pessoa jurídica, sem qualquer
-coleta de dado pessoal de indivíduo vinculado à empresa consultada.
+seus próprios usuários e limitar a consulta aos dados públicos do cadastro com CNPJ e às evidências
+da empresa. A razão social de empresário individual pode conter o nome do titular; sequências de
+CPF são mascaradas, e contatos e perfis de indivíduos não são buscados ([INL02], [NFSE02]).
+Manter os cadastros de empresários individuais na consulta e na pesquisa é uma decisão de produto
+(UC06, regra 11), e o titular pode pedir a remoção ([Avaliação de LGPD](16-Avaliação-LGPD.md)).
 
 ## 2.1 Problema
 
@@ -61,8 +70,28 @@ projeto/software.
 |---|---|---|
 | Responsável pelo Projeto | Supervisionar o desenvolvimento do projeto, garantir o cumprimento de prazos e requisitos, tomar decisões de escopo e arquitetura. | Davi Deosmar Batista Oliveira Miranda. |
 | Desenvolvedor | Implementar as funcionalidades do sistema (back-end, front-end, integrações e testes). | Davi Deosmar Batista Oliveira Miranda. |
-| Usuários | Consultar empresas por CNPJ ou nome, interpretar evidências e índices de aderência ambiental, filtrar e exportar listas de empresas. | Profissionais de negócios e de sustentabilidade/ESG; órgãos e agentes governamentais; imprensa; pesquisadores e estudantes; empresas interessadas em adequação às pautas ambientais. |
+| Usuários | Consultar empresas por CNPJ ou nome, interpretar evidências e índices de aderência ambiental, filtrar e exportar listas de empresas, inclusive para apoiar verificações de cadastro com CNPJ em KYC e KYE. | Profissionais de negócios e de sustentabilidade/ESG; equipes que verificam cadastros com CNPJ; órgãos e agentes governamentais; imprensa; pesquisadores e estudantes; empresas interessadas em adequação às pautas ambientais. |
 | Desenvolvedores Externos | Consumir a API pública do sistema para integração com sistemas próprios, mediante chave de API. | Desenvolvedores e sistemas de terceiros. |
+
+### Usos em decisões de contratação
+
+Em todos os casos abaixo, o BIOS reúne evidências públicas para a análise humana. Ele não substitui as
+consultas oficiais, não emite certidão e não decide quem contratar ([IND01]).
+
+| Uso | Quem usa | Como o BIOS ajuda |
+| --- | --- | --- |
+| Contratação de prestadores PJ (KYE) | Empresas que contratam pessoas com CNPJ próprio | Mostra autuações, sanções e situação cadastral do CNPJ do prestador |
+| Licitações e contratos públicos | Órgãos e entidades públicas, na habilitação e antes de contratar | Reúne CEIS, CNEP e autuações do IBAMA em uma consulta por CNPJ, como apoio à verificação nas fontes oficiais |
+| Terceirizações | Órgãos públicos e empresas | Avalia a empresa que assumirá um serviço, no início do contrato e nas prorrogações |
+| Privatizações, concessões e parcerias | Órgãos públicos, na diligência sobre participantes | Levanta o histórico ambiental público de quem disputa o ativo ou o serviço |
+| Alinhamento à cultura ambiental | Empresas que querem parceiros compatíveis com sua agenda verde | Permite comparar fornecedores e prestadores por índice e confiança, com a evidência de cada resultado |
+
+A Lei nº 14.133/2021 tem o desenvolvimento nacional sustentável entre seus princípios (art. 5º) e entre
+os objetivos da licitação (art. 11, IV), e o estudo técnico preliminar descreve os possíveis impactos
+ambientais da contratação (art. 18, § 1º, XII). A consulta ao CEIS e ao CNEP no momento de contratar
+continua sendo feita nas fontes oficiais (art. 91, § 4º): o BIOS mostra a última coleta, com a data, e
+não exclui ninguém de um certame. O índice não é critério de habilitação nem de julgamento: esses
+critérios vêm da lei e do edital.
 
 ## 2.3 Documento de Visão
 

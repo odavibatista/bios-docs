@@ -19,6 +19,8 @@ exposição ao usuário, formalizada como [RF30] (Desejável). Reportar evoluç�
 
 **Exceção delimitada à nota ([RF33], [RF34], [IND03]):** a tela principal mostra, por empresa, a **última** mudança do índice de cada ODS. Isso não reporta evolução, porque o risco acima vem de dois pontos que a tela trata: (a) a falta de controle sobre a causa, já que cada mudança aparece com a evidência que a provocou, e uma mudança nas regras de pontuação nem é registrada; (b) o ranking, já que a lista é só cronológica. O sistema não guarda nem exibe o índice anterior, o tamanho da variação ou uma série por empresa, e não apresenta a mudança como melhora ou piora de conduta. O [IA05] continua sendo reportado apenas por setor.
 
+**Segunda exceção delimitada à nota ([RF36], [IND03]):** o perfil de uma empresa mostra a evolução do índice em degraus. O risco da nota continua tratado pelos mesmos dois pontos: (a) a causa, porque cada degrau mostra a evidência que o provocou e a data; (b) o ranking, porque a evolução só aparece no perfil daquela empresa, sem número de variação nem comparação com outras. A série é reconstruída com as regras vigentes a partir das evidências atuais, e a tela informa isso. Ela é calculada na leitura e não é gravada, e o modelo de dados segue sem histórico por empresa. Cadastros de empresário individual ficam de fora, porque a curva ficaria ligada a uma pessoa. O [IA05] segue reportado por setor.
+
 ## 15.3 O que o BIOS não mede
 
 Por honestidade epistemológica (mesmo princípio das RIN, `07-Requisitos-Inversos.md`), ficam explicitamente fora do escopo de avaliação de impacto:
