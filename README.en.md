@@ -139,8 +139,8 @@ The project treats what the system **must not** do as a first-class requirement:
 | [01. Introduction](01-Introdução.md) | Goal, conventions, terms and abbreviations |
 | [02. Product and project overview](02-Visão-Geral-do-Produto-e-Projeto.md) | Problem, context, justification and goals |
 | [03. Related systems](03-Sistemas-Relacionados.md) | Current situation and existing solutions |
-| [04. Actors and user stories](04-Atores-e-Histórias-dos-Usuários.md) | Actors, profiles and 39 user stories |
-| [05. Functional requirements](05-Requisitos-Funcionais.md) | 37 requirements and writing heuristics |
+| [04. Actors and user stories](04-Atores-e-Histórias-dos-Usuários.md) | Actors, profiles and 41 user stories |
+| [05. Functional requirements](05-Requisitos-Funcionais.md) | 39 requirements and writing heuristics |
 | [06. Non-functional requirements](06-Requisitos-Nao-Funcionais.md) | 23 requirements by quality characteristic |
 | [07. Inverse requirements](07-Requisitos-Inversos.md) | 5 requirements on what the system must not do |
 | [08. Analysis artifacts](08-Artefatos-de-Análise.md) | 19 use cases, classes, sequences, data and C4 |
