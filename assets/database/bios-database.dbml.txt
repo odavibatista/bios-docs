@@ -118,6 +118,7 @@ Enum email_dispatch_status {
 Enum data_source_role {
   CADASTRAL [note: 'Dados cadastrais de pessoa jurídica (cadeia de fallback)']
   CNAE_TAXONOMY [note: 'Descrição de atividades econômicas']
+  ADDRESS_LOOKUP [note: 'Endereço a partir do CEP']
   EVIDENCE [note: 'Fonte de evidência ambiental ou de conduta']
 }
 
