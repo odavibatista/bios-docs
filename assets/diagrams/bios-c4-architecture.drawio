@@ -7,7 +7,7 @@
         <mxCell id="bios-ctx-t1" value="BIOS — Diagrama de Contexto (C4 Nível 1)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=22;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="-100" y="-120" width="1200" height="40" as="geometry" />
         </mxCell>
-        <object placeholders="1" c4Name="Usuário" c4Type="Pessoa" c4Description="Profissional de negócios ou ESG, órgão governamental, imprensa ou pesquisador que consulta, filtra e exporta empresas por critérios socioambientais" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-ctx-n2">
+        <object placeholders="1" c4Name="Usuário" c4Type="Pessoa" c4Description="Profissional de negócios ou ESG, órgão governamental, imprensa ou pesquisador que consulta, filtra, analisa em gráficos e exporta empresas" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-ctx-n2">
           <mxCell parent="1" style="html=1;fontSize=11;dashed=0;whiteSpace=wrap;fillColor=#083F75;strokeColor=#06315C;fontColor=#ffffff;shape=mxgraph.c4.person2;align=center;metaEdit=1;points=[[0.5,0,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0]];resizable=0;" vertex="1">
             <mxGeometry x="200" y="0" width="200" height="180" as="geometry" />
           </mxCell>
@@ -17,17 +17,22 @@
             <mxGeometry x="900" y="30" width="240" height="120" as="geometry" />
           </mxCell>
         </object>
+<object placeholders="1" c4Name="CRM do cliente" c4Type="Sistema Externo" c4Description="Importa em lote o perfil das contas por CNPJ, com chave de API" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-ctx-n12">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
+            <mxGeometry x="1200" y="30" width="240" height="120" as="geometry" />
+          </mxCell>
+        </object>
         <object placeholders="1" c4Name="BIOS" c4Type="Sistema de Software" c4Description="Consolida evidências ambientais públicas por CNPJ e calcula índice de aderência ambiental por ODS, com nível de confiança e explicabilidade" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-ctx-n4">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#1061B0;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0D5091;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry x="520" y="330" width="280" height="150" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="BrasilAPI / Minha Receita" c4Type="Sistema Externo" c4Description="Espelhos comunitários dos dados abertos do CNPJ da Receita Federal" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-ctx-n5">
+        <object placeholders="1" c4Name="BrasilAPI / OpenCNPJ / Minha Receita" c4Type="Sistema Externo" c4Description="Espelhos comunitários dos dados abertos do CNPJ da Receita Federal" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-ctx-n5">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry x="-100" y="720" width="240" height="120" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="IBGE — API de Classificações" c4Type="Sistema Externo" c4Description="Taxonomia e descrição de CNAE" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-ctx-n6">
+        <object placeholders="1" c4Name="IBGE — Classificações e Localidades" c4Type="Sistema Externo" c4Description="Descrição de CNAE; UFs e municípios só na carga inicial" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-ctx-n6">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry x="180" y="720" width="240" height="120" as="geometry" />
           </mxCell>
@@ -52,10 +57,18 @@
             <mxGeometry x="1300" y="720" width="240" height="120" as="geometry" />
           </mxCell>
         </object>
+<object placeholders="1" c4Name="ViaCEP" c4Type="Sistema Externo" c4Description="Endereço a partir do CEP; recebe só o CEP" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-ctx-n11">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
+            <mxGeometry x="1580" y="720" width="240" height="120" as="geometry" />
+          </mxCell>
+        </object>
         <mxCell id="bios-ctx-e11" value="&lt;b&gt;Consulta, filtra e exporta empresas&lt;/b&gt;&lt;div&gt;[HTTPS]&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="bios-ctx-n2" target="bios-ctx-n4">
           <mxGeometry x="0.0" relative="1" as="geometry" />
         </mxCell>
         <mxCell id="bios-ctx-e12" value="&lt;b&gt;Consome dados via API pública&lt;/b&gt;&lt;div&gt;[HTTPS/JSON, chave de API]&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="bios-ctx-n3" target="bios-ctx-n4">
+          <mxGeometry x="0.0" relative="1" as="geometry" />
+        </mxCell>
+<mxCell id="bios-ctx-e20" value="&lt;b&gt;Importa perfis em lote&lt;/b&gt;&lt;div&gt;[HTTPS/JSON, chave de API]&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" parent="1" source="bios-ctx-n12" target="bios-ctx-n4">
           <mxGeometry x="0.0" relative="1" as="geometry" />
         </mxCell>
         <mxCell id="bios-ctx-e13" value="&lt;b&gt;Consulta dados cadastrais&lt;/b&gt;&lt;div&gt;[HTTPS/JSON]&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.1429;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="bios-ctx-n4" target="bios-ctx-n5">
@@ -74,6 +87,9 @@
           <mxGeometry x="0.55" relative="1" as="geometry" />
         </mxCell>
         <mxCell id="bios-ctx-e18" value="&lt;b&gt;Envia e-mails&lt;/b&gt;&lt;div&gt;[SMTP]&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.8571;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="bios-ctx-n4" target="bios-ctx-n10">
+          <mxGeometry x="0.55" relative="1" as="geometry" />
+        </mxCell>
+<mxCell id="bios-ctx-e19" value="&lt;b&gt;Consulta endereço por CEP&lt;/b&gt;&lt;div&gt;[HTTPS/JSON]&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" parent="1" source="bios-ctx-n4" target="bios-ctx-n11">
           <mxGeometry x="0.55" relative="1" as="geometry" />
         </mxCell>
       </root>
@@ -102,32 +118,47 @@
             <mxGeometry height="120" width="240" x="900" y="-300" as="geometry" />
           </mxCell>
         </object>
+<object placeholders="1" c4Name="CRM do cliente" c4Type="Sistema Externo" c4Description="Importa em lote o perfil das contas por CNPJ" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n21">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
+            <mxGeometry height="120" width="240" x="-350" y="470" as="geometry" />
+          </mxCell>
+        </object>
         <object placeholders="1" c4Name="Servidor SMTP" c4Type="Sistema Externo" c4Description="Entrega de e-mails transacionais" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n5">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="120" width="240" x="-350" y="290" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="Front-end BIOS" c4Type="Container" c4Technology="Angular" c4Description="SPA de consulta, filtros, ranking, explicação do score, exportação e painel de conta" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n6">
+<object placeholders="1" c4Name="GitHub Actions" c4Type="Sistema Externo" c4Description="Monitor semanal do contrato de IBAMA, CGU e GHG, fora do CI de pull request" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n22">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
+            <mxGeometry height="120" width="240" x="2080" y="800" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="Front-end BIOS" c4Type="Container" c4Technology="Angular" c4Description="SPA de consulta, filtros, panorama, gráficos, explicação do índice, exportação e painel de conta" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n6">
           <mxCell parent="1" style="shape=mxgraph.c4.webBrowserContainer2;whiteSpace=wrap;html=1;boundedLbl=1;rounded=0;labelBackgroundColor=none;fillColor=#23A2D9;strokeColor=#118ACD;strokeColor2=#0E7DAD;fontSize=12;fontColor=#ffffff;align=center;metaEdit=1;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];resizable=0;" vertex="1">
             <mxGeometry height="140" width="240" x="620" y="60" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="Serviço de Fallback GHG" c4Type="Container" c4Technology="NestJS/TypeScript" c4Description="Adapter GhgDataSource isolado; consulta best-effort e não bloqueante, sem derrubar a API principal" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n7">
+<object placeholders="1" c4Name="Versão de apresentação" c4Type="Container" c4Technology="Angular + Vercel" c4Description="Mesmo front-end, com a API simulada no navegador e base estática. Hospedada na Vercel, entrada direta em /demonstracao" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n23">
+          <mxCell parent="1" style="shape=mxgraph.c4.webBrowserContainer2;whiteSpace=wrap;html=1;boundedLbl=1;rounded=0;labelBackgroundColor=none;fillColor=#23A2D9;strokeColor=#118ACD;strokeColor2=#0E7DAD;fontSize=12;fontColor=#ffffff;align=center;metaEdit=1;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];resizable=0;" vertex="1">
+            <mxGeometry height="140" width="240" x="1430" y="90" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="Módulo de Inventário GHG" c4Type="Container" c4Technology="NestJS/TypeScript" c4Description="Parte do bios-core-api. Adapter GhgDataSource com fila própria; consulta best-effort e não bloqueante" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n7">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#23A2D9;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0E7DAD;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="120" width="240" x="1100" y="100" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="bios-core-api" c4Type="Container" c4Technology="NestJS/TypeScript" c4Description="Orquestração, API pública, contas e chaves de API, busca e filtros, explicabilidade e exportação XLSX" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n8">
+        <object placeholders="1" c4Name="bios-core-api" c4Type="Container" c4Technology="NestJS/TypeScript" c4Description="Orquestração, API pública, importação para CRMs, contas e chaves de API, busca, panorama, catálogos de localidades, consulta de CEP e exportação XLSX" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n8">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#23A2D9;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0E7DAD;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="130" width="240" x="620" y="300" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="Serviço de Ingestão CNPJ" c4Type="Container" c4Technology="NestJS/TypeScript" c4Description="Adapter ReceitaDataSource com cadeia de fallback BrasilAPI → Minha Receita; CNAE via IBGE" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n9">
+        <object placeholders="1" c4Name="Módulos de Ingestão Cadastral" c4Type="Container" c4Technology="NestJS/TypeScript" c4Description="Parte do bios-core-api. Adapter ReceitaDataSource com cadeia BrasilAPI → OpenCNPJ → Minha Receita; CNAE via IBGE" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n9">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#23A2D9;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0E7DAD;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="120" width="240" x="280" y="590" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="Serviço de Ingestão Ambiental" c4Type="Container" c4Technology="NestJS/TypeScript + BullMQ" c4Description="Adapters IbamaDataSource e CguDataSource; normaliza evidências e calcula índice de aderência e confiança" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n10">
+        <object placeholders="1" c4Name="Módulos de Ingestão Ambiental" c4Type="Container" c4Technology="NestJS/TypeScript + BullMQ" c4Description="Parte do bios-core-api. Adapters IbamaDataSource e CguDataSource; normaliza evidências, calcula índice, confiança e movimentações" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n10">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#23A2D9;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0E7DAD;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="120" width="240" x="1060" y="570" as="geometry" />
           </mxCell>
@@ -137,7 +168,7 @@
             <mxGeometry height="120" width="240" x="1550" y="620" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="Banco de Dados" c4Type="Container" c4Technology="MongoDB (Prisma v6)" c4Description="evidence_raw, evidence_normalized, company_profile; contas e chaves de API (hash)" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n12">
+        <object placeholders="1" c4Name="Banco de Dados" c4Type="Container" c4Technology="MongoDB (Prisma v6)" c4Description="Evidências, perfis, índices, movimentações, catálogos de ODS, UFs e municípios, contas e chaves de API (hash)" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%:&amp;nbsp;%c4Technology%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n12">
           <mxCell parent="1" style="shape=cylinder3;size=15;whiteSpace=wrap;html=1;boundedLbl=1;rounded=0;labelBackgroundColor=none;fillColor=#23A2D9;fontSize=12;fontColor=#ffffff;align=center;strokeColor=#0E7DAD;metaEdit=1;points=[[0.5,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.5,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];resizable=0;" vertex="1">
             <mxGeometry height="120" width="240" x="660" y="827" as="geometry" />
           </mxCell>
@@ -147,12 +178,17 @@
             <mxGeometry height="120" width="240" x="-40" y="1110" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="Minha Receita" c4Type="Sistema Externo" c4Description="Espelho comunitário do CNPJ (fallback)" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n14">
+        <object placeholders="1" c4Name="Minha Receita" c4Type="Sistema Externo" c4Description="Espelho comunitário do CNPJ (2º fallback)" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n14">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="120" width="240" x="280" y="1100" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="IBGE — API de Classificações" c4Type="Sistema Externo" c4Description="Taxonomia e descrição de CNAE" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n15">
+<object placeholders="1" c4Name="OpenCNPJ" c4Type="Sistema Externo" c4Description="Espelho comunitário do CNPJ (1º fallback)" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n19">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
+            <mxGeometry height="120" width="240" x="-360" y="1110" as="geometry" />
+          </mxCell>
+        </object>
+        <object placeholders="1" c4Name="IBGE — Classificações e Localidades" c4Type="Sistema Externo" c4Description="Descrição de CNAE; UFs e municípios só na carga inicial" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n15">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="120" width="240" x="720" y="1120" as="geometry" />
           </mxCell>
@@ -172,7 +208,15 @@
             <mxGeometry height="120" width="240" x="1740" y="1120" as="geometry" />
           </mxCell>
         </object>
+<object placeholders="1" c4Name="ViaCEP" c4Type="Sistema Externo" c4Description="Endereço a partir do CEP; recebe só o CEP" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#E6E6E6&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="bios-cnt-n20">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;fillColor=#8C8496;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#736782;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
+            <mxGeometry height="120" width="240" x="2080" y="1120" as="geometry" />
+          </mxCell>
+        </object>
         <mxCell id="bios-cnt-e19" edge="1" parent="1" source="bios-cnt-n3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bios-cnt-n6" value="&lt;b&gt;Consulta, filtra e exporta empresas&lt;/b&gt;&lt;div&gt;[HTTPS]&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+<mxCell id="bios-cnt-e41" edge="1" parent="1" source="bios-cnt-n3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;" target="bios-cnt-n23" value="&lt;b&gt;Visita a demonstração&lt;/b&gt;&lt;div&gt;[HTTPS]&lt;/div&gt;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="bios-cnt-e20" edge="1" parent="1" source="bios-cnt-n6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="bios-cnt-n8" value="&lt;b&gt;Realiza chamadas à API&lt;/b&gt;&lt;div&gt;[HTTPS/JSON, JWT]&lt;/div&gt;">
@@ -186,12 +230,16 @@
             </Array>
           </mxGeometry>
         </mxCell>
+<mxCell id="bios-cnt-e39" edge="1" parent="1" source="bios-cnt-n21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;" target="bios-cnt-n8" value="&lt;b&gt;Importa perfis em lote&lt;/b&gt;&lt;div&gt;[HTTPS/JSON, chave de API]&lt;/div&gt;">
+          <mxGeometry relative="1" x="-0.3" as="geometry">
+            </mxGeometry>
+        </mxCell>
         <mxCell id="bios-cnt-e22" edge="1" parent="1" source="bios-cnt-n8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0;exitY=0.35;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="bios-cnt-n5" value="&lt;b&gt;Envia e-mails transacionais (Nodemailer + Handlebars)&lt;/b&gt;&lt;div&gt;[SMTP]&lt;/div&gt;">
           <mxGeometry relative="1" x="-0.1831" y="4" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bios-cnt-e23" edge="1" parent="1" source="bios-cnt-n8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="bios-cnt-n7" value="&lt;b&gt;Solicita inventário de emissões (com timeout)&lt;/b&gt;&lt;div&gt;[HTTP interno]&lt;/div&gt;">
+        <mxCell id="bios-cnt-e23" edge="1" parent="1" source="bios-cnt-n8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="bios-cnt-n7" value="&lt;b&gt;Enfileira inventário de emissões&lt;/b&gt;&lt;div&gt;[BullMQ]&lt;/div&gt;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1220" y="332" />
@@ -205,7 +253,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="bios-cnt-e25" edge="1" parent="1" source="bios-cnt-n8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bios-cnt-n9" value="&lt;b&gt;Solicita dados cadastrais sob demanda&lt;/b&gt;&lt;div&gt;[HTTP interno]&lt;/div&gt;">
+        <mxCell id="bios-cnt-e25" edge="1" parent="1" source="bios-cnt-n8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bios-cnt-n9" value="&lt;b&gt;Enfileira dados cadastrais&lt;/b&gt;&lt;div&gt;[BullMQ]&lt;/div&gt;">
           <mxGeometry relative="1" x="0.2241" as="geometry">
             <mxPoint as="offset" />
             <Array as="points">
@@ -213,7 +261,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="bios-cnt-e26" edge="1" parent="1" source="bios-cnt-n8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bios-cnt-n10" value="&lt;b&gt;Solicita evidências sob demanda&lt;/b&gt;&lt;div&gt;[HTTP interno]&lt;/div&gt;">
+        <mxCell id="bios-cnt-e26" edge="1" parent="1" source="bios-cnt-n8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bios-cnt-n10" value="&lt;b&gt;Enfileira evidências&lt;/b&gt;&lt;div&gt;[BullMQ]&lt;/div&gt;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="800" y="520" />
@@ -257,13 +305,17 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="bios-cnt-e32" edge="1" parent="1" source="bios-cnt-n9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bios-cnt-n14" value="&lt;b&gt;Consulta CNPJ em caso de falha&lt;/b&gt;&lt;div&gt;[HTTPS/JSON]&lt;/div&gt;">
+        <mxCell id="bios-cnt-e32" edge="1" parent="1" source="bios-cnt-n9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bios-cnt-n14" value="&lt;b&gt;Consulta CNPJ no 2º fallback&lt;/b&gt;&lt;div&gt;[HTTPS/JSON]&lt;/div&gt;">
           <mxGeometry relative="1" x="0.3" as="geometry">
             <Array as="points">
               <mxPoint x="400" y="970" />
               <mxPoint x="400" y="970" />
             </Array>
           </mxGeometry>
+        </mxCell>
+<mxCell id="bios-cnt-e37" edge="1" parent="1" source="bios-cnt-n9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;" target="bios-cnt-n19" value="&lt;b&gt;Consulta CNPJ no 1º fallback&lt;/b&gt;&lt;div&gt;[HTTPS/JSON]&lt;/div&gt;">
+          <mxGeometry relative="1" x="0.3" as="geometry">
+            </mxGeometry>
         </mxCell>
         <mxCell id="bios-cnt-e33" edge="1" parent="1" source="bios-cnt-n9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bios-cnt-n15" value="&lt;b&gt;Consulta descrição de CNAE&lt;/b&gt;&lt;div&gt;[HTTPS/JSON]&lt;/div&gt;">
           <mxGeometry relative="1" x="0.519" as="geometry">
@@ -302,6 +354,26 @@
               <mxPoint x="1860" y="160" />
             </Array>
           </mxGeometry>
+        </mxCell>
+<mxCell id="bios-cnt-e42" edge="1" parent="1" source="bios-cnt-n23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;" target="bios-cnt-n20" value="&lt;b&gt;Consulta endereço por CEP&lt;/b&gt;&lt;div&gt;[HTTPS/JSON]&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry">
+            </mxGeometry>
+        </mxCell>
+<mxCell id="bios-cnt-e40" edge="1" parent="1" source="bios-cnt-n22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;" target="bios-cnt-n16" value="&lt;b&gt;Confere o contrato de IBAMA, CGU e GHG&lt;/b&gt;&lt;div&gt;[HTTPS]&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry">
+            </mxGeometry>
+        </mxCell>
+<mxCell id="bios-cnt-e43" edge="1" parent="1" source="bios-cnt-n22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;" target="bios-cnt-n17" value="">
+          <mxGeometry relative="1" as="geometry">
+            </mxGeometry>
+        </mxCell>
+<mxCell id="bios-cnt-e44" edge="1" parent="1" source="bios-cnt-n22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;" target="bios-cnt-n18" value="">
+          <mxGeometry relative="1" as="geometry">
+            </mxGeometry>
+        </mxCell>
+<mxCell id="bios-cnt-e38" edge="1" parent="1" source="bios-cnt-n8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;fontSize=12;labelBackgroundColor=default;endArrow=classic;endFill=1;" target="bios-cnt-n20" value="&lt;b&gt;Consulta endereço por CEP, com prazo&lt;/b&gt;&lt;div&gt;[HTTPS/JSON]&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry">
+            </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
