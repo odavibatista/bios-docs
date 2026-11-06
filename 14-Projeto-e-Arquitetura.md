@@ -14,7 +14,7 @@
 
 Observações por fonte:
 
-- **IBGE, UFs e municípios**: a lista muda raramente e é consultada a cada digitação, então fica em disco. O código IBGE é a chave: o nome serve para exibir e buscar. Grafias diferentes da base (18 locais, 342 empresas, em novembro de 2026) ficam numa tabela de sinônimos, e `EXTERIOR` continua fora da lista de UFs.
+- **IBGE, UFs e municípios**: a lista muda raramente e é consultada a cada digitação, então fica em disco. O código IBGE é a chave: o nome serve para exibir e buscar. Grafias diferentes da base (13 locais, 230 empresas, em novembro de 2026) ficam numa tabela de sinônimos, e `EXTERIOR` continua fora da lista de UFs.
 - **ViaCEP**: recebe somente o CEP, nunca dado da conta. A API do BIOS faz a consulta, e a versão de apresentação, que não tem API, chama o serviço direto do navegador. Serviço fora do ar nunca impede a gravação: o usuário preenche o endereço à mão ([RF39]).
 
 - **Receita Federal**: nenhum dos três provedores é institucional — todos são projetos comunitários que espelham o dump aberto da RFB. A cadeia de fallback (BrasilAPI → OpenCNPJ → Minha Receita) é obrigatória, não redundância opcional: a Minha Receita só é consultada quando nem a BrasilAPI nem o OpenCNPJ retornam dados. O retorno da BrasilAPI já cobre RF05 e RF06 numa única chamada (situação cadastral, porte, endereço, CNAE principal e secundários com descrição).

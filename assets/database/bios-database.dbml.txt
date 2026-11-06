@@ -393,9 +393,9 @@ Table ibge_cities {
   ibge_state_id int [ref: > ibge_states.id_ibge_state]
   name varchar
   search_name varchar [note: 'Nome sem acento e em maiúsculas, para a busca do seletor']
-  aliases varchar[] [note: 'Grafias alternativas encontradas nas fontes, como ASSU e PARATI']
+  aliases varchar[] [note: 'Grafias alternativas encontradas nas fontes, como PARATI e BRASOPOLIS']
 
-  Note: 'Catálogo dos 5.570 municípios, carregado uma vez a partir do IBGE. Liga o endereço do usuário e o filtro da pesquisa à UF (RF38, RF39).'
+  Note: 'Catálogo dos 5.571 municípios, carregado uma vez a partir do IBGE. Liga o endereço do usuário e o filtro da pesquisa à UF (RF38, RF39).'
 
   Indexes {
     (ibge_state_id, search_name) [name: 'idx_ibge_cities_state_search']
