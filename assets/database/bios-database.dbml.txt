@@ -183,7 +183,7 @@ Table users {
   email_encrypted varchar [note: 'E-mail cifrado com AES-256']
   email_hash varchar [note: 'Índice cego: hash determinístico do e-mail normalizado, usado no login e na verificação de unicidade']
   password_encrypted varchar [note: 'Hash bcrypt da senha, cifrado com AES-256']
-  address_encrypted varchar [null, note: 'Endereço completo serializado e cifrado com AES-256']
+  address_encrypted varchar [null, note: 'Endereço completo serializado e cifrado com AES-256, com o código IBGE do município (RF38)']
   encryption_key_version int [default: 1, note: 'Versão da chave AES usada nos campos cifrados deste documento']
   role user_role [default: 'USER']
   is_active boolean [default: false, note: 'Falso até a confirmação do e-mail (RF28)']
@@ -373,6 +373,33 @@ Table ods {
 
   Indexes {
     ods_number [unique, name: 'idx_ods_ods_number']
+  }
+}
+
+Table ibge_states {
+  id_ibge_state int [primary key, note: 'Código IBGE da UF']
+  acronym varchar [note: 'Sigla da UF (2 caracteres)']
+  name varchar
+
+  Note: 'Catálogo das 27 UFs, carregado uma vez a partir do IBGE (RF38).'
+
+  Indexes {
+    acronym [unique, name: 'idx_ibge_states_acronym']
+  }
+}
+
+Table ibge_cities {
+  id_ibge_city int [primary key, note: 'Código IBGE do município']
+  ibge_state_id int [ref: > ibge_states.id_ibge_state]
+  name varchar
+  search_name varchar [note: 'Nome sem acento e em maiúsculas, para a busca do seletor']
+  aliases varchar[] [note: 'Grafias alternativas encontradas nas fontes, como PARATI e BRASOPOLIS']
+
+  Note: 'Catálogo dos 5.571 municípios, carregado uma vez a partir do IBGE. Liga o endereço do usuário e o filtro da pesquisa à UF (RF38, RF39).'
+
+  Indexes {
+    (ibge_state_id, search_name) [name: 'idx_ibge_cities_state_search']
+    aliases [name: 'idx_ibge_cities_aliases']
   }
 }
 
@@ -689,6 +716,8 @@ TableGroup seguranca_e_auditoria {
 TableGroup catalogos {
   ods
   data_sources
+  ibge_states
+  ibge_cities
 }
 
 TableGroup ingestao {

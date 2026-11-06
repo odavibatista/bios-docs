@@ -36,6 +36,8 @@ MINHA RECEITA. **Documentação**. Disponível em: https://docs.minhareceita.org
 IBGE. **API de Localidades e Classificações**. Disponível em:
 https://servicodados.ibge.gov.br. Acesso em: 2026.
 
+VIACEP. **Webservice de consulta de CEP**. Disponível em: https://viacep.com.br. Acesso em: 2026.
+
 IBAMA. **Dados Abertos**. Disponível em: https://dadosabertos.ibama.gov.br. Acesso em: 2026.
 
 CONTROLADORIA-GERAL DA UNIÃO (CGU). **Portal da Transparência — API de Dados**. Disponível

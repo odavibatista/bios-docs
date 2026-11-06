@@ -242,11 +242,11 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 <table>
     <tr>
         <td><b>Nome:</b> UC05 — Manter Conta.</td>
-        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir que o usuário edite seus dados de conta ou exclua a própria conta. ([RF26], [RF27], [RF28])</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir que o usuário edite seus dados de conta ou exclua a própria conta. ([RF26], [RF27], [RF28], [RF38], [RF39])</td>
     </tr>
     <tr>
         <td><b>Ator(es):</b> Usuário.</td>
-        <td><b>Ator(es) Secundário(s):</b> Sistema.</td>
+        <td><b>Ator(es) Secundário(s):</b> Sistema, Fontes Externas (ViaCEP).</td>
     </tr>
     <tr>
         <td colspan="2"><b>Pré-condições:</b> O usuário deve estar com sessão ativa.</td>
@@ -261,14 +261,16 @@ Esta seção descreve todos os casos de uso do diagrama 1.
         <td colspan="2"><b>Fluxos Alternativos:</b>
 		<br>1.1 - Alteração de e-mail: o sistema envia confirmação ao novo endereço e só efetiva a troca após a confirmação ([RF28]).</br>
 		<br>1.2 - Exclusão: o usuário seleciona excluir conta e confirma com a senha.</br>
-		<br>1.3 - O sistema remove os dados pessoais, revoga todas as chaves de API e encerra todas as sessões. Exibe a tela inicial e finaliza o caso de uso.</br></td></tr>
+		<br>1.3 - O sistema remove os dados pessoais, revoga todas as chaves de API e encerra todas as sessões. Exibe a tela inicial e finaliza o caso de uso.</br>
+		<br>1.4 - O usuário digita um CEP de 8 dígitos: o sistema preenche logradouro, bairro, UF e município, que continuam editáveis ([RF39]).</br>
+		<br>1.5 - CEP não encontrado ou consulta sem resposta em até 3 segundos: o sistema avisa e libera o preenchimento manual, sem impedir a gravação.</br></td></tr>
 	<tr>
         <td colspan="2"><b>Pós-condições:</b> Dados atualizados; ou, na exclusão, nenhum dado pessoal do titular mantido e nenhuma credencial (sessão ou chave) válida.</td></tr>
 	<tr>
         <td colspan="2"><b>Regras de Negócio:</b>
 		<br>1 - A exclusão atende ao direito de eliminação do titular previsto na LGPD ([NFSE02]).</br>
 		<br>2 - Registros de tentativa de login associados à conta excluída mantêm apenas IP e data/hora, desvinculados do titular.</br>
-			<br>3 - O endereço é composto por CEP, logradouro, número, complemento (opcional), bairro, cidade e unidade da federação; é guardado serializado e cifrado com AES-256 ([NFSE03]), e pode ser removido da conta.</br>
+			<br>3 - O endereço é composto por CEP, logradouro, número, complemento (opcional), bairro, cidade e unidade da federação; é guardado serializado e cifrado com AES-256 ([NFSE03]), e pode ser removido da conta. O município é escolhido entre os da UF selecionada, que precisa vir antes ([RF38]).</br>
 			<br>4 - A alteração de e-mail exige a senha atual. O link de confirmação é enviado ao novo endereço, tem as mesmas regras do link de confirmação de cadastro (uso único, 24 horas por padrão) e o e-mail atual vale até que ele seja aberto; pedir outra troca invalida o link anterior.</br>
 			<br>5 - O novo e-mail é verificado contra a blacklist de domínios ([RF22]). Se ele já pertencer a outra conta, o pedido recebe a mesma resposta do sucesso e nada é enviado, para não revelar contas existentes; se passar a pertencer a outra conta antes da confirmação, a troca é recusada.</br>
 			<br>6 - A exclusão exige a senha e remove a conta, as sessões, os tokens, as chaves de API, os bloqueios e os registros de e-mails enviados ao titular; não há remoção lógica. A sessão usada no pedido deixa de valer imediatamente.</br>
@@ -372,7 +374,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 <table>
     <tr>
         <td><b>Nome:</b> UC08 — Pesquisar Empresas.</td>
-        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir filtrar e ordenar empresas da base por critérios cadastrais e socioambientais. ([RF13], [RF14])</td>
+        <td colspan="2"><b>Objetivo/Descrição:</b> Permitir filtrar e ordenar empresas da base por critérios cadastrais e socioambientais. ([RF13], [RF14], [RF38])</td>
     </tr>
     <tr>
         <td><b>Ator(es):</b> Usuário.</td>
@@ -401,7 +403,7 @@ Esta seção descreve todos os casos de uso do diagrama 1.
 		<br>1 - A pesquisa opera apenas sobre empresas já presentes em <code>company_profile</code>.</br>
 		<br>2 - Filtros de índice, confiança e ordenação sempre se referem a um único ODS selecionado.</br>
 			<br>3 - Os critérios (nome, UF, município, CNAE e ODS) são opcionais, mas ao menos um é exigido; os informados se somam, e a empresa precisa atender a todos. Índice mínimo e confiança mínima só existem com o ODS selecionado.</br>
-			<br>4 - A UF é a sigla de uma das 27 unidades da federação. O município é o nome inteiro, sem distinguir acento, caixa ou pontuação. O CNAE é um código de 2 a 7 dígitos (divisão, grupo, classe ou subclasse), casado como prefixo do CNAE principal ou de algum secundário.</br>
+			<br>4 - A UF é a sigla de uma das 27 unidades da federação. O município só pode ser escolhido depois da UF, entre os municípios dela ([RF38]), e a busca dentro da lista não distingue acento, caixa ou pontuação. O CNAE é um código de 2 a 7 dígitos (divisão, grupo, classe ou subclasse), casado como prefixo do CNAE principal ou de algum secundário.</br>
 			<br>5 - Com um ODS selecionado, cada empresa da lista traz o índice e a confiança desse ODS, em campos separados e nulos quando o ODS ainda não foi calculado para ela. Empresa sem índice calculado no ODS não atende a índice mínimo, e sem confiança calculada não atende a confiança mínima.</br>
 			<br>6 - A lista traz o resumo da empresa e o índice e a confiança do ODS selecionado, sem as contribuições que os explicam, que pertencem ao perfil (UC07).</br>
 			<br>7 - A ordenação pelo índice do ODS selecionado pode ser ascendente ou descendente. Empresa sem índice calculado no ODS aparece sempre ao fim da lista, nos dois sentidos, porque ausência de índice não é o menor nem o maior índice ([IND02]). Entre índices iguais, vem primeiro a empresa de maior confiança, e o desempate final é o CNPJ. As empresas sem índice vêm depois de todas as que têm, em ordem de razão social e CNPJ. Sem ordenação escolhida, a lista segue a proximidade com o nome digitado e, depois, a razão social.</br>
@@ -1332,9 +1334,9 @@ A justificativa das decisões arquiteturais segundo a ISO/IEC 25010:2023 está e
 ### 8.6.1 Nível 1 — Contexto
 
 O diagrama 9 situa o BIOS entre seus usuários e os sistemas externos com os quais se integra:
-o usuário consulta, filtra e exporta empresas via HTTPS; sistemas de terceiros consomem a API
+o usuário consulta, filtra e exporta empresas via HTTPS; sistemas de terceiros e CRMs consomem a API
 pública com chave de API; o BIOS consome BrasilAPI/OpenCNPJ/Minha Receita, IBGE, IBAMA (lote diário),
-CGU (CEIS/CNEP) e GHG Protocol (best-effort), e envia e-mails por servidor SMTP.
+CGU (CEIS/CNEP), GHG Protocol (best-effort) e ViaCEP, e envia e-mails por servidor SMTP.
 
 <p align="center"><b>Diagrama 9 - C4 Nível 1: Contexto</b></p>
 
@@ -1350,7 +1352,8 @@ O diagrama 10 detalha os contêineres do BIOS:
 
 | Contêiner | Tecnologia | Responsabilidade |
 | --- | --- | --- |
-| Front-end BIOS | Angular | SPA de consulta, filtros, ranking, explicação do score, exportação e painel de conta. |
+| Front-end BIOS | Angular | SPA de consulta, filtros, panorama, gráficos, explicação do índice, exportação e painel de conta. |
+| Versão de apresentação | Angular + Vercel | Mesmo front-end, com a API simulada no navegador e base estática, sem servidor. Entrada direta em `/demonstracao`. |
 | `bios-core-api` | NestJS/TypeScript | Orquestração, API pública, contas e chaves de API, busca e filtros, explicabilidade e exportação XLSX. Hospeda também os módulos de ingestão e os consumidores de fila descritos abaixo. |
 | Ingestão cadastral (módulos do core) | NestJS/TypeScript + BullMQ | Adapter `ReceitaDataSource` com cadeia de fallback BrasilAPI → OpenCNPJ → Minha Receita; CNAE via IBGE. Consumidor da fila `company-profile`. |
 | Ingestão ambiental (módulos do core) | NestJS/TypeScript + BullMQ | Adapters `IbamaDataSource` e `CguDataSource`; normaliza evidências e calcula índice e confiança por ODS. |

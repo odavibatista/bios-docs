@@ -16,7 +16,7 @@ troquem informações com o BIOS. O quadro 2 descreve brevemente cada ator da ap
 | Administrador | Representa um usuário com papel `ADMIN` — mesma entidade de usuário, diferenciada apenas pelo valor do enum de papel. Além de tudo o que o Usuário faz, mantém a blacklist de domínios de e-mail. |
 | Desenvolvedor Externo | Representa um usuário que consome os dados do BIOS de forma programática, por meio da API pública e de chave de API gerada no próprio painel de conta. Não é um papel distinto no enum: é um Usuário atuando via API. |
 | Sistema | Representa os processos automáticos do BIOS: ingestão de dados das fontes externas, cálculo de índice e de nível de confiança, disparo de e-mails transacionais, registro e bloqueio de tentativas de login e honeypot. |
-| Fontes Externas | Representa as aplicações públicas das quais o BIOS consome dados: Receita Federal (via BrasilAPI, OpenCNPJ e Minha Receita), IBGE, IBAMA, CGU (CEIS/CNEP) e GHG Protocol — Registro Público de Emissões (ver `14-Projeto-e-Arquitetura.md`, seção 1). |
+| Fontes Externas | Representa as aplicações públicas das quais o BIOS consome dados: Receita Federal (via BrasilAPI, OpenCNPJ e Minha Receita), IBGE, IBAMA, CGU (CEIS/CNEP), GHG Protocol — Registro Público de Emissões e ViaCEP (ver `14-Projeto-e-Arquitetura.md`, seção 1). |
 
 ## 4.2 Perfis de Usuário (Personas)
 
@@ -85,3 +85,5 @@ cada história e os requisitos funcionais (`05-Requisitos-Funcionais.md`), não-
 | [HU37] | Profissional de sustentabilidade/ESG, | ver em gráficos as evidências de uma empresa, a composição do índice e o resultado de cada fonte, | avaliar a empresa de relance e abrir o detalhe só quando precisar. | [RF35] |
 | [HU38] | Analista de compras/suprimentos, | ver como o índice de uma empresa chegou ao valor atual, com a evidência de cada degrau, | entender o histórico antes de contratar, sem confundir o índice com um veredito. | [RF36] |
 | [HU39] | Agente de órgão governamental, | ver totais e gráficos do conjunto de empresas que pesquisei, | analisar um recorte por UF, setor ou bioma sem ler registro a registro. | [RF37] |
+| [HU40] | Usuário, | escolher o município de uma lista ligada à UF, digitando parte do nome, | não errar a grafia nem receber uma lista vazia por causa de um acento. | [RF38] |
+| [HU41] | Usuário, | digitar meu CEP e ver o endereço preenchido, | atualizar meus dados sem redigitar o que o CEP já informa. | [RF39] |
