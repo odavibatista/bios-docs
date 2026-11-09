@@ -2,10 +2,11 @@
 
 Esta seção apresenta os artefatos gerados pela Análise: casos de uso (diagrama e descrição),
 diagrama de classes de domínio, diagramas de sequência dos fluxos principais, modelo de dados
-e diagramas de arquitetura no modelo C4. Os diagramas 1 a 7 estão escritos em Mermaid,
-renderizado nativamente pelo GitHub e versionado como texto junto à documentação; o modelo de
-dados (diagrama 8) é gerado a partir da fonte DBML em `assets/database/bios-database.dbml.txt`;
-os diagramas C4 (8 e 9) têm sua fonte editável em `assets/diagrams/bios-c4-architecture.drawio`.
+e diagramas de arquitetura no modelo C4. Os diagramas 1 a 8 estão escritos em Mermaid,
+renderizado nativamente pelo GitHub e versionado como texto junto à documentação; o modelo
+físico de dados (diagrama 9) é gerado a partir da fonte DBML em
+`assets/database/bios-database.dbml.txt`; os diagramas C4 (10 e 11) têm sua fonte editável em
+`assets/diagrams/bios-c4-architecture.drawio`.
 
 Os atores referenciados são os definidos no Quadro 2 (`04-Atores-e-Histórias-dos-Usuários.md`).
 
@@ -1275,10 +1276,11 @@ sequenceDiagram
 
 ## 8.5 Modelo de Dados
 
-O modelo de dados do BIOS está definido em DBML, cuja fonte textual é
-`assets/database/bios-database.dbml.txt` — referência única para coleções, campos, enumerações,
-índices e relações, a ser convertida no schema Prisma na etapa de implementação. O diagrama 8
-é a imagem gerada a partir dessa fonte.
+O modelo de dados do BIOS é apresentado em dois níveis. O modelo entidade-relacionamento
+(diagrama 8) mostra as entidades, as chaves e a cardinalidade de cada relacionamento. O modelo
+físico (diagrama 9) é gerado a partir da fonte DBML `assets/database/bios-database.dbml.txt`,
+referência única para coleções, campos, enumerações, índices e relações, espelhada nos schemas
+Prisma de cada módulo do `bios-core-api`.
 
 Por se tratar de banco orientado a documentos, as relações são referências lógicas por
 identificador, sem integridade referencial imposta pelo banco. As coleções estão organizadas
@@ -1288,10 +1290,231 @@ em seis grupos:
 | --- | --- | --- |
 | Identidade e acesso | `users`, `user_tokens`, `user_sessions`, `api_keys` | Contas, tokens de uso único, sessões JWT revogáveis e chaves de API. |
 | Segurança e auditoria | `login_attempts`, `access_blocks`, `honeypot_hits`, `blocked_email_domains`, `email_dispatch_logs` | Tentativas de login, bloqueios de IP/usuário, honeypot, blacklist de domínios e auditoria de e-mails. |
-| Catálogos | `ods`, `data_sources` | ODS de referência e fontes externas, ambos populados via seed. |
+| Catálogos | `ods`, `data_sources`, `ibge_states`, `ibge_cities` | ODS de referência, fontes externas e UFs e municípios do IBGE, todos populados por carga inicial. |
 | Ingestão | `ingestion_runs`, `data_source_request_logs` | Execuções de jobs e log de cada chamada às fontes externas. |
-| Evidências e perfis | `evidence_raw`, `evidence_normalized`, `company_profile` | As três camadas de dados (bruto → normalizado → agregado). |
+| Evidências e perfis | `evidence_raw`, `evidence_collection_clocks`, `evidence_normalized`, `company_profile`, `company_removals` | As três camadas de dados (bruto → normalizado → agregado), o relógio de coleta por fonte e os CNPJs retirados a pedido do titular. |
 | Índices | `company_ods_scores`, `company_movements`, `sector_score_snapshots` | Índice e confiança por empresa e ODS; última movimentação por empresa; agregados setoriais para a evolução por setor. |
+
+### 8.5.1 Modelo Entidade-Relacionamento
+
+O diagrama 8 usa a notação pé de galinha. Cada entidade corresponde a uma coleção e mostra
+apenas a chave primária (PK), as chaves estrangeiras (FK), as chaves únicas (UK) e alguns
+atributos que a identificam; a lista completa de campos está no modelo físico.
+
+- **Linha contínua:** relação declarada nos schemas Prisma, por identificador.
+- **Linha tracejada:** ligação lógica, sem relação declarada. Pode ser pelo CNPJ, por um
+  código do IBGE ou por um subdocumento embutido: as contribuições do índice
+  (`contributions`) apontam para as evidências, e cada movimentação (`ods_movements`), para
+  o seu ODS.
+
+<p align="center"><b>Diagrama 8 - Modelo Entidade-Relacionamento</b></p>
+
+```mermaid
+erDiagram
+    users ||--o{ user_tokens : "recebe"
+    users ||--o{ user_sessions : "abre"
+    user_sessions |o..o| user_sessions : "é substituída por"
+    users ||--o{ api_keys : "gera"
+    users |o--o{ login_attempts : "tenta"
+    users |o--o{ access_blocks : "sofre"
+    users |o--o{ blocked_email_domains : "cadastra"
+    users |o--o{ email_dispatch_logs : "recebe"
+
+    ibge_states ||..|{ ibge_cities : "contém"
+    ibge_cities |o..o{ company_profile : "localiza"
+
+    ods |o--o{ data_sources : "classifica"
+    data_sources ||--o{ ingestion_runs : "executa"
+    data_sources ||--o{ data_source_request_logs : "registra"
+    ingestion_runs |o--o{ data_source_request_logs : "origina"
+    data_sources ||--o{ evidence_raw : "fornece"
+    ingestion_runs |o--o{ evidence_raw : "coleta"
+
+    evidence_raw |o--o{ evidence_normalized : "é normalizada em"
+    data_sources ||--o{ evidence_normalized : "origina"
+    ods ||--o{ evidence_normalized : "enquadra"
+    company_profile |o..o{ evidence_normalized : "possui"
+    data_sources ||--o{ company_profile : "atualiza"
+
+    company_profile |o..o{ company_ods_scores : "é pontuada em"
+    ods ||--o{ company_ods_scores : "mede"
+    company_ods_scores |o..o{ evidence_normalized : "é explicado por"
+    company_profile ||..o| company_movements : "movimenta"
+    company_movements }o..|{ ods : "muda em"
+    ods ||--o{ sector_score_snapshots : "agrega"
+
+    users {
+        objectid id_user PK
+        string email_hash UK "índice cego do e-mail"
+        string user_name
+        enum role "USER, ADMIN"
+        boolean is_active
+    }
+    user_tokens {
+        objectid id_user_token PK
+        objectid user_id FK
+        enum purpose
+        string token_hash UK
+        timestamp expires_at
+    }
+    user_sessions {
+        objectid id_user_session PK
+        objectid user_id FK
+        objectid replaced_by_session_id FK
+        string family_id
+        string refresh_token_hash UK
+        timestamp revoked_at
+    }
+    api_keys {
+        objectid id_api_key PK
+        objectid user_id FK
+        string key_prefix UK
+        string key_hash UK
+        timestamp revoked_at
+    }
+    login_attempts {
+        objectid id_login_attempt PK
+        objectid user_id FK "nulo sem conta"
+        string ip
+        boolean was_successful
+    }
+    access_blocks {
+        objectid id_access_block PK
+        objectid user_id FK "quando escopo USER"
+        enum scope "IP, USER"
+        string ip
+        timestamp blocked_until
+    }
+    honeypot_hits {
+        objectid id_honeypot_hit PK
+        string ip
+        string endpoint
+    }
+    blocked_email_domains {
+        objectid id_blocked_email_domain PK
+        objectid created_by_user_id FK
+        string domain UK
+        enum origin
+    }
+    email_dispatch_logs {
+        objectid id_email_dispatch_log PK
+        objectid user_id FK
+        enum template
+        enum status
+    }
+    ods {
+        objectid id_ods PK
+        int ods_number UK "13, 15"
+        string title
+    }
+    ibge_states {
+        int id_ibge_state PK "código IBGE"
+        string acronym UK
+        string name
+    }
+    ibge_cities {
+        int id_ibge_city PK "código IBGE"
+        int ibge_state_id FK
+        string name
+    }
+    data_sources {
+        objectid id_data_source PK
+        objectid ods_id FK
+        string slug UK
+        enum role "cadastral, CNAE, CEP ou evidência"
+        int fallback_priority
+    }
+    ingestion_runs {
+        objectid id_ingestion_run PK
+        objectid data_source_id FK
+        enum run_type
+        enum status
+    }
+    data_source_request_logs {
+        objectid id_data_source_request_log PK
+        objectid data_source_id FK
+        objectid ingestion_run_id FK
+        enum outcome
+    }
+    evidence_raw {
+        objectid id_evidence_raw PK
+        objectid data_source_id FK
+        objectid ingestion_run_id FK
+        string payload_hash UK "único por fonte"
+        json payload
+    }
+    evidence_collection_clocks {
+        objectid id_evidence_collection_clock PK
+        string scope_key UK "fonte e CNPJ"
+        timestamp collected_at
+    }
+    evidence_normalized {
+        objectid id_evidence PK
+        string evidence_key UK
+        string cnpj FK
+        objectid data_source_id FK
+        objectid evidence_raw_id FK
+        objectid ods_id FK
+        enum category
+        enum state
+    }
+    company_profile {
+        objectid id_company_profile PK
+        string cnpj UK
+        objectid cadastral_source_id FK
+        string legal_name
+        string city_ibge_code FK "em address, embutido"
+        string main_cnae "CNAE principal, embutido"
+    }
+    company_removals {
+        objectid id_company_removal PK
+        string cnpj UK
+        timestamp removed_at
+    }
+    company_ods_scores {
+        objectid id_company_ods_score PK
+        string cnpj FK
+        objectid ods_id FK
+        double score_value
+        double confidence_value
+        json contributions "evidências que compõem o índice"
+    }
+    company_movements {
+        objectid id_company_movement PK
+        string cnpj UK, FK
+        timestamp moved_at
+        json ods_movements "última mudança por ODS"
+    }
+    sector_score_snapshots {
+        objectid id_sector_score_snapshot PK
+        objectid ods_id FK
+        string cnae_division
+        timestamp window_start
+        double average_score
+    }
+```
+
+Leitura do diagrama:
+
+- **Conta e dependentes.** Tokens, sessões e chaves de API pertencem a exatamente um usuário e
+  são removidos com a conta (UC05), assim como os bloqueios de usuário; os bloqueios de IP não
+  têm usuário. Tentativas de login, domínios bloqueados e e-mails enviados guardam o usuário
+  quando há um, e ficam sem ele depois da exclusão.
+- **Rotação de sessão.** O autorrelacionamento de `user_sessions` liga cada elo da família ao
+  elo que o substituiu na renovação ([RF32]).
+- **Da fonte ao índice.** Uma fonte executa ingestões, que produzem registros brutos; cada
+  registro bruto vira evidências normalizadas, ligadas a uma empresa e a um ODS. O índice de
+  uma empresa em um ODS (`company_ods_scores`) é explicado pelas evidências que o compõem
+  ([RF12]).
+- **Empresa sem perfil.** O lado da empresa é opcional nas evidências e nos índices: um CNPJ
+  pode ter evidência e índice antes de ter perfil cadastral.
+- **Movimentação.** Cada empresa com perfil tem no máximo uma movimentação, que registra a
+  última mudança em um ou mais ODS ([RF33]).
+- **Entidades isoladas.** `honeypot_hits` (registra só o IP), `company_removals` (guarda só o
+  CNPJ retirado, cujo perfil já foi apagado) e `evidence_collection_clocks` (chave composta
+  por fonte e CNPJ em texto) não se relacionam por identificador com outras coleções.
+
+### 8.5.2 Modelo Físico
 
 Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura.md`):
 
@@ -1317,7 +1540,7 @@ Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura
   `<fonte>:<cnpj>#NOT_FOUND` ou `#UNKNOWN` para o resultado da consulta), permitindo reprocessar
   um dump sem duplicar evidências e sem que a mesma referência em duas empresas se sobrescreva.
 
-<p align="center"><b>Diagrama 8 - Modelo de Dados</b></p>
+<p align="center"><b>Diagrama 9 - Modelo Físico de Dados</b></p>
 
 <div align="center">
 
@@ -1327,18 +1550,18 @@ Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura
 
 ## 8.6 Diagramas de Arquitetura (C4)
 
-Os diagramas 9 e 10 representam a arquitetura do BIOS nos dois primeiros níveis do modelo C4.
+Os diagramas 10 e 11 representam a arquitetura do BIOS nos dois primeiros níveis do modelo C4.
 A justificativa das decisões arquiteturais segundo a ISO/IEC 25010:2023 está em
 `14-Projeto-e-Arquitetura.md`, seção 6.
 
 ### 8.6.1 Nível 1 — Contexto
 
-O diagrama 9 situa o BIOS entre seus usuários e os sistemas externos com os quais se integra:
+O diagrama 10 situa o BIOS entre seus usuários e os sistemas externos com os quais se integra:
 o usuário consulta, filtra e exporta empresas via HTTPS; sistemas de terceiros e CRMs consomem a API
 pública com chave de API; o BIOS consome BrasilAPI/OpenCNPJ/Minha Receita, IBGE, IBAMA (lote diário),
 CGU (CEIS/CNEP), GHG Protocol (best-effort) e ViaCEP, e envia e-mails por servidor SMTP.
 
-<p align="center"><b>Diagrama 9 - C4 Nível 1: Contexto</b></p>
+<p align="center"><b>Diagrama 10 - C4 Nível 1: Contexto</b></p>
 
 <div align="center">
 
@@ -1348,7 +1571,7 @@ CGU (CEIS/CNEP), GHG Protocol (best-effort) e ViaCEP, e envia e-mails por servid
 
 ### 8.6.2 Nível 2 — Contêineres
 
-O diagrama 10 detalha os contêineres do BIOS:
+O diagrama 11 detalha os contêineres do BIOS:
 
 | Contêiner | Tecnologia | Responsabilidade |
 | --- | --- | --- |
@@ -1366,7 +1589,7 @@ publica o job e quem o atende conversam exclusivamente via filas BullMQ sobre o 
 chamada direta entre si; por isso um consumidor pode ser movido para um processo próprio sem
 alterar o contrato do job (ver `14-Projeto-e-Arquitetura.md`, seção 2).
 
-<p align="center"><b>Diagrama 10 - C4 Nível 2: Contêineres</b></p>
+<p align="center"><b>Diagrama 11 - C4 Nível 2: Contêineres</b></p>
 
 <div align="center">
 
