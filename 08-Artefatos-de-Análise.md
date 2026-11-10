@@ -1125,7 +1125,7 @@ sequenceDiagram
         alt Jobs concluídos dentro do timeout
             R-->>API: Jobs concluídos
         else Timeout ou falha de fonte
-            API->>API: Preserva resposta anterior; UNKNOWN se nunca respondeu
+            API->>API: Preserva a resposta anterior, ou UNKNOWN se a fonte nunca respondeu
         end
         API->>DB: Relê evidências e agrupa por categoria
         API->>R: Enfileira recálculo de índices por ODS e aguarda
