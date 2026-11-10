@@ -141,7 +141,7 @@ O projeto trata como requisito de primeira classe aquilo que o sistema **não de
 | [05. Requisitos funcionais](05-Requisitos-Funcionais.md) | 39 requisitos e heurísticas de redação | Engenharia de Requisitos |
 | [06. Requisitos não funcionais](06-Requisitos-Nao-Funcionais.md) | 23 requisitos por característica de qualidade | Engenharia de Requisitos |
 | [07. Requisitos inversos](07-Requisitos-Inversos.md) | 5 requisitos do que o sistema não deve fazer | Engenharia de Requisitos |
-| [08. Artefatos de análise](08-Artefatos-de-Análise.md) | 19 casos de uso, classes, sequência, dados e C4 | Modelagem |
+| [08. Artefatos de análise](08-Artefatos-de-Análise.md) | 19 casos de uso, classes, sequência, MER, modelo físico e C4 | Modelagem |
 | [09. Telas do sistema](09-Telas-do-Sistema.md) | 13 telas da versão publicada e os requisitos de cada uma | Demonstração do MVP |
 | [10. Gerenciamento do projeto](10-Gerenciamento-do-Projeto.md) | Modelo de processo, equipe, cronograma e riscos | Gerenciamento do Projeto |
 | [11. Permissões](11-Permissões.md) | Papéis e o que cada um pode fazer | Adaptado, simplificado |
@@ -162,7 +162,7 @@ O projeto trata como requisito de primeira classe aquilo que o sistema **não de
 | Casos de uso, classes e sequência | [08. Artefatos de análise](08-Artefatos-de-Análise.md) |
 | C4, nível 1 (contexto) | [Diagrama](assets/diagrams/images/bios-context.svg) |
 | C4, nível 2 (contêineres) | [Diagrama](assets/diagrams/images/bios-architecture.svg) · [fonte editável](assets/diagrams/bios-c4-architecture.drawio) |
-| Modelo de dados | [Diagrama](assets/database/bios-database.svg) · [DBML](assets/database/bios-database.dbml.txt) |
+| Modelo de dados | [MER](08-Artefatos-de-Análise.md#851-modelo-entidade-relacionamento) · [Diagrama](assets/database/bios-database.svg) · [DBML](assets/database/bios-database.dbml.txt) |
 
 ## Avaliação de impacto
 
