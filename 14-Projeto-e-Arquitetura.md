@@ -26,7 +26,7 @@ Observações por fonte:
 
 Decisão: **BullMQ + Redis para tudo**, sem broker adicional. BullMQ já cobre nativamente os três elementos que a ingestão do IBAMA precisa — fila, repetição agendada (job repetível = cron) e retry com backoff —, o que torna um segundo broker (ex.: RabbitMQ) redundante com a stack já adotada (ver `overview.md`) e contrário à diretriz de viabilidade solo do projeto (ver `ways-of-working.md`).
 
-A mesma decisão vale para a comunicação **interna**: a ingestão (cadastro por CNPJ, evidências ambientais e inventário GHG) **não é um conjunto de serviços à parte**, e sim de módulos do próprio `bios-core-api` — um módulo por fonte externa (`brasil-api`, `opencnpj`, `minha-receita`, `ibge-cnae`, e os que virão para IBAMA, CGU e GHG), mais um consumidor de fila por assunto (por exemplo, o `CompanyProfileProcessor`, que atende a fila `company-profile`). Quem pede e quem atende conversam **exclusivamente via filas BullMQ**, sem chamar um ao outro diretamente: o contrato do job (nome, payload e resultado) é o único acoplamento. Isso mantém o ganho que a separação em serviços traria — o consumidor pode ser movido para um processo próprio sem tocar em quem publica o job — sem o custo de operar vários deployáveis, o que seria contrário à diretriz de viabilidade solo do projeto. Quando a consulta do usuário exige resposta imediata, o core enfileira o job e aguarda sua conclusão com timeout (sequência em `08-Artefatos-de-Análise.md`, seção 8.4.1); estourado o timeout de uma fonte não bloqueante (GHG), a evidência correspondente é exibida como `UNKNOWN`.
+A mesma decisão vale para a comunicação **interna**: a ingestão (cadastro por CNPJ, evidências ambientais e inventário GHG) **não é um conjunto de serviços à parte**, e sim de módulos do próprio `bios-core-api` — um módulo por fonte externa (`brasil-api`, `opencnpj`, `minha-receita`, `ibge-cnae`, e os que virão para IBAMA, CGU e GHG), mais um consumidor de fila por assunto (por exemplo, o `CompanyProfileProcessor`, que atende a fila `company-profile`). Quem pede e quem atende conversam **exclusivamente via filas BullMQ**, sem chamar um ao outro diretamente: o contrato do job (nome, payload e resultado) é o único acoplamento. Isso mantém o ganho que a separação em serviços traria — o consumidor pode ser movido para um processo próprio sem tocar em quem publica o job — sem o custo de operar vários deployáveis, o que seria contrário à diretriz de viabilidade solo do projeto. Quando a consulta do usuário exige resposta imediata, o core enfileira o job e aguarda sua conclusão com timeout (sequências em `08-Artefatos-de-Análise.md`, seções 8.4.6 e 8.4.7); estourado o timeout de uma fonte não bloqueante (GHG), a evidência correspondente é exibida como `UNKNOWN`.
 
 O *retry* com *backoff* é configurado **por fila** e, quando necessário, **por agendamento**: a fila `ibama-ingestion` é compartilhada pelo lote diário do IBAMA (minutos por tentativa, fonte que costuma ficar horas fora do ar) e pelos jobs por CNPJ (que erram rápido, pois há quem espere a resposta). O lote diário declara a própria política — 5 tentativas com *backoff* exponencial de base 5 minutos — sem alterar a dos demais jobs da fila. A execução de cada job agendado é registrada em `ingestion_runs` e só é marcada como falha quando as tentativas se esgotam; as evidências anteriores seguem valendo até o fim da janela de validade (UC14, fluxo 2.1).
 
@@ -124,7 +124,7 @@ Os ODS aos quais os índices de aderência (RF10) se referem são modelados como
 | 13 | Ação Contra a Mudança Global do Clima | GHG Protocol — Registro Público de Emissões | Apenas positivo (publicação de inventário de emissões) |
 | 15 | Vida Terrestre | IBAMA (autos de infração e termos de embargo); CGU — CEIS/CNEP como sinal complementar de peso reduzido (ver seção 4) | Apenas negativo (autuação/embargo; sanção administrativa) |
 
-Cada evidência normalizada referencia o ODS ao qual se vincula, e os resultados por ODS (`{ odsId, indice, confianca }`) ficam na coleção `company_ods_scores`, um documento por empresa e ODS, em vez de um par único índice/confiança no `company_profile` — o que permite filtrar e ordenar pelo índice de um ODS selecionado com um único índice composto (modelo completo em `08-Artefatos-de-Análise.md`, seção 8.5). Nenhum ODS é assumido de forma implícita no código: incluir um novo ODS passa a ser uma nova entrada de seed somada às regras de pontuação correspondentes, sem alteração de esquema — o que preserva a escalabilidade a outros ODS prevista no objetivo geral do projeto.
+Cada evidência normalizada referencia o ODS ao qual se vincula, e os resultados por ODS (`{ odsId, indice, confianca }`) ficam na coleção `company_ods_scores`, um documento por empresa e ODS, em vez de um par único índice/confiança no `company_profile` — o que permite filtrar e ordenar pelo índice de um ODS selecionado com um único índice composto (modelo completo em `08-Artefatos-de-Análise.md`, seção 8.6). Nenhum ODS é assumido de forma implícita no código: incluir um novo ODS passa a ser uma nova entrada de seed somada às regras de pontuação correspondentes, sem alteração de esquema — o que preserva a escalabilidade a outros ODS prevista no objetivo geral do projeto.
 
 Limitações assumidas e registradas:
 
@@ -194,7 +194,7 @@ separado, conforme RF11 abaixo. A versão conjunta das regras do cálculo é
 `rf10-rf11-v3`; os pesos integrais da versão `rf10-rf11-v2` permanecem iguais. O motor
 é um caso de uso interno, executado pelo job `recalculate-scores(cnpj)` da fila `ods-scoring`
 (UC15, #80), que o fim da ingestão do IBAMA (um job por CNPJ afetado, em lotes), a consulta sob
-demanda (aguardável com prazo, diagrama 3) e a atualização do perfil cadastral (reescrita dos campos
+demanda (aguardável com prazo, diagrama 9) e a atualização do perfil cadastral (reescrita dos campos
 desnormalizados) acionam. Pedidos simultâneos do mesmo CNPJ viram um job só enquanto ele não
 começou, e um recálculo mais antigo nunca sobrescreve um mais novo. Alterar a versão das regras
 dispara um recálculo em lote, por varredura agendada; ao final de cada recálculo, o cache derivado
@@ -344,8 +344,8 @@ ao usuário sobre empresas acompanhadas, lendo a mesma coleção.
 O README (seção 4) e o RF08 formal (`05-Requisitos-Funcionais.md`) chegaram a listar números diferentes de estados (seis vs. quatro). Decisão: os quatro estados do RF08 (`CONFIRMED`, `NOT_FOUND`, `UNKNOWN`, `OUTDATED`) são o modelo definitivo do MVP. `NOT_APPLICABLE` e `CONFLICTING` ficam descartados do escopo atual e registrados aqui como trabalho futuro, não perdidos. O README foi atualizado (seção 4) para refletir essa decisão.
 
 Os diagramas C4 de contexto (nível 1) e de contêineres (nível 2) que materializam as decisões
-desta seção estão em `08-Artefatos-de-Análise.md`, seção 8.6; o modelo de dados das coleções,
-na seção 8.5.
+desta seção estão em `08-Artefatos-de-Análise.md`, seção 8.7; o modelo de dados das coleções,
+na seção 8.6.
 
 ## 6. Justificativa da arquitetura conforme ISO/IEC 25010:2023
 
