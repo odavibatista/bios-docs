@@ -1,12 +1,13 @@
 # 08. Artefatos de Análise
 
 Esta seção apresenta os artefatos gerados pela Análise: casos de uso (diagrama e descrição),
-diagrama de classes de domínio, diagramas de sequência dos fluxos principais, modelo de dados
-e diagramas de arquitetura no modelo C4. Os diagramas 1 a 8 estão escritos em Mermaid,
-renderizado nativamente pelo GitHub e versionado como texto junto à documentação; o modelo
-físico de dados (diagrama 9) é gerado a partir da fonte DBML em
-`assets/database/bios-database.dbml.txt`; os diagramas C4 (10 e 11) têm sua fonte editável em
-`assets/diagrams/bios-c4-architecture.drawio`.
+diagrama de classes de domínio, um diagrama de sequência e um processo em BPMN para cada caso de
+uso, modelo de dados e diagramas de arquitetura no modelo C4. Os diagramas 1 a 21 e o 41 estão
+escritos em Mermaid, renderizado nativamente pelo GitHub e versionado como texto junto à
+documentação. Os processos em BPMN (diagramas 22 a 40) têm a fonte editável em
+`assets/diagrams/bpmn/` (draw.io). O modelo físico de dados (diagrama 42) é gerado a partir da
+fonte DBML em `assets/database/bios-database.dbml.txt`, e os diagramas C4 (43 e 44) têm a fonte
+editável em `assets/diagrams/bios-c4-architecture.drawio`.
 
 Os atores referenciados são os definidos no Quadro 2 (`04-Atores-e-Histórias-dos-Usuários.md`).
 
@@ -1064,14 +1065,225 @@ Observações de modelagem:
 
 ## 8.4 Diagramas de Sequência
 
-### 8.4.1 Consultar empresa por CNPJ (UC06 + UC07)
+Cada caso de uso tem um diagrama de sequência (diagramas 3 a 21), na ordem do diagrama 1. Os
+diagramas mostram as rotas da API, as filas e as coleções envolvidas. O processo de cada caso
+de uso, em BPMN, está na seção 8.5.
+
+### 8.4.1 UC01 — Cadastrar Conta
+
+<p align="center"><b>Diagrama 3 - Sequência: UC01 Cadastrar Conta</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant DB as MongoDB
+    participant R as Redis (BullMQ)
+    participant M as Servidor SMTP
+
+    U->>FE: Informa nome, e-mail e senha
+    FE->>API: POST /accounts
+    API->>API: Valida os dados e normaliza o e-mail
+    API->>DB: Confere o domínio na blacklist
+    alt Domínio bloqueado
+        API-->>FE: Recusa com mensagem genérica
+    else Domínio aceito
+        API->>API: Calcula o hash bcrypt da senha
+        API->>DB: Busca a conta pelo índice cego do e-mail
+        opt E-mail ainda não cadastrado
+            API->>DB: Cria a conta inativa (USER), com e-mail e senha cifrados
+            API->>DB: Grava o hash do token de confirmação (24 h)
+            API->>R: Enfileira o e-mail de confirmação (email-dispatch)
+            R->>M: Envia o link
+        end
+        API-->>FE: Mesma resposta para e-mail novo ou já cadastrado
+    end
+    FE-->>U: Pede que confira o e-mail
+    U->>FE: Abre o link de confirmação
+    FE->>API: POST /accounts/confirm-email (token)
+    API->>DB: Busca o token pelo hash SHA-256
+    alt Token válido
+        API->>DB: Ativa a conta e marca o token como usado
+        API-->>FE: Conta ativa
+    else Token vencido ou já usado
+        API-->>FE: Erro, com o reenvio oferecido (POST /accounts/resend-confirmation)
+    end
+```
+
+### 8.4.2 UC02 — Efetuar Login
+
+<p align="center"><b>Diagrama 4 - Sequência: UC02 Efetuar Login</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant API as bios-core-api
+    participant DB as MongoDB
+    participant M as Servidor SMTP
+
+    U->>API: POST /auth/login (e-mail, senha)
+    API->>DB: Verifica bloqueio de IP/usuário
+    alt Bloqueado
+        API-->>U: 429 — acesso temporariamente bloqueado
+    else Não bloqueado
+        API->>DB: Busca usuário por emailHash
+        API->>API: Decifra o hash da senha (AES-256) e compara (bcrypt)
+        API->>DB: Registra tentativa (IP, data/hora, resultado)
+        alt Credenciais válidas e e-mail confirmado
+            API->>DB: Cria elo de sessão (nova família, hash do refresh token)
+            API-->>U: 200 — access token (sid) + refresh token
+        else Senha confere, mas o e-mail não foi confirmado
+            API-->>U: Pede a confirmação do e-mail e oferece o reenvio
+        else Credenciais inválidas
+            opt 5ª falha consecutiva
+                API->>DB: Bloqueia IP/usuário por 15 min
+                API->>M: E-mail de alerta de login suspeito
+            end
+            API-->>U: 401 — credenciais inválidas
+        end
+    end
+```
+
+### 8.4.3 UC03 — Encerrar Sessão
+
+<p align="center"><b>Diagrama 5 - Sequência: UC03 Encerrar Sessão</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant DB as MongoDB
+
+    U->>FE: Seleciona sair
+    alt Só este dispositivo
+        FE->>API: POST /auth/logout (JWT)
+        API->>DB: Revoga a família da sessão do sid (LOGOUT)
+    else Todos os dispositivos
+        FE->>API: POST /auth/logout-all (JWT)
+        API->>DB: Revoga todas as sessões ativas do usuário (LOGOUT_ALL_DEVICES)
+    end
+    API-->>FE: Sessão encerrada
+    FE->>FE: Descarta os tokens
+    FE-->>U: Exibe o login
+    Note over API,DB: Cada requisição seguinte confere o sid contra a sessão, e a sessão revogada é recusada como não autenticada
+```
+
+### 8.4.4 UC04 — Manter Senha
+
+<p align="center"><b>Diagrama 6 - Sequência: UC04 Manter Senha</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant DB as MongoDB
+    participant R as Redis (BullMQ)
+    participant M as Servidor SMTP
+
+    alt Alteração, com sessão
+        U->>FE: Informa a senha atual e a nova
+        FE->>API: POST /auth/change-password (JWT)
+        API->>DB: Lê a conta e confere a senha atual
+        alt Senha atual incorreta
+            API-->>FE: Erro, e o usuário informa de novo
+        else Senha atual confere
+            API->>DB: Grava a nova senha e migra a chave de cifragem, se preciso
+            API->>DB: Revoga as sessões de todos os dispositivos
+            API-->>FE: Senha alterada
+            FE-->>U: Exibe o login
+        end
+    else Recuperação, sem sessão
+        U->>FE: Informa o e-mail
+        FE->>API: POST /auth/forgot-password
+        opt Conta ativa com esse e-mail
+            API->>DB: Grava o hash do token (2 h), invalidando o anterior
+            API->>R: Enfileira o e-mail com o link
+            R->>M: Envia o link
+        end
+        API-->>FE: Mesma confirmação, exista ou não a conta
+        U->>FE: Abre o link e informa a nova senha
+        FE->>API: POST /auth/reset-password (token, nova senha)
+        alt Token válido e senha na política
+            API->>DB: Grava a nova senha e consome o token
+            API->>DB: Revoga as sessões de todos os dispositivos
+            API-->>FE: Senha redefinida
+            FE-->>U: Exibe o login
+        else Token vencido, usado ou de outra finalidade
+            API-->>FE: Recusa o link
+        end
+    end
+```
+
+### 8.4.5 UC05 — Manter Conta
+
+<p align="center"><b>Diagrama 7 - Sequência: UC05 Manter Conta</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant V as ViaCEP
+    participant DB as MongoDB
+    participant R as Redis (BullMQ)
+    participant M as Servidor SMTP
+
+    alt Editar nome e endereço
+        U->>FE: Edita nome e endereço
+        opt CEP com 8 dígitos
+            FE->>API: GET /locations/postal-codes/{cep}
+            API->>V: Consulta o CEP, com prazo de 3 s
+            alt Endereço encontrado
+                V-->>API: Endereço
+                API-->>FE: Logradouro, bairro, UF e município
+            else Não encontrado ou sem resposta
+                API-->>FE: Endereço indisponível
+                FE-->>U: Avisa e libera o preenchimento manual
+            end
+        end
+        FE->>API: PATCH /accounts/me
+        API->>DB: Valida e grava nome e endereço cifrado (AES-256)
+        API-->>FE: Dados atualizados
+    else Trocar o e-mail
+        U->>FE: Informa o novo e-mail e a senha atual
+        FE->>API: POST /accounts/me/email-change
+        API->>DB: Confere a senha, a blacklist e se o e-mail é de outra conta
+        opt E-mail livre
+            API->>DB: Grava o e-mail pendente cifrado e o hash do token (24 h)
+            API->>R: Enfileira o link para o novo e-mail
+            R->>M: Envia o link
+        end
+        API-->>FE: Mesma resposta de sucesso
+        U->>FE: Abre o link no novo e-mail
+        FE->>API: POST /accounts/confirm-email-change
+        API->>DB: Efetiva a troca, se o e-mail continua livre
+        API-->>FE: E-mail trocado
+    else Excluir a conta
+        U->>FE: Confirma a exclusão com a senha
+        FE->>API: DELETE /accounts/me
+        API->>DB: Remove conta, sessões, tokens, chaves de API, bloqueios e e-mails enviados
+        API->>DB: Desvincula as tentativas de login, que mantêm só IP e data
+        API-->>FE: Conta excluída
+        FE-->>U: Exibe a tela inicial
+    end
+```
+
+### 8.4.6 UC06 — Consultar Empresa
 
 Quem pede e quem atende os jobs de ingestão (consumidores de fila hospedados no próprio
 `bios-core-api`) conversam exclusivamente via filas BullMQ (ver `14-Projeto-e-Arquitetura.md`,
 seção 2). Quando a consulta exige resposta imediata, o core enfileira o job e aguarda sua
-conclusão com timeout. No diagrama, os consumidores são separados por assunto, e não por processo.
+conclusão com prazo. Nos diagramas, os consumidores são separados por assunto, e não por processo.
 
-<p align="center"><b>Diagrama 3 - Sequência: Consultar empresa por CNPJ</b></p>
+<p align="center"><b>Diagrama 8 - Sequência: UC06 Consultar Empresa</b></p>
 
 ```mermaid
 sequenceDiagram
@@ -1080,75 +1292,319 @@ sequenceDiagram
     participant FE as Front-end
     participant API as bios-core-api
     participant R as Redis (cache + BullMQ)
-    participant CNPJ as Consumidor cadastral
-    participant AMB as Consumidor ambiental
-    participant GHG as Consumidor GHG
+    participant CNPJ as Consumidor company-profile
+    participant P as BrasilAPI, OpenCNPJ, Minha Receita
     participant DB as MongoDB
 
-    U->>FE: Informa CNPJ
+    alt Busca por nome
+        U->>FE: Informa razão social ou nome fantasia
+        FE->>API: GET /companies?name=...
+        API->>DB: Busca por início de palavra em company_profile
+        API-->>FE: Empresas paginadas
+        U->>FE: Seleciona uma empresa
+    else Busca por CNPJ
+        U->>FE: Informa o CNPJ
+        FE->>FE: Valida formato e dígitos verificadores
+    end
     FE->>API: GET /companies/{cnpj} (JWT)
-    API->>R: Busca perfil em cache
+    API->>R: Busca o cadastro em cache
     alt Cache válido
-        R-->>API: Perfil
-    else Cache ausente ou vencido
-        API->>R: Enfileira job de cadastro e aguarda (timeout)
-        R->>CNPJ: Entrega job
-        CNPJ->>CNPJ: BrasilAPI → OpenCNPJ → Minha Receita + IBGE
-        CNPJ->>DB: Grava dados cadastrais
-        CNPJ-->>R: Conclui job
-        R-->>API: Job concluído
+        R-->>API: Cadastro
+    else Cache ausente
+        API->>DB: Lê company_profile
+        alt Dentro da janela de validade da fonte
+            API->>R: Devolve o cadastro ao cache
+        else Ausente ou vencido
+            API->>R: Publica o job company-profile e aguarda com prazo
+            R->>CNPJ: Entrega o job, compartilhado pelas consultas do mesmo CNPJ
+            loop Provedores na ordem de prioridade, até um servir
+                CNPJ->>P: Consulta o CNPJ
+                P-->>CNPJ: Cadastro, não encontrado ou falha
+            end
+            CNPJ->>CNPJ: Descrição oficial do CNAE (IBGE) e máscara do CPF na razão social
+            CNPJ->>DB: Grava company_profile, quando encontrado
+            CNPJ-->>R: FOUND, NOT_FOUND ou SOURCES_UNAVAILABLE
+            R-->>API: Resultado do job
+        end
+    end
+    alt Cadastro obtido, ou guardado com os provedores indisponíveis
+        API->>API: Inclui o UC07 (evidências e índices)
+        API-->>FE: Perfil
+        FE-->>U: Exibe o cadastro e o perfil ambiental
+    else NOT_FOUND
+        API-->>FE: Empresa não encontrada
+    else Indisponível e sem cadastro guardado
+        API-->>FE: Indisponibilidade temporária
+    end
+```
+
+### 8.4.7 UC07 — Visualizar Perfil Ambiental
+
+<p align="center"><b>Diagrama 9 - Sequência: UC07 Visualizar Perfil Ambiental</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant R as Redis (cache + BullMQ)
+    participant AMB as Consumidor ambiental
+    participant GHG as Consumidor GHG
+    participant IBQ as Fila ibama-ingestion
+    participant DB as MongoDB
+
+    API->>DB: Confirma o perfil cadastral local
+    alt Sem perfil
+        API-->>FE: 404, sem gravar nem publicar jobs
+    else Com perfil
         par Índice local do IBAMA
             API->>DB: Lê evidências locais válidas
             opt CNPJ sem resposta local do IBAMA
                 alt Lote completo ainda válido
                     API->>DB: Registra NOT_FOUND com data e validade do lote
                 else Sem lote completo válido
-                    API->>DB: Preserva resposta anterior ou registra UNKNOWN
-                    API->>R: Enfileira job avulso IBAMA sem aguardar
+                    API->>DB: Preserva a resposta anterior ou registra UNKNOWN
+                    API->>IBQ: Publica o job avulso (UC14), sem aguardar
                 end
             end
         and Evidências CEIS/CNEP
-            API->>DB: Reutiliza coleta local válida por cadastro
+            API->>DB: Reutiliza a coleta local válida
             opt Atualização necessária
-                API->>R: Enfileira job CGU e aguarda com timeout
-                R->>AMB: Entrega job CGU
-                AMB->>AMB: Consulta CEIS e CNEP em paralelo, isoladamente
-                AMB->>DB: Grava evidências de cada cadastro
-                AMB-->>R: Conclui job CGU
+                API->>R: Publica o job CGU e aguarda com prazo
+                R->>AMB: Entrega o job
+                AMB->>AMB: Consulta CEIS e CNEP, todas as páginas, isoladamente
+                AMB->>DB: Substitui o retrato de cada cadastro
+                AMB-->>R: Conclui o job
             end
         and Evidência GHG
-            API->>R: Enfileira job de inventário
-            R->>GHG: Entrega job
-            GHG->>DB: Grava evidência de emissões
-            GHG-->>R: Conclui job
+            API->>R: Publica o job de inventário e aguarda com prazo
+            R->>GHG: Entrega o job
+            GHG->>DB: Grava a evidência de publicação do inventário, ou UNKNOWN
+            GHG-->>R: Conclui o job
         end
-        alt Jobs concluídos dentro do timeout
-            R-->>API: Jobs concluídos
-        else Timeout ou falha de fonte
-            API->>API: Preserva a resposta anterior, ou UNKNOWN se a fonte nunca respondeu
+        alt Orçamento da consulta esgotado (15 s)
+            API-->>FE: Retrato guardado, com a proveniência de cada fonte e o índice pendente
+        else Coletas concluídas no prazo
+            API->>R: Publica o recálculo (UC15) e aguarda
+            R-->>API: Índices recalculados
+            API->>DB: Lê evidências, company_ods_scores e contribuições
+            API->>R: Guarda o perfil em cache (5 min)
+            API-->>FE: Evidências por categoria, índice e confiança por ODS
         end
-        API->>DB: Relê evidências e agrupa por categoria
-        API->>R: Enfileira recálculo de índices por ODS e aguarda
-        R->>AMB: Entrega job
-        AMB->>DB: Recalcula índice e confiança por ODS em company_ods_scores
-        AMB-->>R: Conclui job
-        R-->>API: Job concluído
-        API->>DB: Lê company_profile e company_ods_scores
-        API->>R: Grava perfil em cache
+        FE-->>U: Exibe evidências, índices e gráficos
+        U->>FE: Seleciona a explicação de um ODS
+        FE->>API: GET /companies/{cnpj}/scores/{ods}/explanation
+        API->>DB: Lê as contribuições do índice
+        API-->>FE: Evidências com peso e sinal
+        FE-->>U: Exibe a explicação do score
     end
-    API-->>FE: Perfil (cadastro, evidências, índice e confiança por ODS)
-    FE-->>U: Exibe perfil e explicação do score
 ```
 
-### 8.4.2 Ingestão diária do IBAMA (UC14 + UC15)
+### 8.4.8 UC08 — Pesquisar Empresas
 
-<p align="center"><b>Diagrama 4 - Sequência: Ingestão diária do IBAMA</b></p>
+<p align="center"><b>Diagrama 10 - Sequência: UC08 Pesquisar Empresas</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant DB as MongoDB
+
+    U->>FE: Abre a pesquisa
+    FE->>API: GET /ods
+    API-->>FE: ODS ativos no cálculo de índices
+    U->>FE: Informa critérios, ODS, mínimos e ordenação
+    FE->>API: GET /companies com os critérios
+    alt Nenhum critério, ou ODS que o sistema não calcula
+        API-->>FE: Recusa, com a lista de ODS disponíveis
+    else Critérios válidos
+        API->>DB: Filtra company_ods_scores pelo ODS (índice composto)
+        API->>DB: Lê o resumo das empresas em company_profile
+        API->>API: Ordena, com as empresas sem índice ao fim, e pagina
+        API-->>FE: Página com índice e confiança do ODS, em campos separados
+        alt Nenhum resultado
+            FE-->>U: Informa que nenhuma empresa atende
+        else Com resultados
+            FE-->>U: Exibe a lista
+            opt Exportar
+                U->>FE: Seleciona exportar (UC09)
+            end
+        end
+    end
+```
+
+### 8.4.9 UC09 — Exportar Lista XLSX
+
+<p align="center"><b>Diagrama 11 - Sequência: UC09 Exportar Lista XLSX</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant DB as MongoDB
+
+    U->>FE: Seleciona exportar
+    FE->>API: GET /companies/export/xlsx com os critérios da pesquisa
+    API->>DB: Conta as empresas que atendem
+    alt Nenhuma
+        API-->>FE: Não há lista para exportar
+    else Acima do teto (5000 por padrão)
+        API-->>FE: Pede critérios mais restritos
+    else Até o teto
+        API->>DB: Lê a lista inteira, na ordem da pesquisa
+        API->>API: Monta o XLSX com índice e confiança de cada ODS ativo, texto gravado como texto
+        API-->>FE: Arquivo XLSX
+        FE-->>U: O navegador baixa o arquivo
+    end
+```
+
+### 8.4.10 UC10 — Consultar Evolução Setorial
+
+<p align="center"><b>Diagrama 12 - Sequência: UC10 Consultar Evolução Setorial</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant Q as Agendador BullMQ
+    participant DB as MongoDB
+
+    Q->>API: Job periódico aggregate-sector-scores
+    API->>DB: Grava em sector_score_snapshots as médias por divisão CNAE, ODS e mês
+    U->>FE: Abre a evolução setorial
+    FE->>API: GET /sectors
+    API-->>FE: Setores com janela registrada, com a descrição da CNAE 2.3
+    U->>FE: Seleciona o setor e o ODS
+    FE->>API: GET /sectors/{cnae}/evolution
+    API->>DB: Lê as janelas do setor
+    alt Menos de duas janelas
+        API-->>FE: Histórico insuficiente
+    else Duas janelas ou mais
+        opt Setor abaixo do mínimo de empresas
+            API->>API: Omite as médias e mantém as contagens
+        end
+        API-->>FE: Índice médio, confiança média e empresas por mês
+        FE-->>U: Exibe a evolução do setor
+    end
+```
+
+### 8.4.11 UC11 — Manter Chaves de API
+
+<p align="center"><b>Diagrama 13 - Sequência: UC11 Manter Chaves de API</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant DB as MongoDB
+
+    U->>FE: Abre o painel de chaves
+    FE->>API: GET /api-keys (JWT)
+    API-->>FE: Nome, prefixo, criação e último uso
+    alt Gerar
+        U->>FE: Informa o nome da chave
+        FE->>API: POST /api-keys
+        alt 10 chaves ativas
+            API-->>FE: API_KEY_LIMIT_REACHED
+        else Abaixo do teto
+            API->>API: Gera bios_{id}_{segredo}
+            API->>DB: Grava o prefixo e o hash SHA-256
+            API-->>FE: Chave completa, exibida uma única vez
+        end
+    else Revogar
+        U->>FE: Seleciona a chave e confirma
+        FE->>API: DELETE /api-keys/{id}
+        alt Chave ativa do próprio usuário
+            API->>DB: Grava revoked_at
+            API-->>FE: Chave revogada, sem efeito a partir da chamada seguinte
+        else Alheia, inexistente ou já revogada
+            API-->>FE: Não encontrada
+        end
+    end
+```
+
+### 8.4.12 UC12 — Consultar Perfil via API
+
+<p align="center"><b>Diagrama 14 - Sequência: UC12 Consultar Perfil via API</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant T as Sistema de terceiros
+    participant API as bios-core-api
+    participant R as Redis (BullMQ)
+    participant DB as MongoDB
+
+    T->>API: GET /v1/companies/{cnpj} (x-api-key)
+    API->>DB: Localiza a chave pelo prefixo e confere o hash
+    alt Chave ausente, inválida ou revogada
+        API-->>T: 401, sem indicar o motivo
+    else Limite da chave excedido
+        API-->>T: 429 com Retry-After
+    else Chave válida
+        API->>DB: Atualiza o último uso (precisão de 1 min)
+        API->>API: Obtém o cadastro como no UC06, aguardando só ele
+        API->>DB: Lê evidências e índices guardados e válidos
+        API->>R: Publica a atualização do que falta, sem aguardar
+        API-->>T: Perfil em JSON, com o pendente indicado na proveniência
+    end
+```
+
+### 8.4.13 UC13 — Manter Blacklist de Domínios
+
+<p align="center"><b>Diagrama 15 - Sequência: UC13 Manter Blacklist de Domínios</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor A as Administrador
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant DB as MongoDB
+
+    A->>FE: Abre a blacklist
+    FE->>API: GET /admin/blocked-email-domains (JWT)
+    alt Sem sessão, ou sessão sem papel ADMIN
+        API-->>FE: 401 ou 403
+    else Sessão de ADMIN
+        API->>DB: Lista os domínios ativos, em ordem alfabética
+        API-->>FE: Página de domínios
+        alt Adicionar
+            A->>FE: Informa o domínio
+            FE->>API: POST /admin/blocked-email-domains
+            alt Formato inválido ou domínio já ativo
+                API-->>FE: Erro de validação
+            else Domínio válido
+                API->>DB: Grava em minúsculas e sem arroba, ou restaura o removido
+                API-->>FE: Domínio bloqueado na hora
+            end
+        else Remover
+            A->>FE: Seleciona o domínio e confirma
+            FE->>API: DELETE /admin/blocked-email-domains/{id}
+            API->>DB: Grava deleted_at
+            API-->>FE: Domínio deixa de bloquear na hora
+        end
+    end
+```
+
+### 8.4.14 UC14 — Ingerir Evidências
+
+<p align="center"><b>Diagrama 16 - Sequência: UC14 Ingerir Evidências</b></p>
 
 ```mermaid
 sequenceDiagram
     autonumber
     participant Q as BullMQ (job repetível)
-    participant AMB as Consumidor ambiental
+    participant AMB as Consumidor ibama-ingestion
     participant IB as IBAMA — Dados Abertos
     participant DB as MongoDB
 
@@ -1179,44 +1635,71 @@ sequenceDiagram
     end
 ```
 
-> O laço "para cada CNPJ afetado" é o gatilho de ingestão do UC15 e não faz parte do job de ingestão: o conjunto de afetados é uma consulta (evidências cuja data de coleta é o início da execução), derivada pelo recálculo por fila.
+> O laço "para cada CNPJ afetado" é o gatilho de ingestão do UC15 e não faz parte do job de ingestão: o conjunto de afetados é uma consulta (evidências cuja data de coleta é o início da execução), derivada pelo recálculo por fila. O job avulso por CNPJ (UC07) lê os mesmos dois dumps e grava só os achados do CNPJ pedido.
 
-### 8.4.3 Efetuar login com bloqueio por tentativas (UC02)
+### 8.4.15 UC15 — Calcular Índice e Confiança
 
-<p align="center"><b>Diagrama 5 - Sequência: Efetuar login</b></p>
+<p align="center"><b>Diagrama 17 - Sequência: UC15 Calcular Índice e Confiança</b></p>
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor U as Usuário
-    participant API as bios-core-api
+    participant Q as Fila ods-scoring
+    participant W as Consumidor ods-scoring
     participant DB as MongoDB
-    participant M as Servidor SMTP
+    participant R as Redis (cache)
 
-    U->>API: POST /auth/login (e-mail, senha)
-    API->>DB: Verifica bloqueio de IP/usuário
-    alt Bloqueado
-        API-->>U: 429 — acesso temporariamente bloqueado
-    else Não bloqueado
-        API->>DB: Busca usuário por emailHash
-        API->>API: Decifra o hash da senha (AES-256) e compara (bcrypt)
-        API->>DB: Registra tentativa (IP, data/hora, resultado)
-        alt Credenciais válidas
-            API->>DB: Cria elo de sessão (nova família, hash do refresh token)
-            API-->>U: 200 — access token (sid) + refresh token
-        else Credenciais inválidas
-            opt 5ª falha consecutiva
-                API->>DB: Bloqueia IP/usuário por 15 min
-                API->>M: E-mail de alerta de login suspeito
-            end
-            API-->>U: 401 — credenciais inválidas
+    Q->>W: Recalcular os índices do CNPJ
+    W->>DB: Carrega os ODS ativos
+    W->>DB: Lê as evidências normalizadas e o perfil cadastral
+    loop Para cada ODS
+        alt Sem evidência conclusiva
+            W->>W: Índice indisponível, com confiança mínima
+        else Com evidências
+            W->>W: Aplica peso e sinal por categoria e estado
+            W->>W: Calcula o índice e, à parte, a confiança
         end
+    end
+    rect rgb(240, 245, 240)
+        Note over W,DB: Transação
+        W->>DB: Lê os índices gravados
+        W->>DB: Substitui company_ods_scores, com as contribuições
+        opt Índice mudou, mesma versão de regras, empresa com perfil
+            W->>DB: Grava a movimentação do ODS (sentido, causa, categoria, data)
+        end
+    end
+    W->>R: Apaga o perfil e as evidências da empresa em cache
+    W-->>Q: Job concluído
+```
+
+> As empresas com perfil e índice que ainda não têm movimentação recebem uma reconstruída pela varredura diária (UC15, regra 8).
+
+### 8.4.16 UC16 — Integrar com CRM
+
+<p align="center"><b>Diagrama 18 - Sequência: UC16 Integrar com CRM</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as CRM de terceiros
+    participant API as bios-core-api
+
+    C->>API: POST /v1/crm/companies (CNPJs, x-api-key)
+    alt Chave inválida ou limite excedido
+        API-->>C: 401 ou 429
+    else Chave válida
+        loop Para cada CNPJ
+            API->>API: Consulta o perfil como no UC12
+            API->>API: Registra o estado do CNPJ, sem derrubar o lote
+        end
+        API-->>C: Perfis no formato de importação de contas
+        C->>C: Enriquece as contas corporativas
     end
 ```
 
-### 8.4.4 Renovar sessão com rotação e detecção de reuso (UC17)
+### 8.4.17 UC17 — Renovar Sessão
 
-<p align="center"><b>Diagrama 6 - Sequência: Renovar sessão</b></p>
+<p align="center"><b>Diagrama 19 - Sequência: UC17 Renovar Sessão</b></p>
 
 ```mermaid
 sequenceDiagram
@@ -1242,43 +1725,340 @@ sequenceDiagram
     end
 ```
 
-### 8.4.5 Registrar e acompanhar movimentações (UC15 + UC18)
+### 8.4.18 UC18 — Acompanhar Movimentações
 
-<p align="center"><b>Diagrama 7 - Sequência: Registrar e acompanhar movimentações</b></p>
+<p align="center"><b>Diagrama 20 - Sequência: UC18 Acompanhar Movimentações</b></p>
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor U as Usuário (front-end)
+    actor U as Usuário
+    participant FE as Front-end
     participant API as bios-core-api
-    participant Q as Fila ods-scoring
     participant DB as MongoDB
 
-    Q->>API: Recalcular índices do CNPJ
-    API->>DB: Lê evidências e perfil cadastral
-    API->>API: Calcula índice, confiança e contribuições
-    rect rgb(240, 245, 240)
-        Note over API,DB: Transação
-        API->>DB: Lê os índices gravados
-        API->>DB: Substitui os índices da empresa
-        opt Índice mudou, mesma versão de regras, empresa com perfil
-            API->>DB: Grava a movimentação do ODS (sentido, causa, categoria, data)
+    U->>FE: Conclui o login ou abre a tela principal
+    FE->>API: GET /companies/movements?page=1 (categoria opcional)
+    API->>DB: Lê a página por data, pelo índice de company_movements
+    alt Falha na leitura
+        API-->>FE: Erro
+        FE-->>U: Informa a falha e oferece nova tentativa
+    else Nenhuma movimentação
+        API-->>FE: Lista vazia
+        FE-->>U: Oferece a consulta e a pesquisa de empresas
+    else Com movimentações
+        API->>DB: Lê identificação e índices atuais das empresas da página
+        API-->>FE: 200 — empresas, movimentação por ODS e paginação
+        FE-->>U: Exibe sentido, causa, categoria e data por ODS
+        opt Seleciona uma empresa
+            U->>FE: Abre o perfil ambiental (UC07)
         end
     end
-    U->>API: GET /companies/movements?page=1
-    API->>DB: Lê a página por data, pelo índice de company_movements
-    API->>DB: Lê identificação e índices atuais das empresas da página
-    API-->>U: 200 — empresas, movimentação por ODS e paginação
 ```
 
-> A lista lê duas vezes, sempre limitada ao tamanho da página. As empresas com perfil e índice que
-> ainda não têm movimentação recebem uma reconstruída pela varredura diária (UC15, regra 8).
+> A lista lê duas vezes, sempre limitada ao tamanho da página, e não consulta fontes externas nem dispara recálculo.
 
-## 8.5 Modelo de Dados
+### 8.4.19 UC19 — Analisar Panorama de Dados
+
+<p align="center"><b>Diagrama 21 - Sequência: UC19 Analisar Panorama de Dados</b></p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Front-end
+    participant API as bios-core-api
+    participant DB as MongoDB
+
+    U->>FE: Aplica os critérios da pesquisa (UC08)
+    FE->>API: GET /companies/analytics com os critérios
+    API->>DB: Agrega totais e distribuições do conjunto
+    opt Conjunto abaixo do mínimo de empresas
+        API->>API: Omite médias e faixas de índice e de confiança
+    end
+    API-->>FE: Totais e séries por dimensão
+    loop Para cada card
+        alt Dimensão com dados
+            FE-->>U: Gráfico, sem cor de bom ou ruim
+        else Dimensão sem dados
+            FE-->>U: O card explica a ausência, com ícone
+        end
+    end
+    U->>FE: Passa o ponteiro ou escolhe a tabela
+    FE-->>U: Dica em frase, ou tabela com os mesmos números
+```
+
+## 8.5 Processos em BPMN
+
+Os diagramas 22 a 40 representam o processo de cada caso de uso em BPMN 2.0. A fonte editável de
+cada um está em `assets/diagrams/bpmn/` (draw.io), e a imagem exportada, em
+`assets/diagrams/bpmn/images/` (SVG).
+
+Convenções usadas nos diagramas:
+
+- **Pool BIOS:** uma raia por participante (ator, front-end, `bios-core-api` e consumidores de fila).
+- **Pools externos:** caixas fechadas (servidor SMTP, ViaCEP, provedores cadastrais e fontes de
+  evidência), ligadas por fluxo de mensagem tracejado.
+- **Eventos:** início simples, de tempo (agendamento) ou de mensagem (job recebido); o fim com raio
+  indica erro ou recusa.
+- **Gateways:** `X` é decisão exclusiva e `+` é execução em paralelo.
+- **Atividade com borda grossa:** chamada a outro caso de uso.
+
+| Caso de uso | Sequência | BPMN | Fonte |
+| --- | --- | --- | --- |
+| UC01 — Cadastrar Conta | [Diagrama 3](#841-uc01--cadastrar-conta) | [Diagrama 22](#851-uc01--cadastrar-conta) | [`UC01-cadastrar-conta.drawio`](assets/diagrams/bpmn/UC01-cadastrar-conta.drawio) |
+| UC02 — Efetuar Login | [Diagrama 4](#842-uc02--efetuar-login) | [Diagrama 23](#852-uc02--efetuar-login) | [`UC02-efetuar-login.drawio`](assets/diagrams/bpmn/UC02-efetuar-login.drawio) |
+| UC03 — Encerrar Sessão | [Diagrama 5](#843-uc03--encerrar-sessão) | [Diagrama 24](#853-uc03--encerrar-sessão) | [`UC03-encerrar-sessao.drawio`](assets/diagrams/bpmn/UC03-encerrar-sessao.drawio) |
+| UC04 — Manter Senha | [Diagrama 6](#844-uc04--manter-senha) | [Diagrama 25](#854-uc04--manter-senha) | [`UC04-manter-senha.drawio`](assets/diagrams/bpmn/UC04-manter-senha.drawio) |
+| UC05 — Manter Conta | [Diagrama 7](#845-uc05--manter-conta) | [Diagrama 26](#855-uc05--manter-conta) | [`UC05-manter-conta.drawio`](assets/diagrams/bpmn/UC05-manter-conta.drawio) |
+| UC06 — Consultar Empresa | [Diagrama 8](#846-uc06--consultar-empresa) | [Diagrama 27](#856-uc06--consultar-empresa) | [`UC06-consultar-empresa.drawio`](assets/diagrams/bpmn/UC06-consultar-empresa.drawio) |
+| UC07 — Visualizar Perfil Ambiental | [Diagrama 9](#847-uc07--visualizar-perfil-ambiental) | [Diagrama 28](#857-uc07--visualizar-perfil-ambiental) | [`UC07-visualizar-perfil-ambiental.drawio`](assets/diagrams/bpmn/UC07-visualizar-perfil-ambiental.drawio) |
+| UC08 — Pesquisar Empresas | [Diagrama 10](#848-uc08--pesquisar-empresas) | [Diagrama 29](#858-uc08--pesquisar-empresas) | [`UC08-pesquisar-empresas.drawio`](assets/diagrams/bpmn/UC08-pesquisar-empresas.drawio) |
+| UC09 — Exportar Lista XLSX | [Diagrama 11](#849-uc09--exportar-lista-xlsx) | [Diagrama 30](#859-uc09--exportar-lista-xlsx) | [`UC09-exportar-lista-xlsx.drawio`](assets/diagrams/bpmn/UC09-exportar-lista-xlsx.drawio) |
+| UC10 — Consultar Evolução Setorial | [Diagrama 12](#8410-uc10--consultar-evolução-setorial) | [Diagrama 31](#8510-uc10--consultar-evolução-setorial) | [`UC10-consultar-evolucao-setorial.drawio`](assets/diagrams/bpmn/UC10-consultar-evolucao-setorial.drawio) |
+| UC11 — Manter Chaves de API | [Diagrama 13](#8411-uc11--manter-chaves-de-api) | [Diagrama 32](#8511-uc11--manter-chaves-de-api) | [`UC11-manter-chaves-de-api.drawio`](assets/diagrams/bpmn/UC11-manter-chaves-de-api.drawio) |
+| UC12 — Consultar Perfil via API | [Diagrama 14](#8412-uc12--consultar-perfil-via-api) | [Diagrama 33](#8512-uc12--consultar-perfil-via-api) | [`UC12-consultar-perfil-via-api.drawio`](assets/diagrams/bpmn/UC12-consultar-perfil-via-api.drawio) |
+| UC13 — Manter Blacklist de Domínios | [Diagrama 15](#8413-uc13--manter-blacklist-de-domínios) | [Diagrama 34](#8513-uc13--manter-blacklist-de-domínios) | [`UC13-manter-blacklist-de-dominios.drawio`](assets/diagrams/bpmn/UC13-manter-blacklist-de-dominios.drawio) |
+| UC14 — Ingerir Evidências | [Diagrama 16](#8414-uc14--ingerir-evidências) | [Diagrama 35](#8514-uc14--ingerir-evidências) | [`UC14-ingerir-evidencias.drawio`](assets/diagrams/bpmn/UC14-ingerir-evidencias.drawio) |
+| UC15 — Calcular Índice e Confiança | [Diagrama 17](#8415-uc15--calcular-índice-e-confiança) | [Diagrama 36](#8515-uc15--calcular-índice-e-confiança) | [`UC15-calcular-indice-e-confianca.drawio`](assets/diagrams/bpmn/UC15-calcular-indice-e-confianca.drawio) |
+| UC16 — Integrar com CRM | [Diagrama 18](#8416-uc16--integrar-com-crm) | [Diagrama 37](#8516-uc16--integrar-com-crm) | [`UC16-integrar-com-crm.drawio`](assets/diagrams/bpmn/UC16-integrar-com-crm.drawio) |
+| UC17 — Renovar Sessão | [Diagrama 19](#8417-uc17--renovar-sessão) | [Diagrama 38](#8517-uc17--renovar-sessão) | [`UC17-renovar-sessao.drawio`](assets/diagrams/bpmn/UC17-renovar-sessao.drawio) |
+| UC18 — Acompanhar Movimentações | [Diagrama 20](#8418-uc18--acompanhar-movimentações) | [Diagrama 39](#8518-uc18--acompanhar-movimentações) | [`UC18-acompanhar-movimentacoes.drawio`](assets/diagrams/bpmn/UC18-acompanhar-movimentacoes.drawio) |
+| UC19 — Analisar Panorama de Dados | [Diagrama 21](#8419-uc19--analisar-panorama-de-dados) | [Diagrama 40](#8519-uc19--analisar-panorama-de-dados) | [`UC19-analisar-panorama-de-dados.drawio`](assets/diagrams/bpmn/UC19-analisar-panorama-de-dados.drawio) |
+
+### 8.5.1 UC01 — Cadastrar Conta
+
+<p align="center"><b>Diagrama 22 - BPMN: UC01 Cadastrar Conta</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC01 — Cadastrar Conta](assets/diagrams/bpmn/images/UC01-cadastrar-conta.svg)
+
+</div>
+
+Fonte editável: [`UC01-cadastrar-conta.drawio`](assets/diagrams/bpmn/UC01-cadastrar-conta.drawio).
+
+### 8.5.2 UC02 — Efetuar Login
+
+<p align="center"><b>Diagrama 23 - BPMN: UC02 Efetuar Login</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC02 — Efetuar Login](assets/diagrams/bpmn/images/UC02-efetuar-login.svg)
+
+</div>
+
+Fonte editável: [`UC02-efetuar-login.drawio`](assets/diagrams/bpmn/UC02-efetuar-login.drawio).
+
+### 8.5.3 UC03 — Encerrar Sessão
+
+<p align="center"><b>Diagrama 24 - BPMN: UC03 Encerrar Sessão</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC03 — Encerrar Sessão](assets/diagrams/bpmn/images/UC03-encerrar-sessao.svg)
+
+</div>
+
+Fonte editável: [`UC03-encerrar-sessao.drawio`](assets/diagrams/bpmn/UC03-encerrar-sessao.drawio).
+
+### 8.5.4 UC04 — Manter Senha
+
+<p align="center"><b>Diagrama 25 - BPMN: UC04 Manter Senha</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC04 — Manter Senha](assets/diagrams/bpmn/images/UC04-manter-senha.svg)
+
+</div>
+
+Fonte editável: [`UC04-manter-senha.drawio`](assets/diagrams/bpmn/UC04-manter-senha.drawio).
+
+### 8.5.5 UC05 — Manter Conta
+
+<p align="center"><b>Diagrama 26 - BPMN: UC05 Manter Conta</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC05 — Manter Conta](assets/diagrams/bpmn/images/UC05-manter-conta.svg)
+
+</div>
+
+Fonte editável: [`UC05-manter-conta.drawio`](assets/diagrams/bpmn/UC05-manter-conta.drawio).
+
+### 8.5.6 UC06 — Consultar Empresa
+
+<p align="center"><b>Diagrama 27 - BPMN: UC06 Consultar Empresa</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC06 — Consultar Empresa](assets/diagrams/bpmn/images/UC06-consultar-empresa.svg)
+
+</div>
+
+Fonte editável: [`UC06-consultar-empresa.drawio`](assets/diagrams/bpmn/UC06-consultar-empresa.drawio).
+
+### 8.5.7 UC07 — Visualizar Perfil Ambiental
+
+<p align="center"><b>Diagrama 28 - BPMN: UC07 Visualizar Perfil Ambiental</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC07 — Visualizar Perfil Ambiental](assets/diagrams/bpmn/images/UC07-visualizar-perfil-ambiental.svg)
+
+</div>
+
+Fonte editável: [`UC07-visualizar-perfil-ambiental.drawio`](assets/diagrams/bpmn/UC07-visualizar-perfil-ambiental.drawio).
+
+### 8.5.8 UC08 — Pesquisar Empresas
+
+<p align="center"><b>Diagrama 29 - BPMN: UC08 Pesquisar Empresas</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC08 — Pesquisar Empresas](assets/diagrams/bpmn/images/UC08-pesquisar-empresas.svg)
+
+</div>
+
+Fonte editável: [`UC08-pesquisar-empresas.drawio`](assets/diagrams/bpmn/UC08-pesquisar-empresas.drawio).
+
+### 8.5.9 UC09 — Exportar Lista XLSX
+
+<p align="center"><b>Diagrama 30 - BPMN: UC09 Exportar Lista XLSX</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC09 — Exportar Lista XLSX](assets/diagrams/bpmn/images/UC09-exportar-lista-xlsx.svg)
+
+</div>
+
+Fonte editável: [`UC09-exportar-lista-xlsx.drawio`](assets/diagrams/bpmn/UC09-exportar-lista-xlsx.drawio).
+
+### 8.5.10 UC10 — Consultar Evolução Setorial
+
+<p align="center"><b>Diagrama 31 - BPMN: UC10 Consultar Evolução Setorial</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC10 — Consultar Evolução Setorial](assets/diagrams/bpmn/images/UC10-consultar-evolucao-setorial.svg)
+
+</div>
+
+Fonte editável: [`UC10-consultar-evolucao-setorial.drawio`](assets/diagrams/bpmn/UC10-consultar-evolucao-setorial.drawio).
+
+### 8.5.11 UC11 — Manter Chaves de API
+
+<p align="center"><b>Diagrama 32 - BPMN: UC11 Manter Chaves de API</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC11 — Manter Chaves de API](assets/diagrams/bpmn/images/UC11-manter-chaves-de-api.svg)
+
+</div>
+
+Fonte editável: [`UC11-manter-chaves-de-api.drawio`](assets/diagrams/bpmn/UC11-manter-chaves-de-api.drawio).
+
+### 8.5.12 UC12 — Consultar Perfil via API
+
+<p align="center"><b>Diagrama 33 - BPMN: UC12 Consultar Perfil via API</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC12 — Consultar Perfil via API](assets/diagrams/bpmn/images/UC12-consultar-perfil-via-api.svg)
+
+</div>
+
+Fonte editável: [`UC12-consultar-perfil-via-api.drawio`](assets/diagrams/bpmn/UC12-consultar-perfil-via-api.drawio).
+
+### 8.5.13 UC13 — Manter Blacklist de Domínios
+
+<p align="center"><b>Diagrama 34 - BPMN: UC13 Manter Blacklist de Domínios</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC13 — Manter Blacklist de Domínios](assets/diagrams/bpmn/images/UC13-manter-blacklist-de-dominios.svg)
+
+</div>
+
+Fonte editável: [`UC13-manter-blacklist-de-dominios.drawio`](assets/diagrams/bpmn/UC13-manter-blacklist-de-dominios.drawio).
+
+### 8.5.14 UC14 — Ingerir Evidências
+
+<p align="center"><b>Diagrama 35 - BPMN: UC14 Ingerir Evidências</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC14 — Ingerir Evidências](assets/diagrams/bpmn/images/UC14-ingerir-evidencias.svg)
+
+</div>
+
+Fonte editável: [`UC14-ingerir-evidencias.drawio`](assets/diagrams/bpmn/UC14-ingerir-evidencias.drawio).
+
+### 8.5.15 UC15 — Calcular Índice e Confiança
+
+<p align="center"><b>Diagrama 36 - BPMN: UC15 Calcular Índice e Confiança</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC15 — Calcular Índice e Confiança](assets/diagrams/bpmn/images/UC15-calcular-indice-e-confianca.svg)
+
+</div>
+
+Fonte editável: [`UC15-calcular-indice-e-confianca.drawio`](assets/diagrams/bpmn/UC15-calcular-indice-e-confianca.drawio).
+
+### 8.5.16 UC16 — Integrar com CRM
+
+<p align="center"><b>Diagrama 37 - BPMN: UC16 Integrar com CRM</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC16 — Integrar com CRM](assets/diagrams/bpmn/images/UC16-integrar-com-crm.svg)
+
+</div>
+
+Fonte editável: [`UC16-integrar-com-crm.drawio`](assets/diagrams/bpmn/UC16-integrar-com-crm.drawio).
+
+### 8.5.17 UC17 — Renovar Sessão
+
+<p align="center"><b>Diagrama 38 - BPMN: UC17 Renovar Sessão</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC17 — Renovar Sessão](assets/diagrams/bpmn/images/UC17-renovar-sessao.svg)
+
+</div>
+
+Fonte editável: [`UC17-renovar-sessao.drawio`](assets/diagrams/bpmn/UC17-renovar-sessao.drawio).
+
+### 8.5.18 UC18 — Acompanhar Movimentações
+
+<p align="center"><b>Diagrama 39 - BPMN: UC18 Acompanhar Movimentações</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC18 — Acompanhar Movimentações](assets/diagrams/bpmn/images/UC18-acompanhar-movimentacoes.svg)
+
+</div>
+
+Fonte editável: [`UC18-acompanhar-movimentacoes.drawio`](assets/diagrams/bpmn/UC18-acompanhar-movimentacoes.drawio).
+
+### 8.5.19 UC19 — Analisar Panorama de Dados
+
+<p align="center"><b>Diagrama 40 - BPMN: UC19 Analisar Panorama de Dados</b></p>
+
+<div align="center">
+
+![Processo BPMN do UC19 — Analisar Panorama de Dados](assets/diagrams/bpmn/images/UC19-analisar-panorama-de-dados.svg)
+
+</div>
+
+Fonte editável: [`UC19-analisar-panorama-de-dados.drawio`](assets/diagrams/bpmn/UC19-analisar-panorama-de-dados.drawio).
+
+## 8.6 Modelo de Dados
 
 O modelo de dados do BIOS é apresentado em dois níveis. O modelo entidade-relacionamento
-(diagrama 8) mostra as entidades, as chaves e a cardinalidade de cada relacionamento. O modelo
-físico (diagrama 9) é gerado a partir da fonte DBML `assets/database/bios-database.dbml.txt`,
+(diagrama 41) mostra as entidades, as chaves e a cardinalidade de cada relacionamento. O modelo
+físico (diagrama 42) é gerado a partir da fonte DBML `assets/database/bios-database.dbml.txt`,
 referência única para coleções, campos, enumerações, índices e relações, espelhada nos schemas
 Prisma de cada módulo do `bios-core-api`.
 
@@ -1295,9 +2075,9 @@ em seis grupos:
 | Evidências e perfis | `evidence_raw`, `evidence_collection_clocks`, `evidence_normalized`, `company_profile`, `company_removals` | As três camadas de dados (bruto → normalizado → agregado), o relógio de coleta por fonte e os CNPJs retirados a pedido do titular. |
 | Índices | `company_ods_scores`, `company_movements`, `sector_score_snapshots` | Índice e confiança por empresa e ODS; última movimentação por empresa; agregados setoriais para a evolução por setor. |
 
-### 8.5.1 Modelo Entidade-Relacionamento
+### 8.6.1 Modelo Entidade-Relacionamento
 
-O diagrama 8 usa a notação pé de galinha. Cada entidade corresponde a uma coleção e mostra
+O diagrama 41 usa a notação pé de galinha. Cada entidade corresponde a uma coleção e mostra
 apenas a chave primária (PK), as chaves estrangeiras (FK), as chaves únicas (UK) e alguns
 atributos que a identificam; a lista completa de campos está no modelo físico.
 
@@ -1307,7 +2087,7 @@ atributos que a identificam; a lista completa de campos está no modelo físico.
   (`contributions`) apontam para as evidências, e cada movimentação (`ods_movements`), para
   o seu ODS.
 
-<p align="center"><b>Diagrama 8 - Modelo Entidade-Relacionamento</b></p>
+<p align="center"><b>Diagrama 41 - Modelo Entidade-Relacionamento</b></p>
 
 ```mermaid
 erDiagram
@@ -1514,7 +2294,7 @@ Leitura do diagrama:
   CNPJ retirado, cujo perfil já foi apagado) e `evidence_collection_clocks` (chave composta
   por fonte e CNPJ em texto) não se relacionam por identificador com outras coleções.
 
-### 8.5.2 Modelo Físico
+### 8.6.2 Modelo Físico
 
 Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura.md`):
 
@@ -1540,7 +2320,7 @@ Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura
   `<fonte>:<cnpj>#NOT_FOUND` ou `#UNKNOWN` para o resultado da consulta), permitindo reprocessar
   um dump sem duplicar evidências e sem que a mesma referência em duas empresas se sobrescreva.
 
-<p align="center"><b>Diagrama 9 - Modelo Físico de Dados</b></p>
+<p align="center"><b>Diagrama 42 - Modelo Físico de Dados</b></p>
 
 <div align="center">
 
@@ -1548,20 +2328,20 @@ Decisões de modelagem que complementam a arquitetura (`14-Projeto-e-Arquitetura
 
 </div>
 
-## 8.6 Diagramas de Arquitetura (C4)
+## 8.7 Diagramas de Arquitetura (C4)
 
-Os diagramas 10 e 11 representam a arquitetura do BIOS nos dois primeiros níveis do modelo C4.
+Os diagramas 43 e 44 representam a arquitetura do BIOS nos dois primeiros níveis do modelo C4.
 A justificativa das decisões arquiteturais segundo a ISO/IEC 25010:2023 está em
 `14-Projeto-e-Arquitetura.md`, seção 6.
 
-### 8.6.1 Nível 1 — Contexto
+### 8.7.1 Nível 1 — Contexto
 
-O diagrama 10 situa o BIOS entre seus usuários e os sistemas externos com os quais se integra:
+O diagrama 43 situa o BIOS entre seus usuários e os sistemas externos com os quais se integra:
 o usuário consulta, filtra e exporta empresas via HTTPS; sistemas de terceiros e CRMs consomem a API
 pública com chave de API; o BIOS consome BrasilAPI/OpenCNPJ/Minha Receita, IBGE, IBAMA (lote diário),
 CGU (CEIS/CNEP), GHG Protocol (best-effort) e ViaCEP, e envia e-mails por servidor SMTP.
 
-<p align="center"><b>Diagrama 10 - C4 Nível 1: Contexto</b></p>
+<p align="center"><b>Diagrama 43 - C4 Nível 1: Contexto</b></p>
 
 <div align="center">
 
@@ -1569,9 +2349,9 @@ CGU (CEIS/CNEP), GHG Protocol (best-effort) e ViaCEP, e envia e-mails por servid
 
 </div>
 
-### 8.6.2 Nível 2 — Contêineres
+### 8.7.2 Nível 2 — Contêineres
 
-O diagrama 11 detalha os contêineres do BIOS:
+O diagrama 44 detalha os contêineres do BIOS:
 
 | Contêiner | Tecnologia | Responsabilidade |
 | --- | --- | --- |
@@ -1589,7 +2369,7 @@ publica o job e quem o atende conversam exclusivamente via filas BullMQ sobre o 
 chamada direta entre si; por isso um consumidor pode ser movido para um processo próprio sem
 alterar o contrato do job (ver `14-Projeto-e-Arquitetura.md`, seção 2).
 
-<p align="center"><b>Diagrama 11 - C4 Nível 2: Contêineres</b></p>
+<p align="center"><b>Diagrama 44 - C4 Nível 2: Contêineres</b></p>
 
 <div align="center">
 

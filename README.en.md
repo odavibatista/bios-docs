@@ -143,7 +143,7 @@ The project treats what the system **must not** do as a first-class requirement:
 | [05. Functional requirements](05-Requisitos-Funcionais.md) | 39 requirements and writing heuristics |
 | [06. Non-functional requirements](06-Requisitos-Nao-Funcionais.md) | 23 requirements by quality characteristic |
 | [07. Inverse requirements](07-Requisitos-Inversos.md) | 5 requirements on what the system must not do |
-| [08. Analysis artifacts](08-Artefatos-de-Análise.md) | 19 use cases, classes, sequences, ER model, physical model and C4 |
+| [08. Analysis artifacts](08-Artefatos-de-Análise.md) | 19 use cases, classes, a sequence and a BPMN process per use case, ER model, physical model and C4 |
 | [09. System screens](09-Telas-do-Sistema.md) | 13 screens of the published version and the requirements each one meets |
 | [10. Project management](10-Gerenciamento-do-Projeto.md) | Process model, team, schedule and risks |
 | [11. Permissions](11-Permissões.md) | Roles and what each one can do |
@@ -162,9 +162,10 @@ The project treats what the system **must not** do as a first-class requirement:
 | Artifact | Where |
 | --- | --- |
 | Use cases, classes and sequences | [08. Analysis artifacts](08-Artefatos-de-Análise.md) |
+| BPMN processes | [Section 8.5](08-Artefatos-de-Análise.md#85-processos-em-bpmn) · [draw.io sources](assets/diagrams/bpmn/) |
 | C4, level 1 (context) | [Diagram](assets/diagrams/images/bios-context.svg) |
 | C4, level 2 (containers) | [Diagram](assets/diagrams/images/bios-architecture.svg) · [editable source](assets/diagrams/bios-c4-architecture.drawio) |
-| Data model | [ER model](08-Artefatos-de-Análise.md#851-modelo-entidade-relacionamento) · [Diagram](assets/database/bios-database.svg) · [DBML](assets/database/bios-database.dbml.txt) |
+| Data model | [ER model](08-Artefatos-de-Análise.md#861-modelo-entidade-relacionamento) · [Diagram](assets/database/bios-database.svg) · [DBML](assets/database/bios-database.dbml.txt) |
 
 ## Impact assessment
 
