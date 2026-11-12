@@ -2,28 +2,21 @@
 
 ## 1.1 Objetivo do Projeto
 
-O objetivo deste projeto é oferecer um mecanismo de consulta e avaliação do comprometimento
-ambiental de empresas brasileiras, a partir da consolidação de evidências públicas associadas
-ao CNPJ. Busca-se fornecer um ambiente que centralize informações hoje dispersas entre
-diferentes órgãos governamentais, transformando dados brutos em indicadores explicáveis de
+O objetivo deste projeto é oferecer um sistema de consulta e avaliação do comprometimento
+ambiental de empresas brasileiras e exteriores, a partir da consolidação de evidências públicas associadas
+ao seu CNPJ ou registro nacional (em caso de empresas operantes no Brasil). O BIOS busca ser uma solução capaz de casar uma série de dados e informações hoje dispersas e espalhadas acerca de como as empresas se portam diante da legislação ambiental (mas não somente limitada a esta, tendo a capacidade de atuar em outras frentes que não somente a ecológica), centralizando e refinando estes dados desestruturados. Tais dados brutos são convertidos em indicadores explicáveis de
 aderência a dois Objetivos de Desenvolvimento Sustentável (ODS) de natureza ambiental — ODS 13
-(Ação Contra a Mudança Global do Clima) e ODS 15 (Vida Terrestre) —, recorte adotado como foco
-do MVP. Com isso,
-pretende-se apoiar a tomada de decisão de profissionais de negócios, de sustentabilidade,
-pesquisadores, imprensa e órgãos públicos, sem incorrer nos riscos éticos e de privacidade
-próprios de ferramentas de prospecção comercial tradicionais.
+(Ação Contra a Mudança Global do Clima) e ODS 15 (Vida Terrestre / Vida Sobre a Terra). O projeto
+visa ser um apoiador na tomada de decisões para profissionais de negócios, sustentabilidade,
+pesquisadores, imprensa e órgãos públicos, utilizando única e exclusivamente de dados públicos hoje disponibilizados por entidades governamentais e provedores de processos internacionais.
 
-Entre as finalidades previstas estão verificações em processos de KYC (*Know Your Customer*) e
-KYE (*Know Your Employee*). O KYE serve principalmente à contratação de prestadores PJ: o BIOS
-alcança o prestador somente quando ele tem cadastro próprio com CNPJ, como empresário individual.
-O BIOS apresenta as evidências desse cadastro, sem busca por CPF e sem transformar o índice em
+O BIOS não visa não somente dar critérios de avaliação às empresas para que estas possam ser melhor escolhidas e analisadas por parte de funcionários públicos em licitações ou até mesmo em processos jurídicos, mas a mesma visa ser um meio de auxiliar profissionais do setor privado em processos de KYC (*Know Your Customer*) e KYE (*Know Your Employee*) (para mais informações, ler a [seção 2.2](02-Visão-Geral-do-Produto-e-Projeto.md#22-principais-stakeholders-e-usuários)), de modo que fornecedores possam saber o modo que empresas fazem uso de seus insumos e operam no mercado, e contratadores/terceirizadores dos setores público e privado sejam capazes de conhecer o modo que seus prestadores de serviço atuam.
+
+Estes dados não se limitam somente a contratantes ou a contratadores, mas também a consultorias e órgãos responsáveis por concederem certificações ambientais de índole pública e privada. No setor público, concedendo licenças para atuações em frentes ambientais (licenças para remoção de material radioativo, hospitalar, entre outros) e no setor privado, fornecimento de certificações ISO por parte de consultorias com tal competência.
+
+O BIOS apresenta as evidências de cada empresa, sem busca por CPF e sem transformar o índice em
 decisão automática ou veredito sobre uma pessoa ou empresa ([IND01], [INL02]). A seção
 [Avaliação de LGPD](16-Avaliação-LGPD.md) traz as regras desse uso.
-
-Os mesmos dados apoiam outras decisões de contratação, descritas na
-[seção 2.2](02-Visão-Geral-do-Produto-e-Projeto.md#22-principais-stakeholders-e-usuários): a
-diligência de órgãos públicos em licitações, terceirizações e privatizações e a escolha, por uma
-empresa, de parceiros alinhados à própria cultura ambiental.
 
 O sistema possibilitará que qualquer usuário autenticado consulte uma empresa por CNPJ ou por
 nome, obtendo um perfil consolidado com evidências categorizadas por fonte, um índice de
