@@ -25,8 +25,7 @@ exposição ao usuário, formalizada como [RF30] (Desejável). Reportar evoluç�
 
 Por honestidade epistemológica (mesmo princípio das RIN, `07-Requisitos-Inversos.md`), ficam explicitamente fora do escopo de avaliação de impacto:
 
-- Redução real de dano ambiental causada pelas empresas monitoradas — o sistema não tem visibilidade sobre causalidade entre consulta/exposição e mudança de comportamento;
-- Qualquer alegação de que aumento do índice médio de um setor significa melhoria ambiental real, quando pode refletir apenas melhoria na cobertura/qualidade da coleta de evidências (viés de instrumentação);
+- Dano real causado pelas empresas monitoradas — o sistema não calcula um total de estragos ou prejuízos ambientais que uma empresa possa ter causado a nível quantitativo ou monetário, apenas traz delitos ou processos que as mesmas possam ter cometido nestas esferas legais;
 - Qualquer alegação de que uma movimentação do índice de uma empresa ([RF33]) significa mudança real de conduta, quando ela reflete apenas a chegada, a saída ou a alteração de uma evidência pública;
 - Impacto fora da plataforma (ex.: decisões de compra ou parceria efetivamente tomadas com base no BIOS) — fora do alcance de instrumentação do sistema em sua v1.
 
@@ -39,8 +38,6 @@ O indicador [IA05] exige manter série histórica de scores, não apenas o valor
 3. **(adotada no modelo de dados)** Persistir apenas os agregados setoriais por janela de tempo na coleção `sector_score_snapshots` (média do índice e da confiança por ODS e divisão CNAE), calculados por job periódico a partir de `company_ods_scores`. Atende o [IA05] sem guardar série histórica por empresa individual — coerente com a restrição da nota do [IA05] — e com custo de armazenamento independente do número de empresas.
 
 A mesma restrição vale para a coleção `company_movements` ([RF33]): ela guarda só a última movimentação de cada ODS por empresa, sem índice anterior, e não forma série histórica.
-
-Não bloqueia o MVP (RF10/RF11 não exigem histórico; [RF30], que expõe [IA05] ao usuário, é Desejável), mas precisa ser decidido antes de implementar [IA05] em nível de código.
 
 **Implementação da opção 3** (bios-core-api, #89 e #90):
 
