@@ -66,11 +66,19 @@ anteriores são reconstruídos, e a ressalva do viés de instrumentação (seç�
 O ODS 13 fica estável por construção: cada inventário soma o mesmo peso, e o índice médio das empresas com
 inventário não muda.
 
-## 15.5 Impacto Extra-Ambiental
+## 15.5 Impacto Ambiental Potencial
+
+Outras fontes ambientais e modos de tratamento & refino dos dados podem ser acrescidos ao BIOS, de modo que outros índices de adesão das empresas mais específicos dos ODS's que tenham relação ambiental possam ser gerados, tais quais:
+- ODS 6: **Água Limpa e Saneamento**, mediante filtragem do tipo de impacto que uma sanção ambiental causou, caso tenha sido em ambiente marítimo, fluvial ou danoso ao saneamento);
+- ODS 7: **Energia Acessível e Limpa**, mediante filtragem e análise de uma sanção ambiental, caso esta esteja relacionada ao setor de minas, refino de combustíveis, ou fornecimento de fontes de energia);
+- ODS 14: **Vida de Baixo D'água**, seguindo critérios similares ao possível cálculo do ODS 6, mas analisando se as sanções ou boas ações tiveram impacto em ambientes com fauna ou flora aquática.
+
+## 15.6 Impacto Extra-Ambiental
 
 Sendo projetado para receber dados de diversas fontes sem estar engessado e limitado somente às de índole ambiental, o BIOS é capaz de escalar para consultar fontes que alimentem índices de comprometimento de outras empresas para outros ODS's, mas não limitados somente a estes dos seguintes modos:
-- A consulta de licitações de empresas em ações governamentais de amparo às classes mais necessitadas possa contribuir para a composição de índice de adesão de uma empresa aos ODS's 1-6 (a saber, respectivamente: Erradicação da Pobreza, Fome Zero, Boa Saúde e Bem-Estar, Educação de Qualidade, Igualdade de Gênero, Água Limpa e Saneamento);
-- A consulta e avaliação de processos trabalhistas sem sigilo de justiça possa contribuir para a composição de índice de adesão de uma empresa ao ODS 8 (Emprego Digno e Crescimento Econômico);
-- A consulta e avaliação de fontes de dados científicas de investimentos empresariais na pesquisa e na elaboração de tecnologias sustentáveis e benéficas possa contribuir para a composição de índice de adesão de uma empresa aos ODS 7, 9 e 11, a saber, respectivamente: Energia Acessível e Limpa; Indústria, Inovação e Infraestrutura; Cidades e Comunidades Sustentáveis;
-- A consulta e avaliação de fontes públicas de faturamento total e amortização/depreciação de ativos tangíveis e intangíveis das empresas e sua resolução possa contribuir para a composição de índice de adesão de uma empresa aos ODS 11 e 12, a saber: Cidades e Comunidades Sustentáveis; Consumo e Produção Responsáveis;
-- A consulta de processos públicos de natureza jurídica, fiscal, criminal e ética possa contribuir para a composição de índice de adesão de uma empresa ao ODS 16, a saber: Paz, Justiça e Instituições Fortes.
+- A consulta de licitações de empresas em ações governamentais de amparo às classes mais necessitadas possa contribuir para a composição de índice de adesão de uma empresa aos ODS's 1-6, a saber, respectivamente: **Erradicação da Pobreza**, **Fome Zero**, **Boa Saúde e Bem-Estar**, **Educação de Qualidade**, **Igualdade de Gênero** & **Água Limpa e Saneamento**);
+- A consulta e avaliação de processos trabalhistas sem sigilo de justiça possa contribuir para a composição de índice de adesão de uma empresa ao ODS 8, a saber: **Emprego Digno e Crescimento Econômico**;
+- A consulta e avaliação de fontes que proporcionem empresas que possuam certificações de "Great Place to Work" (Bom lugar para se trabalhar) ou demais voltadas para o bem-estar no ambiente e no dia a dia de trabalho ou que ofereçam benefícios extras para seus colaboradores através de parcerias com outras empresas possa contribuir para a composição de índice de adesão de uma empresa aos ODS 8, 10 e 17, a saber, respectivamente: **Emprego Digno e Crescimento Econômico**, **Redução das Desigualdades** & **Parcerias em Prol das Metas**; 
+- A consulta e avaliação de fontes de dados científicas de investimentos empresariais na pesquisa e na elaboração de tecnologias sustentáveis e benéficas possa contribuir para a composição de índice de adesão de uma empresa aos ODS 7, 9 e 11, a saber, respectivamente: **Energia Acessível e Limpa**, **Indústria, Inovação e Infraestrutura** & **Cidades e Comunidades Sustentáveis**;
+- A consulta e avaliação de fontes públicas de faturamento total e amortização/depreciação de ativos tangíveis e intangíveis das empresas e sua resolução possa contribuir para a composição de índice de adesão de uma empresa aos ODS 11 e 12, a saber: **Cidades e Comunidades Sustentáveis** & **Consumo e Produção Responsáveis**;
+- A consulta de processos públicos de natureza jurídica, fiscal, criminal e ética possa contribuir para a composição de índice de adesão de uma empresa ao ODS 16, a saber: **Paz, Justiça e Instituições Fortes**.
